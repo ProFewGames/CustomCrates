@@ -1,0 +1,55 @@
+name: CustomCrates
+main: xyz.ufactions.customcrates.CustomCrates
+version: 4.2.1
+author: ProFewGames
+description: A Fully Customizable Crates Plugin
+api-version: 1.13
+softdepend:
+  - HolographicDisplays
+commands:
+  customcrates:
+    description: Main Command for CustomCrates
+    aliases: [crates, crate, customcrates]
+permissions:
+  customcrates.break.crate:
+    description: Permission to break a crate
+    default: op
+  customcrates.sign.purchase.create:
+    description: Permission to create a purchase sign.
+    default: op
+  customcrates.command:
+    description: CustomCrates command.
+    default: true
+  customcrates.command.info:
+    description: CustomCrates info command.
+    default: true
+  customcrates.command.reload:
+    description: CustomCrates reload command.
+    default: op
+  customcrates.command.list:
+    description: CustomCrates list command.
+    default: op
+  customcrates.command.remove:
+    description: CustomCrates remove command.
+    default: op
+  customcrates.command.set:
+    description: CustomCrates set command.
+    default: op
+  customcrates.command.preview:
+    description: CustomCrates preview command.
+    default: op
+  customcrates.command.open:
+    description: CustomCrates open command.
+    default: op
+  customcrates.command.giveall:
+    description: CustomCrates giveall command.
+    default: op
+  customcrates.command.give:
+    description: CustomCrates give command.
+    default: op
+  customcrates.command.givepouch:
+    description: CustomCrates givepouch command.
+    default: op
+  customcrates.notify.version:
+    description: Notify if new version available
+    default: op

@@ -1,0 +1,116 @@
+###########################################################################################
+#                                      DEFAULT CRATE                                      #
+###########################################################################################
+
+# The crate settings
+# Identifier - The unique name that we'll use to identify this crate.
+# Display - This is the display name of the crate.
+# *Note* The player will be able to view both identifier and display names, it's just that
+# It is more neat to have the identifier as raw text
+# Block - The block that will be used for opening this crate.
+# Spin - The spin type of the crate.
+# Spin Types Available:
+# CSGO
+# ROULETTE
+# NONE - Quick Spin Option;
+# Spin Time - The amount of time the crate will spin for. *This time is in milliseconds
+# 1 Second = 1000 Milliseconds.
+
+# Sound:
+# By default configurable sounds is commented out until the user decides to add their own.
+# Your implementation build 'LATEST(>1.13)' or 'LEGACY (<1.12)' will decide the default
+# sounds if one is not chosen or cannot be loaded. Uncomment the sound lines to configure
+# sounds.
+Crate:
+  identifier: Default
+  display: '&3&lDefault Crate'
+  open-commands:
+    - 'broadcast &c%player% &7is opening &c%crate%&7.'
+  block: CHEST
+  spin: CSGO
+  spin time: 2500
+#  open sound: BLOCK_CHEST_CLOSE
+#  spin sound: BLOCK_NOTE_BLOCK_PLING
+#  win sound: ENTITY_EXPERIENCE_ORB_PICKUP
+
+# The key item that will be used for opening this crate in-game.
+# Name - The display name of the item shown in-game
+# Item - The in-game item of the key
+# Glow - Will this key be glowing?
+# Lore - The text shown as a description when you hover over the item
+Key:
+  name: '&b&lCrate Key'
+  item: TRIPWIRE_HOOK
+  glow: true
+  lore:
+    - '&7Use this at the nearest'
+    - '&7Crate to open!'
+
+# (!) This configuration section is optional, by default it will notify the
+# user that there is no configured pouch but this can be changed
+# in the language file.
+# material - The material of the in-game pouch
+# name - The name of the pouch
+# glow - Will this item glow?
+# lore - The text shown as a description when you hover over this item
+pouch:
+  material: ENDER_CHEST
+  glow: false
+  name: '&3&lDefault Pouch'
+  lore:
+    - '&7Click on this item to open pouch'
+
+# Holograms require HolographicDisplays to enable.
+# (!) This configuration section is optional.
+# hologram.items - (Latest(>=1.13.2) ONLY) These are items you can place in holograms.
+# hologram.items.<>.identifier - This has to be a unique name, this will be used as a placeholder
+# ({identifier}) in the lines.
+# hologram.items.<>.item - This is the item that will appear in the hologram.
+# hologram.lines - These are the hologram lines shown above the crate.
+hologram:
+  items:
+    key:
+      identifier: 'item_key'
+      item: TRIPWIRE_HOOK
+      glow: true
+  lines:
+    - '{item_key}'
+    - '{crate_display}'
+    - '&7(Right Click to Open)'
+    - '&7(Left Click to Preview)'
+
+# The prizes that will be available for this crate.
+# Prize.<prize_name> - This must be a unique name not already configured in this file.
+# Prize.<prize_name>.chance - The chance percentage that this prize will be chosen over
+# others.
+# Prize.<prize_name>.display.glow - Will this item glow when it's displayed?
+# Prize.<prize_name>.display.amount - How many of this item will be displayed?
+# Prize.<prize_name>.display.name - The name of this in-game item display.
+# Prize.<prize_name>.display.lore - The lore of this item's display.
+# Prize.<prize_name>.commands - The commands that will be executed when this prize
+# is chosen. * Use the %player% placeholder for the player's name.
+Prizes:
+  diamond:
+    chance: 50.0
+    display:
+      item: DIAMOND
+      data: 0
+      glow: true
+      amount: 1
+      name: '&b&lDIAMONDS!!'
+      lore:
+        - '&aChance: &e%chance%'
+    commands:
+      - 'broadcast &e%player% &ahas won &e2x &b&lDIAMONDS!'
+      - 'give %player% diamond 2'
+  gold:
+    chance: 50.0
+    display:
+      item: GOLD_INGOT
+      glow: false
+      amount: 1
+      name: '&6&lGold'
+      lore:
+        - '&aChance: &e%chance%'
+    commands:
+      - 'give %player% gold_ingot 1'

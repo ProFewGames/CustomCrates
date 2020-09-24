@@ -1,0 +1,21 @@
+###########################################################################################
+#                                                                                         #
+#                             CustomCrates                                                #
+#                                   By: ProFewGames                                       #
+#                                                                                         #
+###########################################################################################
+
+# If this file does not exists the plugin will try to generate it from resources.
+# Available languages:
+# English
+# Spanish
+language: english
+
+# Enabling debugging will output additional logs to console.
+debug: false
+
+# The update type
+# NONE - Do not check/download updates.
+# VERSION_CHECK - Only check the version.
+# CHECK_DOWNLOAD - Check the version and download the update (if one is available)
+updater: VERSION_CHECK
