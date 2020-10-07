@@ -4,7 +4,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import xyz.ufactions.customcrates.CustomCrates;
+import xyz.ufactions.enchantmentlib.EnchantmentLib;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,7 +38,7 @@ public class ItemBuilder {
     }
 
     public ItemBuilder glow(boolean glow) {
-        CustomCrates.getPlugin(CustomCrates.class).getLogger().info("Glow Effect disabled for this version."); // TODO FIX
+        item.addEnchantment(EnchantmentLib.getGlowEnchantment(), 1);
         return this;
     }
 

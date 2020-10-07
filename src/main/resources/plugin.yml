@@ -1,6 +1,6 @@
 name: CustomCrates
 main: xyz.ufactions.customcrates.CustomCrates
-version: 4.2.1
+version: 4.2.2
 author: ProFewGames
 description: A Fully Customizable Crates Plugin
 api-version: 1.13

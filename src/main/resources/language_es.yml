@@ -19,7 +19,7 @@ no-money: '&cNo tienes dinero suficiente.'
 
 
 # Information
-  prefix: '&7[&4CustomCrates&7] '
+prefix: '&7[&4CustomCrates&7] '
 no_key: '&cNo tienes una llave %name% &cpara abrir la crate.'
 no-available-crates: '&cNo hay crates disponibles'
 broken_crate: '&7Eliminaste el crate de ese lugar.'
