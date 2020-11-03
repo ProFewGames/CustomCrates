@@ -38,7 +38,8 @@ public class ItemBuilder {
     }
 
     public ItemBuilder glow(boolean glow) {
-        item.addEnchantment(EnchantmentLib.getGlowEnchantment(), 1);
+        if (glow)
+            item.addEnchantment(EnchantmentLib.getGlowEnchantment(), 1);
         return this;
     }
 

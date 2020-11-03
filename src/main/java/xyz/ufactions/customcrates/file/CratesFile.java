@@ -11,6 +11,8 @@ import xyz.ufactions.customcrates.crates.PhysicalCrate;
 import xyz.ufactions.customcrates.crates.Prize;
 import xyz.ufactions.customcrates.libs.FileHandler;
 import xyz.ufactions.customcrates.libs.ItemBuilder;
+import xyz.ufactions.customcrates.libs.ReflectionUtils;
+import xyz.ufactions.customcrates.libs.VersionUtils;
 import xyz.ufactions.customcrates.spin.Spin;
 
 import java.io.File;
@@ -22,12 +24,23 @@ import java.util.Map;
 
 public class CratesFile {
 
+    // Classes
+    private ReflectionUtils.RefClass ClassMaterial;
+
+    // Methods
+    private ReflectionUtils.RefMethod MaterialMethodGetMaterial$Integer;
+
     private final CustomCrates plugin;
     private File directory;
 
     public CratesFile(CustomCrates plugin) {
         this.plugin = plugin;
         reload();
+
+        this.ClassMaterial = ReflectionUtils.getRefClass(Material.class);
+        if (!VersionUtils.getVersion().greaterOrEquals(VersionUtils.Version.V1_13)) {
+            this.MaterialMethodGetMaterial$Integer = ClassMaterial.getMethod("getMaterial", Integer.class);
+        }
     }
 
     private File locateFile(String identifier) {
@@ -121,20 +134,11 @@ public class CratesFile {
                     continue;
                 }
                 String display = config.getString("Crate.display", identifier);
-                Material block;
-                Spin.SpinType spinType;
+                Material block = materialFromConfiguration(config, "Crate.block");
+                if (block == null) block = Material.CHEST;
                 long spinTime = config.getLong("Crate.spin time");
-                List<String> openCommands;
-                if (config.contains("Crate.open-commands")) {
-                    openCommands = config.getStringList("Crate.open-commands");
-                } else {
-                    openCommands = new ArrayList<>();
-                }
-
-                // Sound
-                Sound openingSound = parseSound(config.getString("Crate.open sound", ""), identifier, "CHEST_OPEN", "BLOCK_CHEST_OPEN");
-                Sound spinSound = parseSound(config.getString("Crate.spin sound", ""), identifier, "NOTE_PLING", "BLOCK_NOTE_PLING");
-                Sound winSound = parseSound(config.getString("Crate.win sound", ""), identifier, "LEVEL_UP", "ENTITY_PLAYER_LEVELUP");
+                List<String> openCommands = config.getStringList("Crate.open-commands");
+                Spin.SpinType spinType;
 
                 try {
                     spinType = Spin.SpinType.valueOf(config.getString("Crate.spin").toUpperCase());
@@ -143,12 +147,10 @@ public class CratesFile {
                     spinType = Spin.SpinType.ROULETTE;
                 }
 
-                try {
-                    block = Material.getMaterial(config.getString("Crate.block").toUpperCase());
-                } catch (Exception e) {
-                    plugin.getLogger().warning(plugin.getLanguage().crateBlockNotFound(identifier));
-                    block = Material.CHEST;
-                }
+                // Sound
+                Sound openingSound = parseSound(config.getString("Crate.open sound", ""), identifier, "CHEST_OPEN", "BLOCK_CHEST_OPEN");
+                Sound spinSound = parseSound(config.getString("Crate.spin sound", ""), identifier, "NOTE_PLING", "BLOCK_NOTE_PLING");
+                Sound winSound = parseSound(config.getString("Crate.win sound", ""), identifier, "LEVEL_UP", "ENTITY_PLAYER_LEVELUP");
 
                 // Hologram
                 List<String> hologram = new ArrayList<>();
@@ -162,11 +164,9 @@ public class CratesFile {
                             String path = "hologram.items." + key;
                             try {
                                 String item_identifier = config.getString(path + ".identifier");
-                                Material material = Material.valueOf(config.getString(path + ".item"));
-                                boolean glow = config.getBoolean(path + ".glow", false);
-                                int data = config.getInt(path + ".data");
-                                ItemStack item = new ItemBuilder(material, data).glow(glow).build();
-                                holographicItemsMap.put(item_identifier, item);
+                                ItemBuilder item = itemFromConfiguration(config, path);
+                                if (item != null)
+                                    holographicItemsMap.put(item_identifier, item.build());
                             } catch (Exception e) {
                                 plugin.getLogger().warning("Failed to load holographic item: " + path);
                                 if (plugin.getConfigurationFile().debugging()) e.printStackTrace();
@@ -176,27 +176,12 @@ public class CratesFile {
                 }
 
                 // Pouches
-                ItemStack pouch = null;
-                if (config.contains("pouch")) {
-                    try {
-                        Material material = Material.valueOf(config.getString("pouch.material"));
-                        boolean glow = config.getBoolean("pouch.glow", false);
-                        String name = config.getString("pouch.name", "");
-                        List<String> lore;
-                        if (config.contains("pouch.lore")) {
-                            lore = config.getStringList("pouch.lore");
-                        } else {
-                            lore = new ArrayList<>();
-                        }
-                        int data = config.getInt("pouch.data");
-
-                        pouch = new ItemBuilder(material, data).glow(glow).name(name).lore(lore).build();
-                    } catch (Exception e) {
-                        plugin.getLogger().warning("Failed to load pouch for crate: " + identifier);
-                    }
-                } else {
+                ItemBuilder pouchBuilder = itemFromConfiguration(config, "pouch");
+                ItemStack pouch;
+                if (pouchBuilder == null)
                     pouch = new ItemStack(Material.AIR);
-                }
+                else
+                    pouch = pouchBuilder.build();
 
                 // KEY
                 Material keyMaterial = Material.getMaterial(config.getString("Key.item").toUpperCase());
@@ -254,6 +239,45 @@ public class CratesFile {
             new FileHandler(plugin, "crates/default.yml", directory, "default.yml") {
             };
         }
+    }
+
+    // Private Methods
+
+    private ItemBuilder itemFromConfiguration(FileConfiguration config, String path) {
+        Material material = materialFromConfiguration(config, path + ".item");
+        if (material == null) return null;
+
+        int data = config.getInt(path + ".data", 0);
+        int amount = config.getInt(path + ".amount", 0);
+
+        ItemBuilder builder = new ItemBuilder(material, amount, data);
+
+        boolean glow = config.getBoolean(path + ".glow", false);
+        builder.glow(glow);
+
+        String name = config.getString(path + ".name");
+        if (name != null)
+            builder.name(name);
+
+        List<String> lore = config.getStringList(path + ".lore");
+        builder.lore(lore);
+        return builder;
+    }
+
+    private Material materialFromConfiguration(FileConfiguration config, String path) {
+        Material material = null;
+        Object o = config.get(path);
+        if (o instanceof Integer) {
+            if (!VersionUtils.getVersion().greaterOrEquals(VersionUtils.Version.V1_13)) {
+                material = (Material) MaterialMethodGetMaterial$Integer.call(o);
+            } else {
+                if (plugin.getConfigurationFile().debugging())
+                    plugin.getLogger().info("Could not load material from path \"" + path + "\" on file \"" + config.getName() + "\". Is not of type Integer.");
+            }
+        } else if (o instanceof String) {
+            material = Material.getMaterial(String.valueOf(o).toUpperCase());
+        }
+        return material;
     }
 
     private Sound parseSound(String configuredName, String identifier, String... soundNames) {

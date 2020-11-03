@@ -104,6 +104,7 @@ public class PlayerListener implements Listener {
                                 e.getClickedBlock().breakNaturally();
                                 return;
                             }
+                            if(!e.getPlayer().hasPermission("customcrates.sign.purchase.use")) return;
                             EconomyResponse response = VaultManager.getInstance().getEconomy().withdrawPlayer(e.getPlayer(), price);
                             if (response.transactionSuccess()) {
                                 ItemStack key = crate.getKey();

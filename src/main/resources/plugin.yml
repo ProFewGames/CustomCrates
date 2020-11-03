@@ -1,6 +1,6 @@
 name: CustomCrates
 main: xyz.ufactions.customcrates.CustomCrates
-version: 4.2.2
+version: 4.3.0
 author: ProFewGames
 description: A Fully Customizable Crates Plugin
 api-version: 1.13
@@ -17,6 +17,9 @@ permissions:
   customcrates.sign.purchase.create:
     description: Permission to create a purchase sign.
     default: op
+  customcrates.sign.purchase.use:
+    description: Permission to use a purchase sign.
+    default: true
   customcrates.command:
     description: CustomCrates command.
     default: true

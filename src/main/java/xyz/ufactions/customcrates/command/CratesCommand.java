@@ -64,7 +64,7 @@ public class CratesCommand implements CommandExecutor, TabExecutor {
                 access.add("givepouch");
                 access.add("gp");
             }
-            // TODO RE-ENABLE FOR UPDATE 4.x.x <- 4.2.2
+            // TODO RE-ENABLE FOR UPDATE 4.x.x <- 4.3.0
 //            access.add("editor"); // TODO Add Permissions Node
             return getMatches(args[0], access);
         }
@@ -132,7 +132,7 @@ public class CratesCommand implements CommandExecutor, TabExecutor {
                 return true;
             }
 
-            // TODO RE-ENABLE FOR UPDATE 4.x.x <- 4.2.2
+            // TODO RE-ENABLE FOR UPDATE 4.x.x <- 4.3.0
 //            if (args[0].equalsIgnoreCase("editor")) {
 //                if (isPlayer(sender, true)) {
 //                     TODO Permission Check
@@ -319,6 +319,7 @@ public class CratesCommand implements CommandExecutor, TabExecutor {
                 return true;
             }
             if (args[0].equalsIgnoreCase("give")) {
+                if (!permissionCheck(sender, "customcrates.command.give", true)) return true;
                 Player target = Bukkit.getPlayer(args[1]);
                 if (target == null) {
                     sender.sendMessage(F.error(plugin.getLanguage().playerNotFound()));
@@ -368,7 +369,7 @@ public class CratesCommand implements CommandExecutor, TabExecutor {
             sender.sendMessage(F.help("/" + label + " give <player> <crate> <amount>", "Give <player> x amount of <crate> keys."));
         if (permissionCheck(sender, "customcrates.command.givepouch", false))
             sender.sendMessage(F.help("/" + label + " givepouch|gp <player> <crate> <amount>", "Give <player> x amount of <crate> pouches."));
-        // TODO RE-ENABLE FOR UPDATE 4.x.x <- 4.2.2
+        // TODO RE-ENABLE FOR UPDATE 4.x.x <- 4.3.0
 //        sender.sendMessage(F.help("/" + label + " editor", "Open the crate editor")); // TODO Add permission check
         return true;
     }
