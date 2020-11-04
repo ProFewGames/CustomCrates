@@ -291,7 +291,29 @@ public class CratesCommand implements CommandExecutor, TabExecutor {
                 if (!permissionCheck(sender, "customcrates.command.givepouch", true)) return true;
 
                 if (args[1].equalsIgnoreCase("@a")) {
-                    sender.sendMessage("Please use the giveall parameter for the command instead.");
+                    ICrate crate = plugin.getCratesManager().getCrate(args[2]);
+                    if (crate == null) {
+                        sender.sendMessage(F.error(plugin.getLanguage().invalidCrateInput()));
+                        return true;
+                    }
+                    ItemStack pouch = crate.getPouch();
+                    if (pouch.getType() == Material.AIR) {
+                        sender.sendMessage(F.error("Ineligible pouch configuration. Make sure you have a pouch configured for this crate."));
+                        return true;
+                    }
+                    int amount;
+                    try {
+                        amount = Integer.parseInt(args[3]);
+                    } catch (NumberFormatException e) {
+                        sender.sendMessage(F.error(plugin.getLanguage().invalidInteger()));
+                        return true;
+                    }
+                    pouch.setAmount(amount);
+                    Bukkit.getOnlinePlayers().stream().forEachOrdered(user -> {
+                        user.getInventory().addItem(pouch);
+                        user.sendMessage(F.format("You've received &c" + amount + "&7x &c" + crate.getIdentifier() + " &7pouches."));
+                    });
+                    sender.sendMessage(F.format("You gave every player " + amount + "&7x &c" + crate.getIdentifier() + " &7pouches."));
                     return true;
                 }
 
@@ -431,7 +453,13 @@ public class CratesCommand implements CommandExecutor, TabExecutor {
         AtomicReference<Player> target = null;
 
         // Check if the player is using the "Self" Target Selector;
-        if (input.equalsIgnoreCase("@s")) return (Player) sender;
+        if (input.equalsIgnoreCase("@s")){
+            if (!(sender instanceof Player)) {
+                sender.sendMessage("Only players may use this Target Selector.");
+                return null;
+            }
+            return (Player) sender;
+        }
 
         // Check if the player is using the "All Entities" Target Selector.
         if (input.equalsIgnoreCase("@e")) {
