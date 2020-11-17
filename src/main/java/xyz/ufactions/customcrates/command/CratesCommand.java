@@ -4,10 +4,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
+import org.bukkit.block.CommandBlock;
+import org.bukkit.command.*;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -27,6 +25,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.stream.Collectors;
 
 public class CratesCommand implements CommandExecutor, TabExecutor {
 
@@ -288,7 +289,35 @@ public class CratesCommand implements CommandExecutor, TabExecutor {
         if (args.length == 4) {
             if (args[0].equalsIgnoreCase("givepouch") || args[0].equalsIgnoreCase("gp")) {
                 if (!permissionCheck(sender, "customcrates.command.givepouch", true)) return true;
-                Player target = Bukkit.getPlayer(args[1]);
+
+                if (args[1].equalsIgnoreCase("@a")) {
+                    ICrate crate = plugin.getCratesManager().getCrate(args[2]);
+                    if (crate == null) {
+                        sender.sendMessage(F.error(plugin.getLanguage().invalidCrateInput()));
+                        return true;
+                    }
+                    ItemStack pouch = crate.getPouch();
+                    if (pouch.getType() == Material.AIR) {
+                        sender.sendMessage(F.error("Ineligible pouch configuration. Make sure you have a pouch configured for this crate."));
+                        return true;
+                    }
+                    int amount;
+                    try {
+                        amount = Integer.parseInt(args[3]);
+                    } catch (NumberFormatException e) {
+                        sender.sendMessage(F.error(plugin.getLanguage().invalidInteger()));
+                        return true;
+                    }
+                    pouch.setAmount(amount);
+                    Bukkit.getOnlinePlayers().stream().forEachOrdered(user -> {
+                        user.getInventory().addItem(pouch);
+                        user.sendMessage(F.format("You've received &c" + amount + "&7x &c" + crate.getIdentifier() + " &7pouches."));
+                    });
+                    sender.sendMessage(F.format("You gave every player " + amount + "&7x &c" + crate.getIdentifier() + " &7pouches."));
+                    return true;
+                }
+
+                Player target = getPlayer(args[1], sender);
                 if (target == null) {
                     sender.sendMessage(F.error(plugin.getLanguage().playerNotFound()));
                     return true;
@@ -320,7 +349,13 @@ public class CratesCommand implements CommandExecutor, TabExecutor {
             }
             if (args[0].equalsIgnoreCase("give")) {
                 if (!permissionCheck(sender, "customcrates.command.give", true)) return true;
-                Player target = Bukkit.getPlayer(args[1]);
+
+                if (args[1].equalsIgnoreCase("@a")) {
+                    sender.sendMessage("Please use the giveall parameter for the command instead.");
+                    return true;
+                }
+
+                Player target = getPlayer(args[1], sender);
                 if (target == null) {
                     sender.sendMessage(F.error(plugin.getLanguage().playerNotFound()));
                     return true;
@@ -404,5 +439,77 @@ public class CratesCommand implements CommandExecutor, TabExecutor {
         } else {
             return true;
         }
+    }
+
+    /**
+     * This method is designed to get a player based off of a string input.
+     * The input can be either a player name, or a Target Selector such as @p.
+     *
+     * @param input A players name, or a target selector.
+     * @param sender The command sender.
+     * @return A Player object based on the input.
+     */
+    private Player getPlayer(String input, CommandSender sender) {
+        AtomicReference<Player> target = null;
+
+        // Check if the player is using the "Self" Target Selector;
+        if (input.equalsIgnoreCase("@s")){
+            if (!(sender instanceof Player)) {
+                sender.sendMessage("Only players may use this Target Selector.");
+                return null;
+            }
+            return (Player) sender;
+        }
+
+        // Check if the player is using the "All Entities" Target Selector.
+        if (input.equalsIgnoreCase("@e")) {
+            sender.sendMessage("You may not use the \"All Entities\" Tag Selector.");
+            return null;
+        }
+
+        //This can be changed to reflect a config value, if necessary.
+        double maxDistance = 5.0;
+
+        // Check if the player is using the "Random" Target Selector.
+        if (input.equalsIgnoreCase("@r")) {
+            int random = ThreadLocalRandom.current().nextInt(Bukkit.getOnlinePlayers().size());
+            return Bukkit.getOnlinePlayers().stream().collect(Collectors.toList()).get(random);
+        }
+
+        // Check if the player is using the "Nearby Player" Target Selector.
+        if (input.equalsIgnoreCase("@p")) {
+            if (sender instanceof Player) {
+                Player s = (Player) sender;
+                Location l = s.getLocation();
+                Bukkit.getOnlinePlayers().stream().forEachOrdered(user -> {
+                    if (user.getLocation().distance(l) <= maxDistance && user.getLocation().distance(l) >= 1) {
+                        target.set(user);
+                    }
+                });
+                if (target.get() == null) {
+                    s.sendMessage("There are no nearby players!");
+                    target.set(s);
+                }
+                return target.get();
+            }
+            // This one has a potential to return null; This is okay, from a CommandBlock standpoint.
+            if (sender instanceof CommandBlock) {
+                CommandBlock block = (CommandBlock) sender;
+                Location l = block.getLocation();
+                Bukkit.getOnlinePlayers().stream().forEachOrdered(user -> {
+                    if (user.getLocation().distance(l) >= maxDistance) {
+                        target.set(user);
+                    }
+                });
+                return target.get();
+            }
+            // Disallow Non Player access to the Nearby Players Target Selector.
+            if ((sender instanceof ConsoleCommandSender) || (sender instanceof RemoteConsoleCommandSender)) {
+                sender.sendMessage("The \"Nearby Player\" Target Selector is only available from in game.");
+                return null;
+            }
+        }
+        // If no Target Selector was used
+        return Bukkit.getPlayer(input);
     }
 }

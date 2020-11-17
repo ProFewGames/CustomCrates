@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.github.ProFewGames.EnchantmentLib:EnchantmentLib-Latest:latest">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/github/ProFewGames/EnchantmentLib/EnchantmentLib-Latest/latest/EnchantmentLib-Latest-latest.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/com/github/ProFewGames/EnchantmentLib/EnchantmentLib-Latest/latest/EnchantmentLib-Latest-latest-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/github/ProFewGames/EnchantmentLib/EnchantmentLib-Latest/latest/EnchantmentLib-Latest-latest-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
