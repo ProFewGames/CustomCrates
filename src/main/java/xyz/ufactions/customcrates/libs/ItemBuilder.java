@@ -43,6 +43,11 @@ public class ItemBuilder {
         return this;
     }
 
+    // XXX : Method might not work : Always return null -> NBT not saved
+    public boolean hasGlow() {
+        return item.containsEnchantment(EnchantmentLib.getGlowEnchantment());
+    }
+
     public ItemBuilder amount(int amount) {
         this.item.setAmount(amount);
         return this;

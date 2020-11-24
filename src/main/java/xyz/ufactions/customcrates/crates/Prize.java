@@ -14,7 +14,7 @@ public class Prize {
     private boolean glowing;
     private final double chance;
 
-    public Prize(ItemBuilder builder, boolean glow, double chance, String configurationSection, List<String> commands) {
+    public Prize(ItemBuilder builder, double chance, String configurationSection, List<String> commands) {
         List<String> lore = builder.getLore();
 
         for (int i = 0; i < lore.size(); i++) {
@@ -25,20 +25,10 @@ public class Prize {
 
         builder.lore(lore);
 
-        this.glowing = glow;
         this.builder = builder;
         this.commands = commands;
         this.chance = chance;
         this.configurationSection = configurationSection;
-    }
-
-    public boolean isGlowing() {
-        return glowing;
-    }
-
-    public void setGlowing(boolean glowing) {
-        this.glowing = glowing;
-        builder.glow(glowing);
     }
 
     public ItemStack getDisplayItem() {
