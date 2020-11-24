@@ -23,6 +23,7 @@ import xyz.ufactions.customcrates.spin.Spin;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
@@ -349,12 +350,6 @@ public class CratesCommand implements CommandExecutor, TabExecutor {
             }
             if (args[0].equalsIgnoreCase("give")) {
                 if (!permissionCheck(sender, "customcrates.command.give", true)) return true;
-
-                if (args[1].equalsIgnoreCase("@a")) {
-                    sender.sendMessage("Please use the giveall parameter for the command instead.");
-                    return true;
-                }
-
                 Player target = getPlayer(args[1], sender);
                 if (target == null) {
                     sender.sendMessage(F.error(plugin.getLanguage().playerNotFound()));
@@ -445,15 +440,13 @@ public class CratesCommand implements CommandExecutor, TabExecutor {
      * This method is designed to get a player based off of a string input.
      * The input can be either a player name, or a Target Selector such as @p.
      *
-     * @param input A players name, or a target selector.
+     * @param input  A players name, or a target selector.
      * @param sender The command sender.
      * @return A Player object based on the input.
      */
     private Player getPlayer(String input, CommandSender sender) {
-        AtomicReference<Player> target = null;
-
         // Check if the player is using the "Self" Target Selector;
-        if (input.equalsIgnoreCase("@s")){
+        if (input.equalsIgnoreCase("@s")) {
             if (!(sender instanceof Player)) {
                 sender.sendMessage("Only players may use this Target Selector.");
                 return null;
@@ -467,21 +460,22 @@ public class CratesCommand implements CommandExecutor, TabExecutor {
             return null;
         }
 
-        //This can be changed to reflect a config value, if necessary.
-        double maxDistance = 5.0;
-
         // Check if the player is using the "Random" Target Selector.
         if (input.equalsIgnoreCase("@r")) {
-            int random = ThreadLocalRandom.current().nextInt(Bukkit.getOnlinePlayers().size());
-            return Bukkit.getOnlinePlayers().stream().collect(Collectors.toList()).get(random);
+            return new ArrayList<Player>(Bukkit.getOnlinePlayers()).get(UtilMath.r(Bukkit.getOnlinePlayers().size()));
         }
 
         // Check if the player is using the "Nearby Player" Target Selector.
         if (input.equalsIgnoreCase("@p")) {
+            AtomicReference<Player> target = new AtomicReference<>(null);
+
+            //This can be changed to reflect a config value, if necessary.
+            double maxDistance = 5.0;
+
             if (sender instanceof Player) {
                 Player s = (Player) sender;
                 Location l = s.getLocation();
-                Bukkit.getOnlinePlayers().stream().forEachOrdered(user -> {
+                Bukkit.getOnlinePlayers().forEach(user -> {
                     if (user.getLocation().distance(l) <= maxDistance && user.getLocation().distance(l) >= 1) {
                         target.set(user);
                     }
@@ -496,7 +490,7 @@ public class CratesCommand implements CommandExecutor, TabExecutor {
             if (sender instanceof CommandBlock) {
                 CommandBlock block = (CommandBlock) sender;
                 Location l = block.getLocation();
-                Bukkit.getOnlinePlayers().stream().forEachOrdered(user -> {
+                Bukkit.getOnlinePlayers().forEach(user -> {
                     if (user.getLocation().distance(l) >= maxDistance) {
                         target.set(user);
                     }

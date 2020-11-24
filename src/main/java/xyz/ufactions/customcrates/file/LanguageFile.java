@@ -22,6 +22,8 @@ public class LanguageFile extends FileHandler {
 
     public LanguageFile(JavaPlugin plugin, String fileName) {
         super(plugin, fileName, plugin.getDataFolder(), fileName);
+
+        plugin.getLogger().info("Loading Language: " + fileName);
     }
 
     public String prefix() {

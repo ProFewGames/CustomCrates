@@ -25,7 +25,6 @@ import java.util.Map;
 public class CustomCrates extends JavaPlugin {
 
     private final int SPIGOTID = 29805; // SPIGOT PLUGIN ID
-    private final String Base64Texture = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvMzY5NTUxZGNjNjYzYzVkYjdjMDk5ZmY5NjQwYjczZTI2ZDhmN2M2M2FkNTY3NmI0MWQyNjE0YzJkMzgwY2UxNSJ9fX0=";
 
     // Files
     private CratesFile cratesFile;
@@ -43,7 +42,6 @@ public class CustomCrates extends JavaPlugin {
         this.cratesFile = new CratesFile(this);
         this.locationsFile = new LocationsFile(this);
         this.configurationFile = new ConfigurationFile(this);
-        getLogger().info("Loading language: " + configurationFile.getLanguage().name());
         this.language = new LanguageFile(this, configurationFile.getLanguage().getResource());
         this.manager = new CratesManager(this);
 
@@ -85,7 +83,6 @@ public class CustomCrates extends JavaPlugin {
         cratesFile.reload();
         manager.reload();
         configurationFile.reload();
-        getLogger().info("Loading language: " + configurationFile.getLanguage().name());
         language = new LanguageFile(this, configurationFile.getLanguage().getResource());
         reseatHolograms();
     }
