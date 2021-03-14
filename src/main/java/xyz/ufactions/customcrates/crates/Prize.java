@@ -11,7 +11,6 @@ public class Prize {
 
     private final ItemBuilder builder;
     private final List<String> commands;
-    private boolean glowing;
     private final double chance;
 
     public Prize(ItemBuilder builder, double chance, String configurationSection, List<String> commands) {

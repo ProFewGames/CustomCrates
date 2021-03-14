@@ -2,8 +2,10 @@ package xyz.ufactions.customcrates.crates;
 
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import xyz.ufactions.customcrates.libs.WeightedList;
 import xyz.ufactions.customcrates.spin.Spin;
 
 import java.util.List;
@@ -41,5 +43,8 @@ public interface ICrate {
 
     Inventory getPreviewInventory();
 
-    List<Prize> getPrizes();
+    WeightedList<Prize> getPrizes();
+
+    void giveKey(Player player, int amount);
+    void givePouch(Player player, int amount);
 }

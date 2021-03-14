@@ -1,6 +1,5 @@
 package xyz.ufactions.customcrates.listener;
 
-import com.stipess1.updater.Updater;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -104,7 +103,7 @@ public class PlayerListener implements Listener {
                                 e.getClickedBlock().breakNaturally();
                                 return;
                             }
-                            if(!e.getPlayer().hasPermission("customcrates.sign.purchase.use")) return;
+                            if (!e.getPlayer().hasPermission("customcrates.sign.purchase.use")) return;
                             EconomyResponse response = VaultManager.getInstance().getEconomy().withdrawPlayer(e.getPlayer(), price);
                             if (response.transactionSuccess()) {
                                 ItemStack key = crate.getKey();
@@ -207,29 +206,5 @@ public class PlayerListener implements Listener {
                 break;
             }
         }
-    }
-
-    // Updater
-
-    @EventHandler
-    public void onJoin(PlayerJoinEvent e) {
-        if (!e.getPlayer().hasPermission("customcrates.notify.version")) return;
-        if (plugin.getConfigurationFile().getUpdateType() == Updater.UpdateType.NONE) return;
-
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                Updater updater = plugin.checkUpdate(false);
-                try {
-                    if (updater.getResult() == Updater.Result.UPDATE_FOUND) {
-                        e.getPlayer().sendMessage(F.format(plugin.getLanguage().updateAvailable()));
-                    } else if (updater.getResult() == Updater.Result.SUCCESS) {
-                        e.getPlayer().sendMessage(F.format(plugin.getLanguage().updateDownloaded()));
-                    }
-                } catch (CustomException e) {
-                    e.printStackTrace();
-                }
-            }
-        }.runTaskAsynchronously(plugin);
     }
 }

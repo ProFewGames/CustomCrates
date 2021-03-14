@@ -2,11 +2,9 @@ package xyz.ufactions.customcrates;
 
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
-import com.stipess1.updater.Updater;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 import xyz.ufactions.customcrates.command.CratesCommand;
 import xyz.ufactions.customcrates.crates.ICrate;
 import xyz.ufactions.customcrates.file.ConfigurationFile;
@@ -60,18 +58,6 @@ public class CustomCrates extends JavaPlugin {
         reseatHolograms();
 
         new xyz.ufactions.customcrates.updater.Updater(this);
-
-        new BukkitRunnable() {
-
-            @Override
-            public void run() {
-                if (configurationFile.getUpdateType() == Updater.UpdateType.NONE) {
-                    cancel(); // CANCEL UPDATER IF TYPE IS NONE AND SCHEDULER IS SCHEDULED
-                } else {
-                    checkUpdate(true);
-                }
-            }
-        }.runTaskTimerAsynchronously(this, 0, 72000); // Check for update every hour
     }
 
     public boolean debugging() {
@@ -144,12 +130,5 @@ public class CustomCrates extends JavaPlugin {
 
     public LanguageFile getLanguage() {
         return language;
-    }
-
-    // Files End
-
-    // Updater
-    public Updater checkUpdate(boolean notify) {
-        return new Updater(this, SPIGOTID, getFile(), configurationFile.getUpdateType(), notify);
     }
 }

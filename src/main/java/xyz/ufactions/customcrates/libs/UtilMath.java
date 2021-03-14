@@ -7,6 +7,15 @@ import java.util.Random;
 
 public class UtilMath {
 
+    public static boolean isInteger(String string) {
+        try {
+            Integer.parseInt(string);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
     public static double trim(int degree, double d) {
         String format = "#.#";
 

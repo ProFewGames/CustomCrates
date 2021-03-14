@@ -10,10 +10,6 @@ import xyz.ufactions.customcrates.crates.Prize;
 import xyz.ufactions.customcrates.libs.F;
 import xyz.ufactions.customcrates.libs.UtilMath;
 
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
-
 public abstract class Spin {
 
     public enum SpinType {
@@ -72,31 +68,35 @@ public abstract class Spin {
     }
 
     protected final Prize randomPrize(ICrate crate) {
-        double max = 0;
-        List<Prize> prizes = crate.getPrizes();
-        for (Prize prize : prizes)
-            if (prize.getChance() > max)
-                max = prize.getChance();
-        DecimalFormat format = new DecimalFormat("####.##");
-        String chanceNumberString = format.format(0 + max * UtilMath.random.nextDouble());
-        double chanceNumber = Double.parseDouble(chanceNumberString);
-        List<Prize> winnablePrizes = new ArrayList<>();
-        for (Prize prize : prizes) {
-            double chance = prize.getChance();
-            if (chanceNumber <= chance)
-                winnablePrizes.add(prize);
-        }
-        Prize wonPrize = null;
-        while (wonPrize == null) {
-            if (winnablePrizes.size() > 1) {
-                int prizeToPick = UtilMath.random.nextInt(winnablePrizes.size());
-                wonPrize = winnablePrizes.get(prizeToPick);
-            } else {
-                wonPrize = winnablePrizes.get(0);
-            }
-        }
-        return wonPrize;
+        return crate.getPrizes().get();
     }
+
+//    protected final Prize randomPrize(ICrate crate) {
+//        double max = 0;
+//        List<Prize> prizes = crate.getPrizes();
+//        for (Prize prize : prizes)
+//            if (prize.getChance() > max)
+//                max = prize.getChance();
+//        DecimalFormat format = new DecimalFormat("####.##");
+//        String chanceNumberString = format.format(0 + max * UtilMath.random.nextDouble());
+//        double chanceNumber = Double.parseDouble(chanceNumberString);
+//        List<Prize> winnablePrizes = new ArrayList<>();
+//        for (Prize prize : prizes) {
+//            double chance = prize.getChance();
+//            if (chanceNumber <= chance)
+//                winnablePrizes.add(prize);
+//        }
+//        Prize wonPrize = null;
+//        while (wonPrize == null) {
+//            if (winnablePrizes.size() > 1) {
+//                int prizeToPick = UtilMath.random.nextInt(winnablePrizes.size());
+//                wonPrize = winnablePrizes.get(prizeToPick);
+//            } else {
+//                wonPrize = winnablePrizes.get(0);
+//            }
+//        }
+//        return wonPrize;
+//    }
 
     protected final ChatColor randomColor() {
         return ChatColor.values()[UtilMath.random.nextInt(ChatColor.values().length)];

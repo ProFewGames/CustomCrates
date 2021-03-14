@@ -12,8 +12,7 @@ import xyz.ufactions.customcrates.crates.PhysicalCrate;
 import xyz.ufactions.customcrates.crates.Prize;
 import xyz.ufactions.customcrates.libs.FileHandler;
 import xyz.ufactions.customcrates.libs.ItemBuilder;
-import xyz.ufactions.customcrates.libs.ReflectionUtils;
-import xyz.ufactions.customcrates.libs.VersionUtils;
+import xyz.ufactions.customcrates.libs.WeightedList;
 import xyz.ufactions.customcrates.spin.Spin;
 
 import java.io.File;
@@ -24,12 +23,6 @@ import java.util.List;
 
 public class CratesFile {
 
-    // Classes
-    private ReflectionUtils.RefClass ClassMaterial;
-
-    // Methods
-    private ReflectionUtils.RefMethod MaterialMethodGetMaterial$Integer;
-
     private final HashMap<String, ICrate> crates;
     private final CustomCrates plugin;
     private File directory;
@@ -38,11 +31,6 @@ public class CratesFile {
         this.plugin = plugin;
         this.crates = new HashMap<>();
         reload();
-
-        this.ClassMaterial = ReflectionUtils.getRefClass(Material.class);
-        if (!VersionUtils.getVersion().greaterOrEquals(VersionUtils.Version.V1_13)) {
-            this.MaterialMethodGetMaterial$Integer = ClassMaterial.getMethod("getMaterial", Integer.class);
-        }
     }
 
     private File locateFile(String identifier) {
@@ -241,12 +229,14 @@ public class CratesFile {
     public ICrate getCrate(FileConfiguration configuration) {
         Validate.notNull(configuration, "File Configuration is null");
 
+        // Load Crate
         String identifier = configuration.getString("Crate.identifier");
         if (identifier == null || identifier.isEmpty()) {
             plugin.getLogger().warning("Identifier for configuration \"" + configuration.getCurrentPath() + "\" is null" +
                     " or empty. '" + identifier + "'");
             return null;
         }
+        identifier = identifier.replaceAll(" ", "_");
 
         if (crates.containsKey(identifier)) {
             return crates.get(identifier);
@@ -262,17 +252,21 @@ public class CratesFile {
             if (block == null) block = Material.CHEST;
         }
 
+        // Load Sounds
         Sound openingSound = parseSound(configuration.getString("Crate.open sound", ""), identifier, "CHEST_OPEN", "BLOCK_CHEST_OPEN");
         Sound spinSound = parseSound(configuration.getString("Crate.spin sound", ""), identifier, "NOTE_PLING", "BLOCK_NOTE_PLING");
         Sound winSound = parseSound(configuration.getString("Crate.win sound", ""), identifier, "LEVEL_UP", "ENTITY_PLAYER_LEVELUP");
         List<String> openCommands = configuration.getStringList("Crate.open-commands");
 
+        // Load Key
         ItemBuilder keyBuilder = itemFromConfiguration(configuration, "Key");
         if (keyBuilder == null) keyBuilder = new ItemBuilder(Material.AIR);
 
+        // Load Pouch
         ItemBuilder pouchBuilder = itemFromConfiguration(configuration, "pouch");
         ItemStack pouch = pouchBuilder == null ? new ItemStack(Material.AIR) : pouchBuilder.build();
 
+        // Load Spin
         Spin.SpinType spinType = Spin.SpinType.CSGO;
         try {
             spinType = Spin.SpinType.valueOf(configuration.getString("Crate.spin"));
@@ -282,7 +276,8 @@ public class CratesFile {
                 e.printStackTrace();
         }
 
-        List<Prize> prizes = new ArrayList<>();
+        // Load Prizes
+        WeightedList<Prize> prizes = new WeightedList<>();
         for (String key : configuration.getConfigurationSection("Prizes").getKeys(false)) {
             String path = "Prizes." + key;
             ItemBuilder prizeBuilder = itemFromConfiguration(configuration, path + ".display");
@@ -291,9 +286,10 @@ public class CratesFile {
             }
             double chance = configuration.getDouble(path + ".chance");
             List<String> commands = configuration.getStringList(path + ".commands");
-            prizes.add(new Prize(prizeBuilder, chance, path, commands));
+            prizes.add(new Prize(prizeBuilder, chance, path, commands), chance);
         }
 
+        // Load Hologram
         List<String> holographicLines = configuration.getStringList("hologram.lines");
         HashMap<String, ItemStack> holographicItemMap = new HashMap<>();
         if (!holographicLines.isEmpty()) { // Redundant check most of the times but if holograms aren't configured we aren't going to load the rest
@@ -308,7 +304,7 @@ public class CratesFile {
                 }
             }
         }
-
+        // Construction
         ICrate crate = new PhysicalCrate(identifier, display, openingSound, spinSound, winSound, spinType, spinTime, block,
                 keyBuilder, prizes, openCommands, holographicLines, holographicItemMap, pouch);
         return crates.put(identifier, crate);
@@ -334,7 +330,7 @@ public class CratesFile {
         if (material == null) return null;
 
         int data = config.getInt(path + ".data", 0);
-        int amount = config.getInt(path + ".amount", 0);
+        int amount = config.getInt(path + ".amount", 1);
 
         ItemBuilder builder = new ItemBuilder(material, amount, data);
 
@@ -351,20 +347,7 @@ public class CratesFile {
     }
 
     private Material materialFromConfiguration(FileConfiguration config, String path) {
-        Material material = null;
-        Object o = config.get(path);
-        if (o instanceof Integer) {
-            if (!VersionUtils.getVersion().greaterOrEquals(VersionUtils.Version.V1_13)) {
-                material = (Material) MaterialMethodGetMaterial$Integer.call(o);
-            } else {
-                if (plugin.getConfigurationFile().debugging())
-                    plugin.getLogger().info("Could not load material from path \"" + path + "\" on file \"" + config.getName() + "\"." +
-                            "This version of Minecraft does not support item ids.");
-            }
-        } else if (o instanceof String) {
-            material = Material.getMaterial(String.valueOf(o).toUpperCase());
-        }
-        return material;
+        return Material.getMaterial(config.getString(path).toUpperCase());
     }
 
     private Sound parseSound(String configuredName, String identifier, String... soundNames) {

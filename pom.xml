@@ -84,11 +84,7 @@
                 <version>3.2.0</version>
                 <configuration>
                     <outputDirectory>
-                        <!--                        C:\Users\rick_\Desktop\New folder\SERVERS\test-server 1.8.8\plugins-->
-                        <!--                    C:\Users\rick_\Desktop\New folder\SERVERS\test-server 1.9\plugins-->
-                        <!--                        Z:\SERVERS\test-server 1.12.2\plugins-->
-                        <!--                        Z:\SERVERS\test-server 1.13.2\plugins-->
-                        <!--                        Z:\SERVERS\test-server 1.14.4\plugins-->
+                        /home/rick/Servers/1.8.8/plugins
                     </outputDirectory>
                 </configuration>
             </plugin>

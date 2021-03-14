@@ -43,9 +43,9 @@ public class CSGOSpin extends Spin {
 
         final long start = System.currentTimeMillis();
 
-        newTask(start, player, inventory, crate, prizes, false).runTaskTimer(plugin, 0, 1);
-
         player.openInventory(inventory);
+
+        newTask(start, player, inventory, crate, prizes, false).runTaskTimer(plugin, 0, 1);
     }
 
     private BukkitRunnable newTask(final long start, final Player player, final Inventory inventory, final ICrate crate, final List<Prize> prizes, final boolean slowDown) {

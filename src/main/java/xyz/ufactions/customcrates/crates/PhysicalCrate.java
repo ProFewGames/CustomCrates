@@ -3,11 +3,13 @@ package xyz.ufactions.customcrates.crates;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import xyz.ufactions.customcrates.libs.F;
 import xyz.ufactions.customcrates.libs.ItemBuilder;
 import xyz.ufactions.customcrates.libs.UtilMath;
+import xyz.ufactions.customcrates.libs.WeightedList;
 import xyz.ufactions.customcrates.spin.Spin;
 
 import java.util.List;
@@ -28,14 +30,14 @@ public class PhysicalCrate implements ICrate {
 
     private final Inventory previewInventory;
 
-    private final List<Prize> prizes;
+    private final WeightedList<Prize> prizes;
     private final List<String> openCommands;
 
     private final Map<String, ItemStack> holographicItemMap;
     private final List<String> holographicLines;
 
     public PhysicalCrate(String identifier, String display, Sound openingSound, Sound spinSound, Sound winSound,
-                         Spin.SpinType spinType, long spinTime, Material block, ItemBuilder keyBuilder, List<Prize> prizes, List<String> openCommands,
+                         Spin.SpinType spinType, long spinTime, Material block, ItemBuilder keyBuilder, WeightedList<Prize> prizes, List<String> openCommands,
                          List<String> holographicLines, Map<String, ItemStack> holographicItemMap, ItemStack pouch) {
         this.identifier = identifier.replaceAll(" ", "_");
         this.display = F.color(display);
@@ -120,7 +122,7 @@ public class PhysicalCrate implements ICrate {
     }
 
     @Override
-    public List<Prize> getPrizes() {
+    public WeightedList<Prize> getPrizes() {
         return prizes;
     }
 
@@ -137,5 +139,27 @@ public class PhysicalCrate implements ICrate {
     @Override
     public Map<String, ItemStack> holographicItemMap() {
         return holographicItemMap;
+    }
+
+    @Override
+    public void giveKey(Player player, int amount) {
+        ItemStack key = getKey();
+        key.setAmount(amount);
+        if (player.getInventory().firstEmpty() == -1) {
+            player.getWorld().dropItemNaturally(player.getLocation(), key);
+        } else {
+            player.getInventory().setItem(player.getInventory().firstEmpty(), key);
+        }
+    }
+
+    @Override
+    public void givePouch(Player player, int amount) {
+        ItemStack pouch = getPouch();
+        pouch.setAmount(amount);
+        if (player.getInventory().firstEmpty() == -1) {
+            player.getWorld().dropItemNaturally(player.getLocation(), pouch);
+        } else {
+            player.getInventory().setItem(player.getInventory().firstEmpty(), pouch);
+        }
     }
 }

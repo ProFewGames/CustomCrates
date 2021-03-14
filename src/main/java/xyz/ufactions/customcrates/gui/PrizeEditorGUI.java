@@ -23,12 +23,12 @@ public class PrizeEditorGUI extends GUI<CustomCrates> {
         // Edit name
         addButton(new BasicButton<CustomCrates>(plugin,
                 new ItemBuilder(Material.GLOWSTONE).name(ChatColor.RED + "" + ChatColor.BOLD + "GLOW")
-                        .lore("* Click to toggle glowing for this item *").glow(prize.isGlowing()),
+                        .lore("* Click to toggle glowing for this item *").glow(false),
                 11) {
 
             @Override
             public void onClick(Player player, ClickType type) {
-                boolean var = !prize.isGlowing();
+                boolean var = false;
                 plugin.getCratesManager().setGlowingPrize(crate, prize, var);
                 player.sendMessage(F.format("You've toggled this prize's glowing status to: " + F.oo(var)));
             }

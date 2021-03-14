@@ -43,7 +43,6 @@ public class CratesManager {
     }
 
     public void setGlowingPrize(ICrate crate, Prize prize, boolean glow) {
-        prize.setGlowing(glow);
         plugin.getCratesFile().setPrizeGlow(crate, prize, glow);
     }
 
