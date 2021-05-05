@@ -12,32 +12,32 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class CratesCommand implements CommandExecutor, TabExecutor, ICommand {
+public class CratesCommand extends xyz.ufactions.customcrates.command.Command implements CommandExecutor, TabExecutor {
 
-    private final CustomCrates plugin;
-    private final List<SubCommand> subCommands = new ArrayList<>();
+    private final List<SubCommand> commands = new ArrayList<>();
 
     public CratesCommand(CustomCrates plugin) {
-        this.plugin = plugin;
+        super(plugin);
 
-        subCommands.add(new InfoCommand(plugin));
-        subCommands.add(new ListCommand(plugin));
-        subCommands.add(new ReloadCommand(plugin));
-        subCommands.add(new RemoveCommand(plugin));
-        subCommands.add(new SetCommand(plugin));
-        subCommands.add(new PreviewCommand(plugin));
-        subCommands.add(new OpenCommand(plugin));
-        subCommands.add(new GiveAllCommand(plugin));
-        subCommands.add(new GivePouchCommand(plugin));
-        subCommands.add(new GiveCommand(plugin));
+        commands.add(new InfoCommand(plugin));
+        commands.add(new ListCommand(plugin));
+        commands.add(new ReloadCommand(plugin));
+        commands.add(new RemoveCommand(plugin));
+        commands.add(new SetCommand(plugin));
+        commands.add(new PreviewCommand(plugin));
+        commands.add(new OpenCommand(plugin));
+        commands.add(new GiveAllCommand(plugin));
+        commands.add(new GivePouchCommand(plugin));
+        commands.add(new GiveCommand(plugin));
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (args.length >= 1) {
-            for (SubCommand command : subCommands) {
+            for (SubCommand command : commands) {
                 for (String alias : command.aliases()) {
                     if (args[0].equalsIgnoreCase(alias)) {
+                        if (!checkPermission(sender, command.permission())) return true;
                         String[] newArgs = Arrays.copyOfRange(args, 1, args.length);
                         if (!command.execute(sender, label, newArgs)) {
                             sender.sendMessage(F.error("Incorrect Usage: " + command.usage(label)));
@@ -47,21 +47,29 @@ public class CratesCommand implements CommandExecutor, TabExecutor, ICommand {
                 }
             }
         }
-        if (!permissionCheck(sender, "customcrates.command", true)) return true;
+        if (!checkPermission(sender, "customcrates.command")) return true;
         sender.sendMessage(F.format("Commands:"));
-        for (SubCommand command : subCommands) {
+        for (SubCommand command : commands) {
+            if (!checkPermission(sender, command.permission())) continue;
             sender.sendMessage(F.help(command.usage(label), command.description()));
         }
         return true;
     }
 
     @Override
-    public List<String> onTabComplete(CommandSender commandSender, Command command, String s, String[] strings) {
+    public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
+        if (args.length >= 1) {
+            for (SubCommand command : commands) {
+                for (String alias : command.aliases()) {
+                    if (args[0].equalsIgnoreCase(alias)) {
+                        if (checkPermission(sender, command.permission(), false)) {
+                            String[] newArgs = Arrays.copyOfRange(args, 1, args.length);
+                            return command.tabComplete(sender, label, newArgs);
+                        }
+                    }
+                }
+            }
+        }
         return null;
-    }
-
-    @Override
-    public CustomCrates getPlugin() {
-        return plugin;
     }
 }

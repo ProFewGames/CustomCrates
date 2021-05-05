@@ -9,18 +9,18 @@ import xyz.ufactions.customcrates.command.SubCommand;
 import xyz.ufactions.customcrates.libs.F;
 
 import java.io.IOException;
+import java.util.List;
 
 public class RemoveCommand extends SubCommand {
 
     public RemoveCommand(CustomCrates plugin) {
-        super(plugin, "Removes the crate you are looking at.", new String[]{
+        super(plugin, "Removes the crate you are looking at.", "customcrates.command.remove", new String[]{
                 "remove"
         });
     }
 
     @Override
     protected boolean execute(CommandSender sender, String label, String[] args) {
-        if (!permissionCheck(sender, "customcrates.command.remove", true)) return true;
         if (!isPlayer(sender)) return true;
 
         Player player = (Player) sender;
@@ -42,5 +42,10 @@ public class RemoveCommand extends SubCommand {
             e.printStackTrace();
         }
         return true;
+    }
+
+    @Override
+    protected List<String> tabComplete(CommandSender sender, String label, String[] args) {
+        return null; // TODO
     }
 }

@@ -6,17 +6,18 @@ import xyz.ufactions.customcrates.command.SubCommand;
 import xyz.ufactions.customcrates.crates.Crate;
 import xyz.ufactions.customcrates.libs.F;
 
+import java.util.List;
+
 public class ListCommand extends SubCommand {
 
     public ListCommand(CustomCrates plugin) {
-        super(plugin, "List all available crates.", new String[]{
+        super(plugin, "List all available crates.", "customcrates.command.list", new String[]{
                 "list"
         });
     }
 
     @Override
     protected boolean execute(CommandSender sender, String label, String[] args) {
-        if (!permissionCheck(sender, "customcrates.command.list", true)) return true;
         if (plugin.getCratesManager().getCrates().isEmpty()) {
             sender.sendMessage(F.error(plugin.getLanguage().noAvailableCrates()));
         } else {
@@ -26,5 +27,10 @@ public class ListCommand extends SubCommand {
             }
         }
         return true;
+    }
+
+    @Override
+    protected List<String> tabComplete(CommandSender sender, String label, String[] args) {
+        return null; // TODO
     }
 }

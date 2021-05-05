@@ -1,7 +1,6 @@
 package xyz.ufactions.customcrates.command.sub;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import xyz.ufactions.customcrates.CustomCrates;
@@ -10,16 +9,17 @@ import xyz.ufactions.customcrates.crates.Crate;
 import xyz.ufactions.customcrates.libs.F;
 import xyz.ufactions.customcrates.libs.UtilMath;
 
+import java.util.List;
+
 public class GivePouchCommand extends SubCommand {
 
     public GivePouchCommand(CustomCrates plugin) {
-        super(plugin, "Give PLAYER X amount of CRATE pouches.", "givepouch <player> <crate> <amount>",
+        super(plugin, "Give PLAYER X amount of CRATE pouches.", "customcrates.command.givepouch", "givepouch <player> <crate> <amount>",
                 new String[]{"givepouch", "gp"});
     }
 
     @Override
     protected boolean execute(CommandSender sender, String label, String[] args) {
-        if (!permissionCheck(sender, "customcrates.command.givepouch", true)) return true;
         if (args.length == 3) {
             Player target = Bukkit.getPlayer(args[0]);
             if (target == null) {
@@ -45,5 +45,10 @@ public class GivePouchCommand extends SubCommand {
             return true;
         }
         return false;
+    }
+
+    @Override
+    protected List<String> tabComplete(CommandSender sender, String label, String[] args) {
+        return null; // TODO
     }
 }

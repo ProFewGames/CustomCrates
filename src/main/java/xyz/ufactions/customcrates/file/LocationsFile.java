@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+// XXX - Static getter for language?
 public class LocationsFile extends FileHandler {
 
     public LocationsFile(CustomCrates plugin) {

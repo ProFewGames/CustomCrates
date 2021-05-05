@@ -41,6 +41,7 @@
             <groupId>com.github.filoghost</groupId>
             <artifactId>HolographicDisplays</artifactId>
             <version>2.4.0</version>
+            <scope>provided</scope>
         </dependency>
         <!-- Enchantment Dependency -->
         <dependency>
@@ -84,7 +85,7 @@
                 <version>3.2.0</version>
                 <configuration>
                     <outputDirectory>
-<!--                        /home/rick/Servers/1.8.8/plugins-->
+                        ../
                     </outputDirectory>
                 </configuration>
             </plugin>

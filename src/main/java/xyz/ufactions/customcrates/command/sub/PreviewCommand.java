@@ -7,17 +7,18 @@ import xyz.ufactions.customcrates.command.SubCommand;
 import xyz.ufactions.customcrates.crates.Crate;
 import xyz.ufactions.customcrates.libs.F;
 
+import java.util.List;
+
 public class PreviewCommand extends SubCommand {
 
     public PreviewCommand(CustomCrates plugin) {
-        super(plugin, "Preview a crate without physically clicking one.", "preview <crate>", new String[]{
+        super(plugin, "Preview a crate without physically clicking one.", "customcrates.command.preview", "preview <crate>", new String[]{
                 "preview"
         });
     }
 
     @Override
     protected boolean execute(CommandSender sender, String label, String[] args) {
-        if (!permissionCheck(sender, "customcrates.command.preview", true)) return true;
         if (!isPlayer(sender)) return true;
         if (args.length == 1) {
             Player player = (Player) sender;
@@ -28,5 +29,10 @@ public class PreviewCommand extends SubCommand {
             return true;
         }
         return false;
+    }
+
+    @Override
+    protected List<String> tabComplete(CommandSender sender, String label, String[] args) {
+        return null; // TODO
     }
 }

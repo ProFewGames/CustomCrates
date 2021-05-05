@@ -5,6 +5,7 @@ import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.plugin.java.JavaPlugin;
+import xyz.ufactions.customcrates.api.CustomCratesAPI;
 import xyz.ufactions.customcrates.command.CratesCommand;
 import xyz.ufactions.customcrates.crates.Crate;
 import xyz.ufactions.customcrates.file.ConfigurationFile;
@@ -43,6 +44,8 @@ public class CustomCrates extends JavaPlugin {
         this.configurationFile = new ConfigurationFile(this);
         this.language = new LanguageFile(this, configurationFile.getLanguage().getResource());
         this.manager = new CratesManager(this);
+
+        CustomCratesAPI.initialize(this);
 
         CratesCommand cratesCommand = new CratesCommand(this);
         getCommand("customcrates").setExecutor(cratesCommand);

@@ -9,16 +9,17 @@ import xyz.ufactions.customcrates.crates.Crate;
 import xyz.ufactions.customcrates.libs.F;
 import xyz.ufactions.customcrates.libs.UtilMath;
 
+import java.util.List;
+
 public class GiveCommand extends SubCommand {
 
     public GiveCommand(CustomCrates plugin) {
-        super(plugin, "Give PLAYER X amount of CRATE keys.", "give <player> <crate> <amount>",
+        super(plugin, "Give PLAYER X amount of CRATE keys.", "customcrates.command.give", "give <player> <crate> <amount>",
                 new String[]{"give"});
     }
 
     @Override
     protected boolean execute(CommandSender sender, String label, String[] args) {
-        if (!permissionCheck(sender, "customcrates.command.give", true)) return true;
         if (args.length == 3) {
             Player target = Bukkit.getPlayer(args[0]);
             if (target == null) {
@@ -40,5 +41,10 @@ public class GiveCommand extends SubCommand {
             return true;
         }
         return false;
+    }
+
+    @Override
+    protected List<String> tabComplete(CommandSender sender, String label, String[] args) {
+        return null; // TODO
     }
 }

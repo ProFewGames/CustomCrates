@@ -7,17 +7,18 @@ import xyz.ufactions.customcrates.command.SubCommand;
 import xyz.ufactions.customcrates.crates.Crate;
 import xyz.ufactions.customcrates.libs.F;
 
+import java.util.List;
+
 public class OpenCommand extends SubCommand {
 
     public OpenCommand(CustomCrates plugin) {
-        super(plugin, "Open a crate without a key.", "open <crate>", new String[]{
+        super(plugin, "Open a crate without a key.", "customcrates.command.open", "open <crate>", new String[]{
                 "open"
         });
     }
 
     @Override
     protected boolean execute(CommandSender sender, String label, String[] args) {
-        if (!permissionCheck(sender, "customcrates.command.open", true)) return true;
         if (!isPlayer(sender)) return true;
         if (args.length == 1) {
             Player player = (Player) sender;
@@ -28,5 +29,10 @@ public class OpenCommand extends SubCommand {
             return true;
         }
         return false;
+    }
+
+    @Override
+    protected List<String> tabComplete(CommandSender sender, String label, String[] args) {
+        return null; // TODO
     }
 }

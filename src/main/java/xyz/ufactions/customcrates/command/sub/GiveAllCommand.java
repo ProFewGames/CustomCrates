@@ -8,18 +8,19 @@ import xyz.ufactions.customcrates.crates.Crate;
 import xyz.ufactions.customcrates.libs.F;
 import xyz.ufactions.customcrates.libs.UtilMath;
 
+import java.util.List;
+
 public class GiveAllCommand extends SubCommand {
 
     public GiveAllCommand(CustomCrates plugin) {
-        super(plugin, "Give all players on the server X amount of crate keys.", "giveall <crate> <amount>",
+        super(plugin, "Give all players on the server X amount of crate keys.", "customcrates.command.giveall", "giveall <crate> <amount>",
                 new String[]{
-                "giveall"
-        });
+                        "giveall"
+                });
     }
 
     @Override
     protected boolean execute(CommandSender sender, String label, String[] args) {
-        if (!permissionCheck(sender, "customcrates.command.giveall", true)) return true;
         if (args.length == 2) {
             Crate crate = getCrate(sender, args[0]);
             if (crate == null) return true;
@@ -37,5 +38,10 @@ public class GiveAllCommand extends SubCommand {
             return true;
         }
         return false;
+    }
+
+    @Override
+    protected List<String> tabComplete(CommandSender sender, String label, String[] args) {
+        return null; // TODO
     }
 }
