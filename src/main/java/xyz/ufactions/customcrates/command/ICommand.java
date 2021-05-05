@@ -7,13 +7,13 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.BlockIterator;
 import xyz.ufactions.customcrates.CustomCrates;
-import xyz.ufactions.customcrates.crates.ICrate;
+import xyz.ufactions.customcrates.crates.Crate;
 import xyz.ufactions.customcrates.libs.F;
 
 public interface ICommand {
 
-    default ICrate getCrate(CommandSender sender, String name) {
-        ICrate crate = getPlugin().getCratesManager().getCrate(name);
+    default Crate getCrate(CommandSender sender, String name) {
+        Crate crate = getPlugin().getCratesManager().getCrate(name);
         if (crate == null)
             if (sender != null)
                 sender.sendMessage(F.error(getPlugin().getLanguage().invalidCrateInput()));

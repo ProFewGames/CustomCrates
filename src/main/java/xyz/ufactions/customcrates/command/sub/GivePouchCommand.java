@@ -4,10 +4,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import xyz.ufactions.customcrates.CustomCrates;
 import xyz.ufactions.customcrates.command.SubCommand;
-import xyz.ufactions.customcrates.crates.ICrate;
+import xyz.ufactions.customcrates.crates.Crate;
 import xyz.ufactions.customcrates.libs.F;
 import xyz.ufactions.customcrates.libs.UtilMath;
 
@@ -27,10 +26,9 @@ public class GivePouchCommand extends SubCommand {
                 sender.sendMessage(F.error(plugin.getLanguage().playerNotFound()));
                 return true;
             }
-            ICrate crate = getCrate(sender, args[1]);
+            Crate crate = getCrate(sender, args[1]);
             if (crate == null) return true;
-            ItemStack pouch = crate.getPouch();
-            if (pouch.getType() == Material.AIR) {
+            if (!crate.validPouch()) {
                 sender.sendMessage(F.error("Ineligible pouch configuration. Make sure you have a pouch configured for this crate."));
                 return true;
             }
@@ -40,9 +38,9 @@ public class GivePouchCommand extends SubCommand {
             }
             int amount = Integer.parseInt(args[2]);
             crate.givePouch(target, amount);
-            target.sendMessage(F.format("You've received &c" + amount + "&7x &c" + crate.getIdentifier() + " &7pouches."));
+            target.sendMessage(F.format("You've received &c" + amount + "&7x &c" + crate.getSettings().getIdentifier() + " &7pouches."));
             if (target != sender) {
-                sender.sendMessage(F.format("You gave &c" + target.getName() + " " + amount + "&7x &c" + crate.getIdentifier() + " &7pouches."));
+                sender.sendMessage(F.format("You gave &c" + target.getName() + " " + amount + "&7x &c" + crate.getSettings().getIdentifier() + " &7pouches."));
             }
             return true;
         }

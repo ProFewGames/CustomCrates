@@ -3,7 +3,7 @@ package xyz.ufactions.customcrates.command.sub;
 import org.bukkit.command.CommandSender;
 import xyz.ufactions.customcrates.CustomCrates;
 import xyz.ufactions.customcrates.command.SubCommand;
-import xyz.ufactions.customcrates.crates.ICrate;
+import xyz.ufactions.customcrates.crates.Crate;
 import xyz.ufactions.customcrates.libs.F;
 
 public class ListCommand extends SubCommand {
@@ -21,8 +21,8 @@ public class ListCommand extends SubCommand {
             sender.sendMessage(F.error(plugin.getLanguage().noAvailableCrates()));
         } else {
             sender.sendMessage(F.format(plugin.getLanguage().availableCratesHeader()));
-            for (ICrate crate : plugin.getCratesManager().getCrates()) {
-                sender.sendMessage(F.list(crate.getIdentifier()));
+            for (Crate crate : plugin.getCratesManager().getCrates()) {
+                sender.sendMessage(F.list(crate.getSettings().getIdentifier()));
             }
         }
         return true;

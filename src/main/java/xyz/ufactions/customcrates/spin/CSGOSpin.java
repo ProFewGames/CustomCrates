@@ -3,7 +3,7 @@ package xyz.ufactions.customcrates.spin;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.scheduler.BukkitRunnable;
-import xyz.ufactions.customcrates.crates.ICrate;
+import xyz.ufactions.customcrates.crates.Crate;
 import xyz.ufactions.customcrates.crates.Prize;
 import xyz.ufactions.customcrates.libs.ItemBuilder;
 import xyz.ufactions.customcrates.libs.UtilTime;
@@ -18,7 +18,7 @@ public class CSGOSpin extends Spin {
     private final int delta = 10;
 
     @Override
-    protected void execute(Player player, ICrate crate) {
+    protected void execute(Player player, Crate crate) {
         Inventory inventory = constructInventory(crate, 27);
 
         // Border
@@ -48,27 +48,27 @@ public class CSGOSpin extends Spin {
         newTask(start, player, inventory, crate, prizes, false).runTaskTimer(plugin, 0, 1);
     }
 
-    private BukkitRunnable newTask(final long start, final Player player, final Inventory inventory, final ICrate crate, final List<Prize> prizes, final boolean slowDown) {
+    private BukkitRunnable newTask(final long start, final Player player, final Inventory inventory, final Crate crate, final List<Prize> prizes, final boolean slowDown) {
         return new BukkitRunnable() {
 
             @Override
             public void run() {
-                if (UtilTime.elapsed(start, crate.getSpinTime())) {
+                if (UtilTime.elapsed(start, crate.getSettings().getSpinTime())) {
                     cancel();
                     end(player, crate, prizes.get(3));
                     return;
                 }
-                if (UtilTime.elapsed(start, crate.getSpinTime() - 1300) && !slowDown) {
+                if (UtilTime.elapsed(start, crate.getSettings().getSpinTime() - 1300) && !slowDown) {
                     cancel();
                     newTask(start, player, inventory, crate, prizes, true).runTaskTimer(plugin, 0, 3);
                     return;
                 }
-                if (!player.getOpenInventory().getTitle().equals(crate.getDisplay())) {
+                if (!player.getOpenInventory().getTitle().equals(crate.getSettings().getDisplay())) {
                     cancel();
                     end(player, crate, randomPrize(crate));
                     return;
                 }
-                player.playSound(player.getLocation(), crate.getSpinSound(), 1f, 1f);
+                player.playSound(player.getLocation(), crate.getSettings().getSpinSound(), 1f, 1f);
                 // Scrolling prize list
                 for (int i = 0; i < prizes.size(); i++) {
                     int slot = i + delta;

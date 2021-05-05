@@ -1,13 +1,11 @@
 package xyz.ufactions.customcrates.command.sub;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import xyz.ufactions.customcrates.CustomCrates;
 import xyz.ufactions.customcrates.command.SubCommand;
-import xyz.ufactions.customcrates.crates.ICrate;
+import xyz.ufactions.customcrates.crates.Crate;
 import xyz.ufactions.customcrates.libs.F;
 import xyz.ufactions.customcrates.libs.UtilMath;
 
@@ -27,7 +25,7 @@ public class GiveCommand extends SubCommand {
                 sender.sendMessage(F.error(plugin.getLanguage().playerNotFound()));
                 return true;
             }
-            ICrate crate = getCrate(sender, args[1]);
+            Crate crate = getCrate(sender, args[1]);
             if (crate == null) return true;
             if (!UtilMath.isInteger(args[2])) {
                 sender.sendMessage(F.error(plugin.getLanguage().invalidInteger()));
@@ -35,9 +33,9 @@ public class GiveCommand extends SubCommand {
             }
             int amount = Integer.parseInt(args[2]);
             crate.giveKey(target, amount);
-            target.sendMessage(F.format(plugin.getLanguage().keyReceived(amount, crate.getIdentifier())));
+            target.sendMessage(F.format(plugin.getLanguage().keyReceived(amount, crate.getSettings().getIdentifier())));
             if (target != sender) {
-                sender.sendMessage(F.format(plugin.getLanguage().keyGiven(target.getName(), amount, crate.getIdentifier())));
+                sender.sendMessage(F.format(plugin.getLanguage().keyGiven(target.getName(), amount, crate.getSettings().getIdentifier())));
             }
             return true;
         }

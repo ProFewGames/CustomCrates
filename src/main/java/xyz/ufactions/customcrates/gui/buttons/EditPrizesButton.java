@@ -5,16 +5,16 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import xyz.ufactions.customcrates.CustomCrates;
-import xyz.ufactions.customcrates.crates.ICrate;
+import xyz.ufactions.customcrates.crates.Crate;
 import xyz.ufactions.customcrates.gui.PrizeListGUI;
 import xyz.ufactions.customcrates.gui.internal.button.BasicButton;
 import xyz.ufactions.customcrates.libs.ItemBuilder;
 
 public class EditPrizesButton extends BasicButton<CustomCrates> {
 
-    private final ICrate crate;
+    private final Crate crate;
 
-    public EditPrizesButton(CustomCrates plugin, ICrate crate) {
+    public EditPrizesButton(CustomCrates plugin, Crate crate) {
         super(plugin,
                 new ItemBuilder(Material.DIAMOND).glow(true)
                         .name(ChatColor.RED + "" + ChatColor.BOLD + "Edit Prizes").lore("* Click to edit prizes *"),

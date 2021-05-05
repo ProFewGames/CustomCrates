@@ -6,7 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.plugin.java.JavaPlugin;
 import xyz.ufactions.customcrates.command.CratesCommand;
-import xyz.ufactions.customcrates.crates.ICrate;
+import xyz.ufactions.customcrates.crates.Crate;
 import xyz.ufactions.customcrates.file.ConfigurationFile;
 import xyz.ufactions.customcrates.file.CratesFile;
 import xyz.ufactions.customcrates.file.LanguageFile;
@@ -15,6 +15,7 @@ import xyz.ufactions.customcrates.libs.F;
 import xyz.ufactions.customcrates.libs.VaultManager;
 import xyz.ufactions.customcrates.listener.PlayerListener;
 import xyz.ufactions.customcrates.manager.CratesManager;
+import xyz.ufactions.customcrates.metrics.Metrics;
 
 import java.util.HashMap;
 import java.util.List;
@@ -58,10 +59,15 @@ public class CustomCrates extends JavaPlugin {
         reseatHolograms();
 
         new xyz.ufactions.customcrates.updater.Updater(this);
+        new Metrics(this, 10660);
     }
 
     public boolean debugging() {
         return configurationFile.debugging();
+    }
+
+    public void debug(Object o) {
+        if (debugging()) getLogger().info("(DEBUGGING) " + o);
     }
 
     public void reload() {
@@ -74,27 +80,27 @@ public class CustomCrates extends JavaPlugin {
     }
 
     public void reseatHolograms() {
-        HashMap<ICrate, List<Location>> crates = locationsFile.getLocations();
+        HashMap<Crate, List<Location>> crates = locationsFile.getLocations();
 
         Bukkit.getScheduler().runTask(this, () -> { // Make sure this task is running sync'd
             if (Bukkit.getPluginManager().isPluginEnabled("HolographicDisplays")) {
                 HologramsAPI.getHolograms(this).forEach(Hologram::delete); // Delete all previous holograms
-                for (Map.Entry<ICrate, List<Location>> entry : crates.entrySet()) {
-                    ICrate crate = entry.getKey();
-                    if (crate.holographicLines().isEmpty()) continue;
+                for (Map.Entry<Crate, List<Location>> entry : crates.entrySet()) {
+                    Crate crate = entry.getKey();
+                    if (crate.getSettings().getHolographicLines().isEmpty()) continue;
                     List<Location> locations = entry.getValue();
 
                     for (Location location : locations) {
-                        location.add(0.5, 1.0 + (0.25 * crate.holographicLines().size()), 0.5);
+                        location.add(0.5, 1.0 + (0.25 * crate.getSettings().getHolographicLines().size()), 0.5);
 
                         Hologram hologram = HologramsAPI.createHologram(this, location);
-                        for (String line : crate.holographicLines()) {
-                            line = line.replaceAll("\\{crate_display}", crate.getDisplay());
+                        for (String line : crate.getSettings().getHolographicLines()) {
+                            line = line.replaceAll("\\{crate_display}", crate.getSettings().getDisplay());
                             boolean found = false;
-                            for (String identifier : crate.holographicItemMap().keySet()) {
+                            for (String identifier : crate.getSettings().getHolographicItemMap().keySet()) {
                                 if (line.equalsIgnoreCase("{" + identifier + "}")) {
                                     hologram.teleport(location.add(0, 0.5, 0));
-                                    hologram.appendItemLine(crate.holographicItemMap().get(identifier));
+                                    hologram.appendItemLine(crate.getSettings().getHolographicItemMap().get(identifier).build());
                                     found = true;
                                     break;
                                 }

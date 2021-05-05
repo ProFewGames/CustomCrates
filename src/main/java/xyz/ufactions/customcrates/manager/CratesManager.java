@@ -2,7 +2,7 @@ package xyz.ufactions.customcrates.manager;
 
 import org.bukkit.Location;
 import xyz.ufactions.customcrates.CustomCrates;
-import xyz.ufactions.customcrates.crates.ICrate;
+import xyz.ufactions.customcrates.crates.Crate;
 import xyz.ufactions.customcrates.crates.Prize;
 
 import java.util.ArrayList;
@@ -10,7 +10,7 @@ import java.util.List;
 
 public class CratesManager {
 
-    private final List<ICrate> crates;
+    private final List<Crate> crates;
     private final CustomCrates plugin;
 
     public CratesManager(CustomCrates plugin) {
@@ -29,34 +29,34 @@ public class CratesManager {
         return getCrate(name) != null;
     }
 
-    public ICrate getCrate(Location location) {
+    public Crate getCrate(Location location) {
         return plugin.getLocationsFile().getCrate(location);
     }
 
-    public ICrate getCrate(String name) {
-        for (ICrate crate : getCrates()) {
-            if (crate.getIdentifier().equalsIgnoreCase(name)) {
+    public Crate getCrate(String name) {
+        for (Crate crate : getCrates()) {
+            if (crate.getSettings().getIdentifier().equalsIgnoreCase(name)) {
                 return crate;
             }
         }
         return null;
     }
 
-    public void setGlowingPrize(ICrate crate, Prize prize, boolean glow) {
+    public void setGlowingPrize(Crate crate, Prize prize, boolean glow) {
         plugin.getCratesFile().setPrizeGlow(crate, prize, glow);
     }
 
-    public void editCrateDisplayName(ICrate crate, String displayName) {
-        crate.setDisplay(displayName);
-        plugin.getCratesFile().changeCrateDisplayName(crate.getIdentifier(), displayName);
+    public void editCrateDisplayName(Crate crate, String displayName) {
+//        crate.setDisplay(displayName); TODO FIX
+        plugin.getCratesFile().changeCrateDisplayName(crate.getSettings().getIdentifier(), displayName);
     }
 
-    public boolean deleteCrate(ICrate crate) {
+    public boolean deleteCrate(Crate crate) {
         crates.remove(crate);
-        return plugin.getCratesFile().deleteCrate(crate.getIdentifier());
+        return plugin.getCratesFile().deleteCrate(crate.getSettings().getIdentifier());
     }
 
-    public synchronized List<ICrate> getCrates() {
+    public synchronized List<Crate> getCrates() {
         return crates;
     }
 }

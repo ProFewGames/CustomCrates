@@ -4,7 +4,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import xyz.ufactions.customcrates.CustomCrates;
 import xyz.ufactions.customcrates.command.SubCommand;
-import xyz.ufactions.customcrates.crates.ICrate;
+import xyz.ufactions.customcrates.crates.Crate;
 import xyz.ufactions.customcrates.libs.F;
 
 public class PreviewCommand extends SubCommand {
@@ -21,10 +21,10 @@ public class PreviewCommand extends SubCommand {
         if (!isPlayer(sender)) return true;
         if (args.length == 1) {
             Player player = (Player) sender;
-            ICrate crate = getCrate(player, args[0]);
+            Crate crate = getCrate(player, args[0]);
             if (crate == null) return true;
             player.openInventory(crate.getPreviewInventory());
-            player.sendMessage(F.format(plugin.getLanguage().previewing(crate.getIdentifier())));
+            player.sendMessage(F.format(plugin.getLanguage().previewing(crate.getSettings().getIdentifier())));
             return true;
         }
         return false;

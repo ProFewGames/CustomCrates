@@ -7,8 +7,8 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 import xyz.ufactions.customcrates.CustomCrates;
-import xyz.ufactions.customcrates.crates.ICrate;
-import xyz.ufactions.customcrates.crates.PhysicalCrate;
+import xyz.ufactions.customcrates.crates.Crate;
+import xyz.ufactions.customcrates.crates.CrateSettings;
 import xyz.ufactions.customcrates.crates.Prize;
 import xyz.ufactions.customcrates.libs.FileHandler;
 import xyz.ufactions.customcrates.libs.ItemBuilder;
@@ -23,7 +23,7 @@ import java.util.List;
 
 public class CratesFile {
 
-    private final HashMap<String, ICrate> crates;
+    private final HashMap<String, Crate> crates;
     private final CustomCrates plugin;
     private File directory;
 
@@ -49,8 +49,8 @@ public class CratesFile {
         return null;
     }
 
-    public void createPrize(ICrate crate, Prize prize) {
-        File file = locateFile(crate.getIdentifier());
+    public void createPrize(Crate crate, Prize prize) {
+        File file = locateFile(crate.getSettings().getIdentifier());
         if (file != null) {
             FileConfiguration config = YamlConfiguration.loadConfiguration(file);
             int index = config.getInt("prize index", 0);
@@ -72,8 +72,8 @@ public class CratesFile {
         }
     }
 
-    public void setPrizeGlow(ICrate crate, Prize prize, boolean glowing) {
-        File file = locateFile(crate.getIdentifier());
+    public void setPrizeGlow(Crate crate, Prize prize, boolean glowing) {
+        File file = locateFile(crate.getSettings().getIdentifier());
         if (file != null) {
             FileConfiguration config = YamlConfiguration.loadConfiguration(file);
             config.set(prize.getConfigurationSection() + ".display.glow", glowing);
@@ -111,126 +111,23 @@ public class CratesFile {
         }
     }
 
-    public List<ICrate> getCrates() {
+    public List<Crate> getCrates() {
         if (crates.isEmpty()) {
             for (File file : directory.listFiles()) {
                 FileConfiguration configuration = YamlConfiguration.loadConfiguration(file);
                 getCrate(configuration);
             }
         }
-        return new ArrayList<>(crates.values()); // TODO Optimize -> Defeats the whole purpose of only loading once.
-/*        List<ICrate> crates = new ArrayList<>();
-        for (File file : directory.listFiles()) {
-            try {
-                FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-
-                // CRATE
-                String identifier = config.getString("Crate.identifier");
-                if (identifier == null) {
-                    plugin.getLogger().warning("No identifier for crate '" + file.getName() + "'.");
-                    continue;
-                }
-                String display = config.getString("Crate.display", identifier);
-                Material block = materialFromConfiguration(config, "Crate.block");
-                if (block == null) block = Material.CHEST;
-                long spinTime = config.getLong("Crate.spin time");
-                List<String> openCommands = config.getStringList("Crate.open-commands");
-                Spin.SpinType spinType;
-
-                try {
-                    spinType = Spin.SpinType.valueOf(config.getString("Crate.spin").toUpperCase());
-                } catch (EnumConstantNotPresentException e) {
-                    plugin.getLogger().warning(plugin.getLanguage().spinTypeNotFound(identifier));
-                    spinType = Spin.SpinType.ROULETTE;
-                }
-
-                // Sound
-                Sound openingSound = parseSound(config.getString("Crate.open sound", ""), identifier, "CHEST_OPEN", "BLOCK_CHEST_OPEN");
-                Sound spinSound = parseSound(config.getString("Crate.spin sound", ""), identifier, "NOTE_PLING", "BLOCK_NOTE_PLING");
-                Sound winSound = parseSound(config.getString("Crate.win sound", ""), identifier, "LEVEL_UP", "ENTITY_PLAYER_LEVELUP");
-
-                // Hologram
-                List<String> hologram = new ArrayList<>();
-                Map<String, ItemStack> holographicItemsMap = new HashMap<>();
-                if (config.contains("hologram.lines")) {
-                    hologram = config.getStringList("hologram.lines");
-                }
-                if (config.contains("hologram.items")) {
-                    if (config.isConfigurationSection("hologram.items")) {
-                        for (String key : config.getConfigurationSection("hologram.items").getKeys(false)) {
-                            String path = "hologram.items." + key;
-                            try {
-                                String item_identifier = config.getString(path + ".identifier");
-                                ItemBuilder item = itemFromConfiguration(config, path);
-                                if (item != null)
-                                    holographicItemsMap.put(item_identifier, item.build());
-                            } catch (Exception e) {
-                                plugin.getLogger().warning("Failed to load holographic item: " + path);
-                                if (plugin.getConfigurationFile().debugging()) e.printStackTrace();
-                            }
-                        }
-                    }
-                }
-
-                // Pouches
-                ItemBuilder pouchBuilder = itemFromConfiguration(config, "pouch");
-                ItemStack pouch;
-                if (pouchBuilder == null)
-                    pouch = new ItemStack(Material.AIR);
-                else
-                    pouch = pouchBuilder.build();
-
-                // KEY
-                Material keyMaterial = Material.getMaterial(config.getString("Key.item").toUpperCase());
-                int keyData = config.getInt("Key.data");
-                ItemBuilder keyBuilder = new ItemBuilder(keyMaterial, keyData);
-                keyBuilder.glow(config.getBoolean("Key.glow", true));
-                if (config.contains("Key.name"))
-                    keyBuilder.name(config.getString("Key.name"));
-                if (config.contains("Key.lore"))
-                    keyBuilder.lore(config.getStringList("Key.lore"));
-
-                // PRIZES
-                List<Prize> prizes = new ArrayList<>();
-
-                for (String key : config.getConfigurationSection("Prizes").getKeys(false)) {
-                    String path = "Prizes." + key;
-                    try {
-                        Material displayPrize = Material.getMaterial(config.getString(path + ".display.item").toUpperCase());
-                        int displayData = config.getInt(path + ".display.data", 0);
-                        ItemBuilder builder = new ItemBuilder(displayPrize, displayData);
-                        boolean glow = config.getBoolean(path + ".display.glow", false);
-                        builder.glow(glow);
-                        builder.amount(config.getInt(path + ".display.amount", 1));
-                        if (config.contains(path + ".display.name"))
-                            builder.name(config.getString(path + ".display.name"));
-                        if (config.contains(path + ".display.lore"))
-                            builder.lore(config.getStringList(path + ".display.lore"));
-
-                        double chance = config.getDouble(path + ".chance", 50);
-                        List<String> commands = config.getStringList(path + ".commands");
-                        prizes.add(new Prize(builder, glow, chance, path, commands));
-                    } catch (Exception e) {
-                        plugin.getLogger().warning(plugin.getLanguage().failedLoadPrize(path, identifier));
-                        if (plugin.getConfigurationFile().debugging()) e.printStackTrace();
-                    }
-                }
-
-                crates.add(new PhysicalCrate(identifier, display, openingSound, spinSound, winSound, spinType, spinTime, block, keyBuilder, prizes, openCommands, hologram, holographicItemsMap, pouch));
-            } catch (Exception e) {
-                plugin.getLogger().warning(plugin.getLanguage().failedLoadCrate(file.getName()));
-                if (plugin.getConfigurationFile().debugging())
-                    e.printStackTrace();
-            }
-        }
-        return crates;*/
+        return new ArrayList<>(crates.values()); // TODO Optimize -> Defeats the whole purpose of only loading once.=
     }
 
-    public ICrate getCrate(FileConfiguration configuration) {
+    public Crate getCrate(FileConfiguration configuration) {
         Validate.notNull(configuration, "File Configuration is null");
 
         // Load Crate
+        plugin.debug("Loading Crate Preset...");
         String identifier = configuration.getString("Crate.identifier");
+        plugin.debug("Identifier=" + identifier);
         if (identifier == null || identifier.isEmpty()) {
             plugin.getLogger().warning("Identifier for configuration \"" + configuration.getCurrentPath() + "\" is null" +
                     " or empty. '" + identifier + "'");
@@ -239,6 +136,7 @@ public class CratesFile {
         identifier = identifier.replaceAll(" ", "_");
 
         if (crates.containsKey(identifier)) {
+            plugin.debug("Loaded from cache.");
             return crates.get(identifier);
         }
 
@@ -258,10 +156,12 @@ public class CratesFile {
         Sound winSound = parseSound(configuration.getString("Crate.win sound", ""), identifier, "LEVEL_UP", "ENTITY_PLAYER_LEVELUP");
         List<String> openCommands = configuration.getStringList("Crate.open-commands");
 
+        plugin.debug("Loading Key...");
         // Load Key
         ItemBuilder keyBuilder = itemFromConfiguration(configuration, "Key");
         if (keyBuilder == null) keyBuilder = new ItemBuilder(Material.AIR);
 
+        plugin.debug("Loading Pouch...");
         // Load Pouch
         ItemBuilder pouchBuilder = itemFromConfiguration(configuration, "pouch");
         ItemStack pouch = pouchBuilder == null ? new ItemStack(Material.AIR) : pouchBuilder.build();
@@ -276,6 +176,7 @@ public class CratesFile {
                 e.printStackTrace();
         }
 
+        plugin.debug("Loading Prizes...");
         // Load Prizes
         WeightedList<Prize> prizes = new WeightedList<>();
         for (String key : configuration.getConfigurationSection("Prizes").getKeys(false)) {
@@ -289,9 +190,10 @@ public class CratesFile {
             prizes.add(new Prize(prizeBuilder, chance, path, commands), chance);
         }
 
+        plugin.debug("Loading Hologram...");
         // Load Hologram
         List<String> holographicLines = configuration.getStringList("hologram.lines");
-        HashMap<String, ItemStack> holographicItemMap = new HashMap<>();
+        HashMap<String, ItemBuilder> holographicItemMap = new HashMap<>();
         if (!holographicLines.isEmpty()) { // Redundant check most of the times but if holograms aren't configured we aren't going to load the rest
             if (configuration.contains("hologram.items")) {
                 for (String key : configuration.getConfigurationSection("hologram.items").getKeys(false)) {
@@ -299,14 +201,15 @@ public class CratesFile {
 
                     String itemIdentifier = configuration.getString(path + ".identifier");
                     ItemBuilder builder = itemFromConfiguration(configuration, path);
-                    ItemStack item = builder == null ? new ItemStack(Material.AIR) : builder.build();
-                    holographicItemMap.put(itemIdentifier, item);
+                    holographicItemMap.put(itemIdentifier, builder);
                 }
             }
         }
         // Construction
-        ICrate crate = new PhysicalCrate(identifier, display, openingSound, spinSound, winSound, spinType, spinTime, block,
-                keyBuilder, prizes, openCommands, holographicLines, holographicItemMap, pouch);
+        CrateSettings settings = new CrateSettings(identifier, display, openCommands, block, spinType, spinTime, openingSound,
+                spinSound, winSound, keyBuilder, pouchBuilder, prizes, holographicItemMap, holographicLines);
+        Crate crate = new Crate(settings);
+        plugin.debug("Crate Construction Complete.");
         return crates.put(identifier, crate);
     }
 
@@ -327,7 +230,8 @@ public class CratesFile {
 
     private ItemBuilder itemFromConfiguration(FileConfiguration config, String path) {
         Material material = materialFromConfiguration(config, path + ".item");
-        if (material == null) return null;
+        if (material == null) materialFromConfiguration(config, path + ".material");
+        if (material == null) return new ItemBuilder(Material.AIR);
 
         int data = config.getInt(path + ".data", 0);
         int amount = config.getInt(path + ".amount", 1);
@@ -347,7 +251,13 @@ public class CratesFile {
     }
 
     private Material materialFromConfiguration(FileConfiguration config, String path) {
-        return Material.getMaterial(config.getString(path).toUpperCase());
+        if (!config.contains(path))
+            return null;
+        try {
+            return Material.getMaterial(config.getString(path).toUpperCase());
+        } catch (EnumConstantNotPresentException e) {
+            return null;
+        }
     }
 
     private Sound parseSound(String configuredName, String identifier, String... soundNames) {

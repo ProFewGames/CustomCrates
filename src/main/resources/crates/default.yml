@@ -5,7 +5,7 @@
 # Crate Settings
 Crate:
   identifier: Default
-  display: '&3&lDefault Crate'
+  display: '&3&lDefault Crate '
   open-commands:
     - 'broadcast &c%player% &7is opening &c%crate%&7.'
   block: CHEST

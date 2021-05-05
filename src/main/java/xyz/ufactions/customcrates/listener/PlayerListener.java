@@ -13,13 +13,10 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 import xyz.ufactions.customcrates.CustomCrates;
-import xyz.ufactions.customcrates.crates.ICrate;
-import xyz.ufactions.customcrates.exception.CustomException;
+import xyz.ufactions.customcrates.crates.Crate;
 import xyz.ufactions.customcrates.libs.F;
 import xyz.ufactions.customcrates.libs.UtilEvent;
 import xyz.ufactions.customcrates.libs.VaultManager;
@@ -43,8 +40,8 @@ public class PlayerListener implements Listener {
                 return;
             }
             if (e.getPlayer().hasPermission("customcrates.sign.purchase.create")) {
-                for (ICrate crate : plugin.getCratesManager().getCrates()) {
-                    if (e.getLine(2).equalsIgnoreCase(crate.getIdentifier())) {
+                for (Crate crate : plugin.getCratesManager().getCrates()) {
+                    if (e.getLine(2).equalsIgnoreCase(crate.getSettings().getIdentifier())) {
                         double price;
                         try {
                             price = Double.parseDouble(e.getLine(3));
@@ -65,7 +62,7 @@ public class PlayerListener implements Listener {
                         }
                         e.setLine(0, F.color("&7[&cCrates&7]"));
                         e.setLine(1, String.valueOf(amount));
-                        e.setLine(2, F.capitalizeFirstLetter(crate.getIdentifier()));
+                        e.setLine(2, F.capitalizeFirstLetter(crate.getSettings().getIdentifier()));
                         e.setLine(3, "$" + price);
                         e.getPlayer().sendMessage(F.format(plugin.getLanguage().signSet()));
                         return;
@@ -85,8 +82,8 @@ public class PlayerListener implements Listener {
                         e.getPlayer().sendMessage(F.error("&cEconomy is not enabled on the server."));
                         return;
                     }
-                    for (ICrate crate : plugin.getCratesManager().getCrates()) {
-                        if (sign.getLine(2).equalsIgnoreCase(crate.getIdentifier())) {
+                    for (Crate crate : plugin.getCratesManager().getCrates()) {
+                        if (sign.getLine(2).equalsIgnoreCase(crate.getSettings().getIdentifier())) {
                             double price;
                             try {
                                 price = Double.parseDouble(sign.getLine(3).substring(1));
@@ -106,7 +103,7 @@ public class PlayerListener implements Listener {
                             if (!e.getPlayer().hasPermission("customcrates.sign.purchase.use")) return;
                             EconomyResponse response = VaultManager.getInstance().getEconomy().withdrawPlayer(e.getPlayer(), price);
                             if (response.transactionSuccess()) {
-                                ItemStack key = crate.getKey();
+                                ItemStack key = crate.getSettings().getKey().build();
                                 key.setAmount(amount);
                                 e.getPlayer().getInventory().addItem(key);
                                 if (!plugin.getLanguage().purchasedKey().isEmpty()) {
@@ -125,8 +122,8 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onPouchInteract(PlayerInteractEvent e) {
         if (UtilEvent.isAction(e, UtilEvent.ActionType.R)) {
-            for (ICrate crate : plugin.getCratesManager().getCrates()) {
-                ItemStack pouch = crate.getPouch();
+            for (Crate crate : plugin.getCratesManager().getCrates()) {
+                ItemStack pouch = crate.getSettings().getPouch().build();
                 if (pouch.getType() != Material.AIR && Universal.getInstance().getItemInHand(e.getPlayer()).isSimilar(pouch)) {
                     e.setCancelled(true);
 
@@ -138,7 +135,7 @@ public class PlayerListener implements Listener {
                         item.setAmount(item.getAmount() - 1);
                     }
 
-                    crate.getSpinType().getSpin(plugin).spin(e.getPlayer(), crate);
+                    crate.getSettings().getSpinType().getSpin(plugin).spin(e.getPlayer(), crate);
                     return;
                 }
             }
@@ -148,21 +145,21 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onCrateInteract(PlayerInteractEvent e) {
         if (UtilEvent.isAction(e, UtilEvent.ActionType.R_BLOCK)) {
-            ICrate crate = plugin.getCratesManager().getCrate(e.getClickedBlock().getLocation());
+            Crate crate = plugin.getCratesManager().getCrate(e.getClickedBlock().getLocation());
             if (crate != null) {
                 e.setCancelled(true);
                 Inventory inventory = e.getPlayer().getInventory();
-                ItemStack item = crate.getKey();
+                ItemStack item = crate.getSettings().getKey().build();
                 item.setAmount(1); // Just in case it's not already one we're setting it to one
                 if (inventory.containsAtLeast(item, 1)) {
                     inventory.removeItem(item);
-                    crate.getSpinType().getSpin(plugin).spin(e.getPlayer(), crate);
+                    crate.getSettings().getSpinType().getSpin(plugin).spin(e.getPlayer(), crate);
                 } else {
                     e.getPlayer().sendMessage(F.error(plugin.getLanguage().noKey(item.getItemMeta().getDisplayName())));
                 }
             }
         } else if (UtilEvent.isAction(e, UtilEvent.ActionType.L_BLOCK)) {
-            ICrate crate = plugin.getCratesManager().getCrate(e.getClickedBlock().getLocation());
+            Crate crate = plugin.getCratesManager().getCrate(e.getClickedBlock().getLocation());
             if (crate != null) {
                 e.setCancelled(true);
                 e.getPlayer().openInventory(crate.getPreviewInventory());
@@ -200,8 +197,8 @@ public class PlayerListener implements Listener {
     public void onInventoryClick(InventoryClickEvent e) {
         if (!(e.getWhoClicked() instanceof Player)) return;
         if (e.getCurrentItem() == null) return;
-        for (ICrate crate : plugin.getCratesManager().getCrates()) {
-            if (e.getView().getTitle().equals(crate.getDisplay())) {
+        for (Crate crate : plugin.getCratesManager().getCrates()) {
+            if (e.getView().getTitle().equals(crate.getSettings().getDisplay())) {
                 e.setCancelled(true);
                 break;
             }

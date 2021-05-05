@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import xyz.ufactions.customcrates.CustomCrates;
-import xyz.ufactions.customcrates.crates.ICrate;
+import xyz.ufactions.customcrates.crates.Crate;
 import xyz.ufactions.customcrates.crates.Prize;
 import xyz.ufactions.customcrates.gui.internal.GUI;
 import xyz.ufactions.customcrates.gui.internal.button.BasicButton;
@@ -17,7 +17,7 @@ import xyz.ufactions.customcrates.libs.UtilMath;
 
 public class PrizeEditorGUI extends GUI<CustomCrates> {
 
-    public PrizeEditorGUI(CustomCrates plugin, ICrate crate, Prize prize) {
+    public PrizeEditorGUI(CustomCrates plugin, Crate crate, Prize prize) {
         super(plugin, prize.getDisplayItem().getItemMeta().getDisplayName(), 27, GUIFiller.RAINBOW);
 
         // Edit name

@@ -6,7 +6,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import xyz.ufactions.customcrates.CustomCrates;
 import xyz.ufactions.customcrates.command.SubCommand;
-import xyz.ufactions.customcrates.crates.ICrate;
+import xyz.ufactions.customcrates.crates.Crate;
 import xyz.ufactions.customcrates.libs.F;
 
 import java.io.IOException;
@@ -30,11 +30,11 @@ public class SetCommand extends SubCommand {
                 player.sendMessage(F.error(plugin.getLanguage().noTargetBlock()));
                 return true;
             }
-            ICrate crate = getCrate(player, args[0]);
+            Crate crate = getCrate(player, args[0]);
             if (crate == null) return true;
-            if (block.getType() != crate.getBlock()) {
+            if (block.getType() != crate.getSettings().getBlock()) {
                 player.sendMessage(F.error(plugin.getLanguage().incorrectTargetBlock(F.capitalizeFirstLetter(
-                        crate.getBlock().toString().replaceAll("_", " ")))));
+                        crate.getSettings().getBlock().toString().replaceAll("_", " ")))));
                 return true;
             }
             Location location = block.getLocation();
