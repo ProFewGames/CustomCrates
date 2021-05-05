@@ -2,6 +2,7 @@ package xyz.ufactions.customcrates.crates;
 
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import xyz.ufactions.customcrates.libs.F;
 import xyz.ufactions.customcrates.libs.ItemBuilder;
 import xyz.ufactions.customcrates.libs.WeightedList;
 import xyz.ufactions.customcrates.spin.Spin;
@@ -34,7 +35,7 @@ public class CrateSettings {
                          long spinTime, Sound openingSound, Sound spinSound, Sound winSound, ItemBuilder key, ItemBuilder pouch,
                          WeightedList<Prize> prizes, Map<String, ItemBuilder> holographicItemMap, List<String> holographicLines) {
         this.identifier = identifier;
-        this.display = display;
+        this.display = F.color(display);
         this.openCommands = openCommands;
         this.block = block;
         this.spinType = spinType;

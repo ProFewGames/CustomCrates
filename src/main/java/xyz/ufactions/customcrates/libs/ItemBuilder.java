@@ -43,11 +43,6 @@ public class ItemBuilder {
         return this;
     }
 
-    // XXX : Method might not work : Always return null -> NBT not saved
-    public boolean hasGlow() {
-        return item.containsEnchantment(EnchantmentLib.getGlowEnchantment());
-    }
-
     public ItemBuilder amount(int amount) {
         this.item.setAmount(amount);
         return this;
@@ -55,7 +50,7 @@ public class ItemBuilder {
 
     public ItemBuilder name(String name) {
         ItemMeta meta = this.item.getItemMeta();
-        meta.setDisplayName(cc((name.startsWith("&") ? "&f" : "") + name));
+        meta.setDisplayName(cc((name.startsWith("&") ? "" : "&f") + name));
         this.item.setItemMeta(meta);
         return this;
     }
@@ -64,7 +59,7 @@ public class ItemBuilder {
         ItemMeta meta = this.item.getItemMeta();
         List<String> finLore = new ArrayList<String>();
         for (String line : lore) {
-            finLore.add(cc("&7" + line));
+            finLore.add(cc((line.startsWith("&") ? "" : "&f") + line));
         }
         meta.setLore(finLore);
         this.item.setItemMeta(meta);

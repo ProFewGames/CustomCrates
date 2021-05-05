@@ -10,6 +10,7 @@ import xyz.ufactions.customcrates.libs.F;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class CratesCommand extends xyz.ufactions.customcrates.command.Command implements CommandExecutor, TabExecutor {
@@ -29,6 +30,21 @@ public class CratesCommand extends xyz.ufactions.customcrates.command.Command im
         commands.add(new GiveAllCommand(plugin));
         commands.add(new GivePouchCommand(plugin));
         commands.add(new GiveCommand(plugin));
+
+        commands.add(new SubCommand(plugin, "Show this message", "customcrates.command", new String[]{
+                "help"
+        }) {
+
+            @Override
+            protected boolean execute(CommandSender sender, String label, String[] args) {
+                return false;
+            }
+
+            @Override
+            protected List<String> tabComplete(CommandSender sender, String label, String[] args) {
+                return Collections.emptyList();
+            }
+        });
     }
 
     @Override
@@ -58,7 +74,18 @@ public class CratesCommand extends xyz.ufactions.customcrates.command.Command im
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
-        if (args.length >= 1) {
+        if (args.length == 1) {
+            List<String> matches = new ArrayList<>();
+            for (SubCommand command : commands) {
+                for (String string : command.aliases()) {
+                    if (string.startsWith(args[0])) {
+                        matches.add(string);
+                    }
+                }
+            }
+            return matches;
+        }
+        if (args.length > 1) {
             for (SubCommand command : commands) {
                 for (String alias : command.aliases()) {
                     if (args[0].equalsIgnoreCase(alias)) {

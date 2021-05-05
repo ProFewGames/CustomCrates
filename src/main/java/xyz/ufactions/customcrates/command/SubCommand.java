@@ -1,6 +1,5 @@
 package xyz.ufactions.customcrates.command;
 
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import xyz.ufactions.customcrates.CustomCrates;
 

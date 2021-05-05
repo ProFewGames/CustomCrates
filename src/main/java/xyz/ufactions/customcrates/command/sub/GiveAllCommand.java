@@ -2,12 +2,16 @@ package xyz.ufactions.customcrates.command.sub;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.HumanEntity;
 import xyz.ufactions.customcrates.CustomCrates;
 import xyz.ufactions.customcrates.command.SubCommand;
 import xyz.ufactions.customcrates.crates.Crate;
 import xyz.ufactions.customcrates.libs.F;
 import xyz.ufactions.customcrates.libs.UtilMath;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class GiveAllCommand extends SubCommand {
@@ -42,6 +46,12 @@ public class GiveAllCommand extends SubCommand {
 
     @Override
     protected List<String> tabComplete(CommandSender sender, String label, String[] args) {
-        return null; // TODO
+        if (args.length == 1) {
+            return getMatches(args[0], plugin.getCratesManager().getCrates(), crate -> crate.getSettings().getIdentifier());
+        }
+        if (args.length == 2) {
+            return getMatches(args[0], Arrays.asList("1", "2", "3"));
+        }
+        return Collections.emptyList();
     }
 }

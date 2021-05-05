@@ -9,6 +9,7 @@ import xyz.ufactions.customcrates.command.SubCommand;
 import xyz.ufactions.customcrates.libs.F;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 public class RemoveCommand extends SubCommand {
@@ -46,6 +47,6 @@ public class RemoveCommand extends SubCommand {
 
     @Override
     protected List<String> tabComplete(CommandSender sender, String label, String[] args) {
-        return null; // TODO
+        return Collections.emptyList();
     }
 }

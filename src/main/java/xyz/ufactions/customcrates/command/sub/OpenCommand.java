@@ -7,6 +7,7 @@ import xyz.ufactions.customcrates.command.SubCommand;
 import xyz.ufactions.customcrates.crates.Crate;
 import xyz.ufactions.customcrates.libs.F;
 
+import java.util.Collections;
 import java.util.List;
 
 public class OpenCommand extends SubCommand {
@@ -33,6 +34,9 @@ public class OpenCommand extends SubCommand {
 
     @Override
     protected List<String> tabComplete(CommandSender sender, String label, String[] args) {
-        return null; // TODO
+        if (args.length == 1) {
+            return getMatches(args[0], plugin.getCratesManager().getCrates(), crate -> crate.getSettings().getIdentifier());
+        }
+        return Collections.emptyList();
     }
 }

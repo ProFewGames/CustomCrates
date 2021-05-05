@@ -10,12 +10,34 @@ import xyz.ufactions.customcrates.CustomCrates;
 import xyz.ufactions.customcrates.crates.Crate;
 import xyz.ufactions.customcrates.libs.F;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Function;
+
 public abstract class Command {
 
     protected final CustomCrates plugin;
 
     public Command(CustomCrates plugin) {
         this.plugin = plugin;
+    }
+
+    protected final List<String> getMatches(String start, List<String> list) {
+        return getMatches(start, list, string -> string);
+    }
+
+    protected final <Any> List<String> getMatches(String start, List<Any> list, Function<Any, String> function) { // XXX : Relocate?
+        List<String> toReturn = new ArrayList<>();
+        for (Any any : list) {
+            String string = function.apply(any);
+            if (string.equalsIgnoreCase(start)) {
+                toReturn.add(string);
+                break;
+            } else {
+                toReturn.add(string);
+            }
+        }
+        return toReturn;
     }
 
     protected final Block getTargetBlock(LivingEntity entity, int range) {

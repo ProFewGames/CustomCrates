@@ -2,9 +2,7 @@ package xyz.ufactions.customcrates.libs;
 
 import org.bukkit.ChatColor;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 
 public class F {
 
@@ -36,20 +34,6 @@ public class F {
 
     public static String color(String text) {
         return ChatColor.translateAlternateColorCodes('&', text);
-    }
-
-    public static <T> List<String> match(String lookFor, List<T> list, Function<T, String> function) {
-        List<String> toReturn = new ArrayList<>();
-        for (T t : list) {
-            String string = function.apply(t);
-            if (string.equalsIgnoreCase(lookFor)) {
-                toReturn.add(string);
-                break;
-            } else {
-                if (string.startsWith(lookFor)) toReturn.add(string);
-            }
-        }
-        return toReturn;
     }
 
     public static String oo(boolean var) {

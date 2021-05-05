@@ -6,6 +6,7 @@ import xyz.ufactions.customcrates.CustomCrates;
 import xyz.ufactions.customcrates.command.SubCommand;
 import xyz.ufactions.customcrates.libs.F;
 
+import java.util.Collections;
 import java.util.List;
 
 public class InfoCommand extends SubCommand {
@@ -27,6 +28,7 @@ public class InfoCommand extends SubCommand {
 
     @Override
     protected List<String> tabComplete(CommandSender sender, String label, String[] args) {
-        return null; // TODO
+        return Collections.emptyList();
+
     }
 }
