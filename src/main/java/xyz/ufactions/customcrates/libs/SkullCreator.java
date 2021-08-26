@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
+import xyz.ufactions.enchantmentlib.VersionUtils;
 
 import java.util.UUID;
 
@@ -74,7 +75,7 @@ public class SkullCreator {
     }
 
     private static ItemStack baseSkull() {
-        if (VersionUtils.getVersion().greaterOrEquals(VersionUtils.Version.V1_13)) {
+        if (VersionUtils.getVersion().equalOrGreater(VersionUtils.Version.V1_13)) {
             return new ItemStack(Material.getMaterial("SKULL_ITEM"));
         } else {
             return new ItemStack(Material.PLAYER_HEAD);

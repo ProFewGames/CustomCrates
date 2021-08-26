@@ -1,12 +1,11 @@
 name: CustomCrates
 main: xyz.ufactions.customcrates.CustomCrates
-version: 4.3.1
+version: 4.3.3
 author: ProFewGames
 description: A Fully Customizable Crates Plugin
 api-version: 1.13
 softdepend:
   - Vault
-  - HolographicDisplays
 commands:
   customcrates:
     description: Main Command for CustomCrates
@@ -53,6 +52,9 @@ permissions:
     default: op
   customcrates.command.givepouch:
     description: CustomCrates givepouch command.
+    default: op
+  customcrates.command.editor:
+    description: CustomCrates editor command.
     default: op
   customcrates.notify.version:
     description: Notify if new version available

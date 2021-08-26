@@ -16,10 +16,7 @@ import xyz.ufactions.customcrates.libs.WeightedList;
 import xyz.ufactions.customcrates.spin.Spin;
 
 import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class CratesFile {
 
@@ -33,96 +30,86 @@ public class CratesFile {
         reload();
     }
 
-    private File locateFile(String identifier) {
-        for (File file : directory.listFiles()) { // TODO : Check empty directory | Directory Null -> MkDir Def File
-            try {
-                FileConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+    // Creators/Setters
+
+    public Crate createCrate(String identifier) {
+        identifier = cleanIdentifier(identifier);
+        Crate crate = getCrateByIdentifier(identifier);
+        if (crate != null) return crate;
+        File file = new File(identifier + ".yml");
+        FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+
+        String path;
+
+        // Creating Crate
+        path = "Crate";
+        config.set(path + ".identifier", identifier);
+        config.set(path + ".display", "&3&l" + identifier + " Crate");
+        config.set(path + ".open-commands", Collections.singletonList("broadcast &e%player% &bis opening &e%crate%&b."));
+        config.set(path + ".block", Material.CHEST.name());
+        config.set(path + ".spin", Spin.SpinType.CSGO.name());
+        config.set(path + ".spin time", 2500);
+
+        // Creating Key
+        path = "Key";
+        config.set(path + ".name", "&3&l" + identifier + " Key");
+        config.set(path + ".item", Material.TRIPWIRE_HOOK.name());
+        config.set(path + ".glow", true);
+        config.set(path + ".lore", Arrays.asList("&7Use this at the nearest", "&7Crate to open!"));
+
+        // Creating Pouch
+        path = "pouch";
+        config.set(path + ".item", Material.ENDER_CHEST.name());
+        config.set(path + ".glow", false);
+        config.set(path + ".name", "&3&l" + identifier + " Pouch");
+        config.set(path + ".lore", Collections.singletonList("&7Click on this item to open pouch"));
+
+        // Creating Hologram
+        path = "hologram.items.key";
+        config.set(path + ".identifier", "item_key");
+        config.set(path + ".item", Material.TRIPWIRE_HOOK.name());
+        config.set(path + ".glow", true);
+        path = "hologram";
+        config.set(path + ".lines", Arrays.asList("{item_key}", "{crate_display}", "&7(Right Click to Open)", "&7(Left Click to Preview)"));
+
+        // Create Prizes
+
+        return getCrateByFile(file);
+    }
+
+    public void savePrize(Crate crate, Prize prize) {
+
+    }
+
+    // Getters
+
+    public List<Crate> getCrates() {
+        if (crates.isEmpty()) {
+            for (File file : directory.listFiles()) {
+                getCrateByFile(file);
+            }
+        }
+        return new ArrayList<>(crates.values());
+    }
+
+    public Crate getCrateByIdentifier(String identifier) {
+        identifier = cleanIdentifier(identifier);
+        if (crates.containsKey(identifier)) return crates.get(identifier);
+        for (File file : directory.listFiles()) {
+            FileConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+            if (configuration.contains("Crate.identifier")) {
                 if (configuration.getString("Crate.identifier").equalsIgnoreCase(identifier)) {
-                    return file;
+                    return getCrateByFile(file);
                 }
-            } catch (Exception e) {
-                plugin.getLogger().warning("Failed to read information from file: " + file.getName());
-                if (plugin.getConfigurationFile().debugging())
-                    e.printStackTrace();
             }
         }
         return null;
     }
 
-    public void createPrize(Crate crate, Prize prize) {
-        File file = locateFile(crate.getSettings().getIdentifier());
-        if (file != null) {
-            FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-            int index = config.getInt("prize index", 0);
-            config.set("Prizes." + index + ".chance", prize.getChance());
-            config.set("Prizes." + index + ".display.item", prize.getDisplayItem().getType().name());
-//            config.set("Prizes." + index + ".display.glow", prize.isGlowing());
-            config.set("Prizes." + index + ".display.amount", prize.getDisplayItem().getAmount());
-            config.set("Prizes." + index + ".display.name", prize.getDisplayItem().getItemMeta().getDisplayName());
-            config.set("Prizes." + index + ".display.lore", prize.getDisplayItem().getItemMeta().getLore());
-            config.set("Prizes." + index + ".commands", prize.getCommands());
-            config.set("prize index", ++index);
-            try {
-                config.save(file);
-            } catch (IOException e) {
-                plugin.getLogger().warning(plugin.getLanguage().errorFileSaving());
-                if (plugin.getConfigurationFile().debugging())
-                    e.printStackTrace();
-            }
-        }
-    }
+    public Crate getCrateByFile(File file) {
+        Validate.notNull(file, "File is null");
 
-    public void setPrizeGlow(Crate crate, Prize prize, boolean glowing) {
-        File file = locateFile(crate.getSettings().getIdentifier());
-        if (file != null) {
-            FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-            config.set(prize.getConfigurationSection() + ".display.glow", glowing);
-            try {
-                config.save(file);
-            } catch (IOException e) {
-                plugin.getLogger().warning(plugin.getLanguage().errorFileSaving());
-                if (plugin.getConfigurationFile().debugging())
-                    e.printStackTrace();
-            }
-        }
-    }
-
-    public void changeCrateDisplayName(String identifier, String displayName) {
-        File file = locateFile(identifier);
-        if (file != null) {
-            FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-            config.set("Crate.display", displayName);
-            try {
-                config.save(file);
-            } catch (IOException e) {
-                plugin.getLogger().warning(plugin.getLanguage().errorFileSaving());
-                if (plugin.getConfigurationFile().debugging())
-                    e.printStackTrace();
-            }
-        }
-    }
-
-    public boolean deleteCrate(String identifier) {
-        File file = locateFile(identifier);
-        if (file != null) {
-            return file.delete();
-        } else {
-            return false;
-        }
-    }
-
-    public List<Crate> getCrates() {
-        if (crates.isEmpty()) {
-            for (File file : directory.listFiles()) {
-                FileConfiguration configuration = YamlConfiguration.loadConfiguration(file);
-                getCrate(configuration);
-            }
-        }
-        return new ArrayList<>(crates.values()); // TODO Optimize -> Defeats the whole purpose of only loading once.=
-    }
-
-    public Crate getCrate(FileConfiguration configuration) {
-        Validate.notNull(configuration, "File Configuration is null");
+        FileConfiguration configuration = YamlConfiguration.loadConfiguration(file);
 
         // Load Crate
         plugin.debug("Loading Crate Preset...");
@@ -133,7 +120,7 @@ public class CratesFile {
                     " or empty. '" + identifier + "'");
             return null;
         }
-        identifier = identifier.replaceAll(" ", "_");
+        identifier = cleanIdentifier(identifier);
 
         if (crates.containsKey(identifier)) {
             plugin.debug("Loaded from cache.");
@@ -276,5 +263,9 @@ public class CratesFile {
                     plugin.getLogger().info("Could not load closing sound for crate: \"" + identifier + "\". Defaulting to: " + sound.name() + ".");
             return sound;
         }
+    }
+
+    private String cleanIdentifier(String identifier) {
+        return identifier.replaceAll(" ", "_");
     }
 }

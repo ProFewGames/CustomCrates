@@ -3,7 +3,6 @@ package xyz.ufactions.customcrates.manager;
 import org.bukkit.Location;
 import xyz.ufactions.customcrates.CustomCrates;
 import xyz.ufactions.customcrates.crates.Crate;
-import xyz.ufactions.customcrates.crates.Prize;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,15 +19,19 @@ public class CratesManager {
         reload();
     }
 
+    // Methods
+
     public void reload() {
         crates.clear();
         crates.addAll(plugin.getCratesFile().getCrates());
     }
 
-    public boolean crateExists(String name) {
-        return getCrate(name) != null;
+    public boolean createCrate(String identifier) {
+        if (crateExists(identifier)) return false;
+        return plugin.getCratesFile().createCrate(identifier) != null;
     }
 
+    // Getters
     public Crate getCrate(Location location) {
         return plugin.getLocationsFile().getCrate(location);
     }
@@ -42,18 +45,8 @@ public class CratesManager {
         return null;
     }
 
-    public void setGlowingPrize(Crate crate, Prize prize, boolean glow) {
-        plugin.getCratesFile().setPrizeGlow(crate, prize, glow);
-    }
-
-    public void editCrateDisplayName(Crate crate, String displayName) {
-//        crate.setDisplay(displayName); TODO FIX
-        plugin.getCratesFile().changeCrateDisplayName(crate.getSettings().getIdentifier(), displayName);
-    }
-
-    public boolean deleteCrate(Crate crate) {
-        crates.remove(crate);
-        return plugin.getCratesFile().deleteCrate(crate.getSettings().getIdentifier());
+    public boolean crateExists(String name) {
+        return getCrate(name) != null;
     }
 
     public synchronized List<Crate> getCrates() {

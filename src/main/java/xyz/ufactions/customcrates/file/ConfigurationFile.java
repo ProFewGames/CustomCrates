@@ -1,13 +1,13 @@
 package xyz.ufactions.customcrates.file;
 
-import org.bukkit.plugin.java.JavaPlugin;
+import xyz.ufactions.customcrates.CustomCrates;
 import xyz.ufactions.customcrates.libs.FileHandler;
 
 public class ConfigurationFile extends FileHandler {
 
     private LanguageFile.LanguageType language;
 
-    public ConfigurationFile(JavaPlugin plugin) {
+    public ConfigurationFile(CustomCrates plugin) {
         super(plugin, "config.yml", plugin.getDataFolder(), "config.yml");
     }
 

@@ -1,13 +1,14 @@
 ###########################################################################################
 #                                      DEFAULT CRATE                                      #
 ###########################################################################################
+# Documentation v4.2.0 moved to Discord
 
 # Crate Settings
 Crate:
   identifier: Default
   display: '&3&lDefault Crate '
   open-commands:
-    - 'broadcast &c%player% &7is opening &c%crate%&7.'
+    - 'broadcast &e%player% &bis opening &e%crate%&7.'
   block: CHEST
   spin: CSGO
   spin time: 2500
@@ -17,7 +18,7 @@ Crate:
 
 # Crate Key
 Key:
-  name: '&b&lCrate Key'
+  name: '&3&lCrate Key'
   item: TRIPWIRE_HOOK
   glow: true
   lore:
@@ -40,7 +41,6 @@ hologram:
       item: TRIPWIRE_HOOK
       glow: true
   lines:
-    - '{item_key}'
     - '{crate_display}'
     - '&7(Right Click to Open)'
     - '&7(Left Click to Preview)'

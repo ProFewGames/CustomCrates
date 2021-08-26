@@ -2,17 +2,22 @@ package xyz.ufactions.customcrates.gui.internal.button;
 
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.java.JavaPlugin;
+import xyz.ufactions.customcrates.CustomCrates;
 
-public abstract class InverseButton<T extends JavaPlugin> extends IButton<T> {
+public abstract class InverseButton extends Button {
 
     protected boolean inverse = false;
-    private final int slot;
 
-    public InverseButton(T plugin, int slot) {
+    public InverseButton(CustomCrates plugin) {
         super(plugin);
+    }
 
-        this.slot = slot;
+    public InverseButton(CustomCrates plugin, int slot) {
+        super(plugin, null, slot);
+    }
+
+    public InverseButton(CustomCrates plugin, long refreshTime, int slot) {
+        super(plugin, null, refreshTime, slot);
     }
 
     public final boolean isInversed() {
@@ -36,10 +41,5 @@ public abstract class InverseButton<T extends JavaPlugin> extends IButton<T> {
     @Override
     public final ItemStack getItem() {
         return getInverse(inverse);
-    }
-
-    @Override
-    public int getSlot() {
-        return slot;
     }
 }

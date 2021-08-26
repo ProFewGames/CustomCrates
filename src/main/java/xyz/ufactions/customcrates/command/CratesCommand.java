@@ -8,9 +8,9 @@ import xyz.ufactions.customcrates.CustomCrates;
 import xyz.ufactions.customcrates.command.sub.*;
 import xyz.ufactions.customcrates.libs.F;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class CratesCommand extends xyz.ufactions.customcrates.command.Command implements CommandExecutor, TabExecutor {
@@ -30,21 +30,8 @@ public class CratesCommand extends xyz.ufactions.customcrates.command.Command im
         commands.add(new GiveAllCommand(plugin));
         commands.add(new GivePouchCommand(plugin));
         commands.add(new GiveCommand(plugin));
-
-        commands.add(new SubCommand(plugin, "Show this message", "customcrates.command", new String[]{
-                "help"
-        }) {
-
-            @Override
-            protected boolean execute(CommandSender sender, String label, String[] args) {
-                return false;
-            }
-
-            @Override
-            protected List<String> tabComplete(CommandSender sender, String label, String[] args) {
-                return Collections.emptyList();
-            }
-        });
+        if (new File("editor.dat").exists())
+            commands.add(new EditorCommand(plugin));
     }
 
     @Override
@@ -66,7 +53,7 @@ public class CratesCommand extends xyz.ufactions.customcrates.command.Command im
         if (!checkPermission(sender, "customcrates.command")) return true;
         sender.sendMessage(F.format("Commands:"));
         for (SubCommand command : commands) {
-            if (!checkPermission(sender, command.permission())) continue;
+            if (!checkPermission(sender, command.permission(), false)) continue;
             sender.sendMessage(F.help(command.usage(label), command.description()));
         }
         return true;
@@ -76,6 +63,7 @@ public class CratesCommand extends xyz.ufactions.customcrates.command.Command im
     public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
         if (args.length == 1) {
             List<String> matches = new ArrayList<>();
+            if ("help".startsWith(args[0])) matches.add("help");
             for (SubCommand command : commands) {
                 for (String string : command.aliases()) {
                     if (string.startsWith(args[0])) {

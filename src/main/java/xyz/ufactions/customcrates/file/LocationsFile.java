@@ -27,7 +27,7 @@ public class LocationsFile extends FileHandler {
                 if (getInt(path + ".x") == location.getBlockX()) {
                     if (getInt(path + ".y") == location.getBlockY()) {
                         if (getInt(path + ".z") == location.getBlockZ()) {
-                            return getPlugin().getCratesManager().getCrate(getString("saves." + key + ".crate"));
+                            return plugin.getCratesManager().getCrate(getString("saves." + key + ".crate"));
                         }
                     }
                 }
@@ -45,7 +45,7 @@ public class LocationsFile extends FileHandler {
         if (contains("saves")) {
             for (String key : getConfigurationSection("saves").getKeys(false)) {
                 String path = "saves." + key;
-                Crate crate = getPlugin().getCratesManager().getCrate(getString(path + ".crate"));
+                Crate crate = plugin.getCratesManager().getCrate(getString(path + ".crate"));
                 if (crate != null) {
                     World world = Bukkit.getWorld(getString(path + ".location.world"));
                     int x = getInt(path + ".location.x");
@@ -75,7 +75,7 @@ public class LocationsFile extends FileHandler {
         set("index", ++index);
         save();
 
-        getPlugin().reseatHolograms();
+        plugin.getHologramManager().reload();
     }
 
     public void deleteLocation(Location location) throws IOException {
@@ -88,16 +88,12 @@ public class LocationsFile extends FileHandler {
                         if (getInt(path + ".z") == location.getBlockZ()) {
                             set("saves." + key, null);
                             save();
-                            getPlugin().reseatHolograms();
+                            plugin.getHologramManager().reload();
                             return;
                         }
                     }
                 }
             }
         }
-    }
-
-    private CustomCrates getPlugin() {
-        return (CustomCrates) plugin;
     }
 }

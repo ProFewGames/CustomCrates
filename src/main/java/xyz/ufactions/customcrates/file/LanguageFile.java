@@ -1,6 +1,7 @@
 package xyz.ufactions.customcrates.file;
 
 import org.bukkit.plugin.java.JavaPlugin;
+import xyz.ufactions.customcrates.CustomCrates;
 import xyz.ufactions.customcrates.libs.F;
 import xyz.ufactions.customcrates.libs.FileHandler;
 
@@ -20,7 +21,7 @@ public class LanguageFile extends FileHandler {
         }
     }
 
-    public LanguageFile(JavaPlugin plugin, String fileName) {
+    public LanguageFile(CustomCrates plugin, String fileName) {
         super(plugin, fileName, plugin.getDataFolder(), fileName);
 
         plugin.getLogger().info("Loading Language: " + fileName);

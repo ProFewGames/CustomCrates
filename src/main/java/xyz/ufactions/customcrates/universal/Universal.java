@@ -10,7 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import xyz.ufactions.customcrates.libs.ItemBuilder;
 import xyz.ufactions.customcrates.libs.ReflectionUtils;
-import xyz.ufactions.customcrates.libs.VersionUtils;
+import xyz.ufactions.enchantmentlib.VersionUtils;
 
 public class Universal {
 
@@ -28,7 +28,7 @@ public class Universal {
     }
 
     public ItemStack getItemInHand(Player player) {
-        if (!VersionUtils.getVersion().greaterOrEquals(VersionUtils.Version.V1_9)) {// Legacy
+        if (!VersionUtils.getVersion().equalOrGreater(VersionUtils.Version.V1_9)) {// Legacy
             return (ItemStack) MethodGetItemInHand.of(player.getInventory()).call();
         } else { // Newer
             return player.getInventory().getItemInMainHand();
@@ -36,7 +36,7 @@ public class Universal {
     }
 
     public boolean isStainedGlassPane(ItemStack item) {
-        if (!VersionUtils.getVersion().greaterOrEquals(VersionUtils.Version.V1_13)) { // Legacy
+        if (!VersionUtils.getVersion().equalOrGreater(VersionUtils.Version.V1_13)) { // Legacy
             return item.getType() == Material.getMaterial("STAINED_GLASS_PANE");
         } else { // Newer
             return item.getType().data.equals(GlassPane.class);
@@ -44,7 +44,7 @@ public class Universal {
     }
 
     public boolean isSign(Block block) {
-        if (!VersionUtils.getVersion().greaterOrEquals(VersionUtils.Version.V1_13)) { // Legacy
+        if (!VersionUtils.getVersion().equalOrGreater(VersionUtils.Version.V1_13)) { // Legacy
             return block.getType() == Material.getMaterial("SIGN") || block.getType() == Material.getMaterial("SIGN_POST") || block.getType() == Material.getMaterial("WALL_SIGN");
         } else { // Newer
             return block.getType().data.equals(Sign.class);
@@ -52,7 +52,7 @@ public class Universal {
     }
 
     public ItemBuilder colorToGlassPane(ChatColor color) {
-        if (!VersionUtils.getVersion().greaterOrEquals(VersionUtils.Version.V1_13)) { // Legacy
+        if (!VersionUtils.getVersion().equalOrGreater(VersionUtils.Version.V1_13)) { // Legacy
             return new ItemBuilder(Material.getMaterial("STAINED_GLASS_PANE"), 1, cbyte(color));
         } else { // Newer
             if (color == ChatColor.WHITE) return new ItemBuilder(Material.WHITE_STAINED_GLASS_PANE);

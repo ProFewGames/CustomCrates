@@ -1,7 +1,7 @@
 package xyz.ufactions.customcrates.universal;
 
 import org.bukkit.Material;
-import xyz.ufactions.customcrates.libs.VersionUtils;
+import xyz.ufactions.enchantmentlib.VersionUtils;
 
 /**
  * Only to be used for any back-end use like GUIs or whatever
@@ -14,7 +14,7 @@ public enum UniversalMaterial {
     private final Material material;
 
     UniversalMaterial(VersionUtils.Version version, String legacyName, String latestName) {
-        this.material = Material.getMaterial(VersionUtils.getVersion().greaterOrEquals(version) ? latestName : legacyName);
+        this.material = Material.getMaterial(VersionUtils.getVersion().equalOrGreater(version) ? latestName : legacyName);
     }
 
     public Material get() {

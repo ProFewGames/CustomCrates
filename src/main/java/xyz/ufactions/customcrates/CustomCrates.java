@@ -1,7 +1,5 @@
 package xyz.ufactions.customcrates;
 
-import com.gmail.filoghost.holographicdisplays.api.Hologram;
-import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -16,6 +14,7 @@ import xyz.ufactions.customcrates.libs.F;
 import xyz.ufactions.customcrates.libs.VaultManager;
 import xyz.ufactions.customcrates.listener.PlayerListener;
 import xyz.ufactions.customcrates.manager.CratesManager;
+import xyz.ufactions.customcrates.manager.HologramManager;
 import xyz.ufactions.customcrates.metrics.Metrics;
 
 import java.util.HashMap;
@@ -36,6 +35,7 @@ public class CustomCrates extends JavaPlugin {
 
     // Managers
     private CratesManager manager;
+    private HologramManager hologramManager;
 
     @Override
     public void onEnable() {
@@ -44,6 +44,7 @@ public class CustomCrates extends JavaPlugin {
         this.configurationFile = new ConfigurationFile(this);
         this.language = new LanguageFile(this, configurationFile.getLanguage().getResource());
         this.manager = new CratesManager(this);
+        this.hologramManager = new HologramManager(this);
 
         CustomCratesAPI.initialize(this);
 
@@ -59,10 +60,13 @@ public class CustomCrates extends JavaPlugin {
 
         getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
 
-        reseatHolograms();
-
         new xyz.ufactions.customcrates.updater.Updater(this);
         new Metrics(this, 10660);
+    }
+
+    @Override
+    public void onDisable() {
+        this.hologramManager.unload();
     }
 
     public boolean debugging() {
@@ -78,43 +82,8 @@ public class CustomCrates extends JavaPlugin {
         cratesFile.reload();
         manager.reload();
         configurationFile.reload();
+        hologramManager.reload();
         language = new LanguageFile(this, configurationFile.getLanguage().getResource());
-        reseatHolograms();
-    }
-
-    public void reseatHolograms() {
-        HashMap<Crate, List<Location>> crates = locationsFile.getLocations();
-
-        Bukkit.getScheduler().runTask(this, () -> { // Make sure this task is running sync'd
-            if (Bukkit.getPluginManager().isPluginEnabled("HolographicDisplays")) {
-                HologramsAPI.getHolograms(this).forEach(Hologram::delete); // Delete all previous holograms
-                for (Map.Entry<Crate, List<Location>> entry : crates.entrySet()) {
-                    Crate crate = entry.getKey();
-                    if (crate.getSettings().getHolographicLines().isEmpty()) continue;
-                    List<Location> locations = entry.getValue();
-
-                    for (Location location : locations) {
-                        location.add(0.5, 1.0 + (0.25 * crate.getSettings().getHolographicLines().size()), 0.5);
-
-                        Hologram hologram = HologramsAPI.createHologram(this, location);
-                        for (String line : crate.getSettings().getHolographicLines()) {
-                            line = line.replaceAll("\\{crate_display}", crate.getSettings().getDisplay());
-                            boolean found = false;
-                            for (String identifier : crate.getSettings().getHolographicItemMap().keySet()) {
-                                if (line.equalsIgnoreCase("{" + identifier + "}")) {
-                                    hologram.teleport(location.add(0, 0.5, 0));
-                                    hologram.appendItemLine(crate.getSettings().getHolographicItemMap().get(identifier).build());
-                                    found = true;
-                                    break;
-                                }
-                            }
-                            if (found) continue;
-                            hologram.appendTextLine(F.color(line));
-                        }
-                    }
-                }
-            }
-        });
     }
 
     // Managers
@@ -131,6 +100,10 @@ public class CustomCrates extends JavaPlugin {
 
     public LocationsFile getLocationsFile() {
         return locationsFile;
+    }
+
+    public HologramManager getHologramManager() {
+        return hologramManager;
     }
 
     public ConfigurationFile getConfigurationFile() {

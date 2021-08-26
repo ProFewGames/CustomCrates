@@ -4,6 +4,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
+import xyz.ufactions.customcrates.CustomCrates;
 
 import java.io.File;
 import java.io.IOException;
@@ -12,22 +13,22 @@ import java.util.List;
 
 public abstract class FileHandler {
 
-    protected final JavaPlugin plugin;
+    protected final CustomCrates plugin;
     protected final String fileName;
     private final File directory;
     private final String resourcePath;
     private File file;
     private FileConfiguration config;
 
-    public FileHandler(JavaPlugin plugin, String fileName) {
+    public FileHandler(CustomCrates plugin, String fileName) {
         this(plugin, plugin.getDataFolder(), fileName);
     }
 
-    public FileHandler(JavaPlugin plugin, File directory, String fileName) {
+    public FileHandler(CustomCrates plugin, File directory, String fileName) {
         this(plugin, null, directory, fileName);
     }
 
-    public FileHandler(JavaPlugin plugin, String resourcePath, File directory, String fileName) {
+    public FileHandler(CustomCrates plugin, String resourcePath, File directory, String fileName) {
         this.plugin = plugin;
         this.fileName = fileName;
         this.directory = directory;
