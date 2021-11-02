@@ -2,10 +2,12 @@ package xyz.ufactions.customcrates.manager;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import xyz.ufactions.customcrates.CustomCrates;
 import xyz.ufactions.customcrates.crates.Crate;
 import xyz.ufactions.customcrates.hologram.Hologram;
 import xyz.ufactions.customcrates.libs.F;
+import xyz.ufactions.customcrates.libs.ItemBuilder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -45,6 +47,10 @@ public class HologramManager {
                     Hologram hologram = new Hologram(plugin, location);
                     hologram.centerPosition();
                     for (String line : crate.getSettings().getHolographicLines()) {
+                        if (line.equalsIgnoreCase("{item_key}")) {
+                            hologram.addItem(crate.getSettings().getKey().build());
+                            continue;
+                        }
                         line = line.replaceAll("\\{crate_display}", crate.getSettings().getDisplay());
                         line = F.color(line);
                         hologram.addLine(line);

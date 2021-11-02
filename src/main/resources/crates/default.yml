@@ -41,7 +41,7 @@ hologram:
       item: TRIPWIRE_HOOK
       glow: true
   lines:
-    - '{crate_display}'
+#    - '{crate_display}'
     - '&7(Right Click to Open)'
     - '&7(Left Click to Preview)'
 

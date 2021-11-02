@@ -5,8 +5,10 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import xyz.ufactions.customcrates.hologram.Hologram;
+import xyz.ufactions.customcrates.libs.RandomizableList;
 import xyz.ufactions.customcrates.libs.UtilMath;
+
+import java.util.Map;
 
 public class Crate {
 
@@ -19,8 +21,9 @@ public class Crate {
         this.previewInventory = Bukkit.createInventory(null, UtilMath.round(settings.getPrizes().size()),
                 settings.getDisplay());
 
-        for (int i = 0; i < settings.getPrizes().size(); i++) {
-            previewInventory.setItem(i, settings.getPrizes().get(i).getDisplayItem());
+        int delta = 0;
+        for (Map.Entry<Double, RandomizableList<Prize>.Entry> entry : settings.getPrizes().getEntries().entrySet()) {
+            previewInventory.setItem(delta++, entry.getValue().object.getDisplayItem());
         }
     }
 

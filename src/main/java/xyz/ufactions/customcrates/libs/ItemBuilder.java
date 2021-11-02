@@ -2,6 +2,7 @@ package xyz.ufactions.customcrates.libs;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import xyz.ufactions.enchantmentlib.EnchantmentLib;
@@ -9,6 +10,7 @@ import xyz.ufactions.enchantmentlib.EnchantmentLib;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 public class ItemBuilder {
 
@@ -75,6 +77,10 @@ public class ItemBuilder {
         meta.setLore(lore);
         this.item.setItemMeta(meta);
         return this;
+    }
+
+    public void enchant(Map<Enchantment, Integer> enchantments) {
+        this.item.addUnsafeEnchantments(enchantments);
     }
 
     public ItemBuilder setItemMeta(ItemMeta meta) {

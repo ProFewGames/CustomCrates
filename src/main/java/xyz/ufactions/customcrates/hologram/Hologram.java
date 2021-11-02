@@ -2,8 +2,11 @@ package xyz.ufactions.customcrates.hologram;
 
 import org.bukkit.Location;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Item;
+import org.bukkit.inventory.ItemStack;
 import xyz.ufactions.customcrates.CustomCrates;
 import xyz.ufactions.customcrates.libs.F;
+import xyz.ufactions.customcrates.libs.ItemBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,17 +15,19 @@ public class Hologram {
 
     // Meta
     private Location location;
-    private List<String> lines;
+    private List<Object> lines;
 
     // Storage
     private final CustomCrates plugin;
     private final List<ArmorStand> armorStands;
+    private final List<Item> items;
 
     public Hologram(CustomCrates plugin, Location location) {
         this.location = location;
         this.plugin = plugin;
         this.lines = new ArrayList<>();
         this.armorStands = new ArrayList<>();
+        this.items = new ArrayList<>();
     }
 
     public void centerPosition() {
@@ -41,15 +46,21 @@ public class Hologram {
         }
 
         for (int delta = 0; delta < lines.size(); delta++) {
-            String line = lines.get(delta);
-
+            Object line = lines.get(delta);
             Location location = this.location.clone().subtract(0, delta * 0.25, 0);
+            if (line instanceof ItemStack) {
+                Item item = location.getWorld().dropItem(location, (ItemStack) line);
+                item.setPickupDelay(Integer.MAX_VALUE);
+                // TODO
+                items.add(item);
+                continue;
+            }
             ArmorStand armorStand = location.getWorld().spawn(location, ArmorStand.class);
             armorStand.setGravity(false);
             armorStand.setCanPickupItems(false);
-            armorStand.setCustomName(F.color(line));
             armorStand.setCustomNameVisible(true);
             armorStand.setVisible(false);
+            armorStand.setCustomName(F.color((String) line));
             armorStands.add(armorStand);
         }
     }
@@ -59,6 +70,11 @@ public class Hologram {
             plugin.debug("Cannot hide hologram as there is nothing to hide");
             return;
         }
+
+        for (Item item : items) {
+            item.remove();
+        }
+        items.clear();
 
         for (ArmorStand armorStand : armorStands) {
             armorStand.remove();
@@ -72,5 +88,9 @@ public class Hologram {
 
     public void addLine(String line) {
         this.lines.add(line);
+    }
+
+    public void addItem(ItemStack item) {
+        this.lines.add(new ItemBuilder(item).name("CustomCrates - Unobtainable").build());
     }
 }

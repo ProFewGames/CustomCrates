@@ -30,6 +30,8 @@ public class CratesCommand extends xyz.ufactions.customcrates.command.Command im
         commands.add(new GiveAllCommand(plugin));
         commands.add(new GivePouchCommand(plugin));
         commands.add(new GiveCommand(plugin));
+        commands.add(new CreateCommand(plugin));
+        commands.add(new CreatePrizeCommand(plugin));
         if (new File("editor.dat").exists())
             commands.add(new EditorCommand(plugin));
     }

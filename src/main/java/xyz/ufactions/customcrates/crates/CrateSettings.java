@@ -4,7 +4,7 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import xyz.ufactions.customcrates.libs.F;
 import xyz.ufactions.customcrates.libs.ItemBuilder;
-import xyz.ufactions.customcrates.libs.WeightedList;
+import xyz.ufactions.customcrates.libs.RandomizableList;
 import xyz.ufactions.customcrates.spin.Spin;
 
 import java.util.List;
@@ -26,14 +26,14 @@ public class CrateSettings {
 
     private final ItemBuilder pouch;
 
-    private final WeightedList<Prize> prizes;
+    private final RandomizableList<Prize> prizes;
 
     private final Map<String, ItemBuilder> holographicItemMap;
     private final List<String> holographicLines;
 
     public CrateSettings(String identifier, String display, List<String> openCommands, Material block, Spin.SpinType spinType,
                          long spinTime, Sound openingSound, Sound spinSound, Sound winSound, ItemBuilder key, ItemBuilder pouch,
-                         WeightedList<Prize> prizes, Map<String, ItemBuilder> holographicItemMap, List<String> holographicLines) {
+                         RandomizableList<Prize> prizes, Map<String, ItemBuilder> holographicItemMap, List<String> holographicLines) {
         this.identifier = identifier;
         this.display = F.color(display);
         this.openCommands = openCommands;
@@ -95,7 +95,7 @@ public class CrateSettings {
         return new ItemBuilder(pouch.build().clone());
     }
 
-    public WeightedList<Prize> getPrizes() {
+    public RandomizableList<Prize> getPrizes() {
         return prizes;
     }
 

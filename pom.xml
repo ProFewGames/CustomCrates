@@ -6,7 +6,7 @@
 
     <artifactId>CustomCrates</artifactId>
     <groupId>xyz.ufactions.customcrates</groupId>
-    <version>4.3.3</version>
+    <version>4.4.0</version>
 
     <repositories>
         <!-- Spigot Repository -->

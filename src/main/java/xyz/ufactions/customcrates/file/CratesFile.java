@@ -5,6 +5,7 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 import xyz.ufactions.customcrates.CustomCrates;
 import xyz.ufactions.customcrates.crates.Crate;
@@ -12,10 +13,11 @@ import xyz.ufactions.customcrates.crates.CrateSettings;
 import xyz.ufactions.customcrates.crates.Prize;
 import xyz.ufactions.customcrates.libs.FileHandler;
 import xyz.ufactions.customcrates.libs.ItemBuilder;
-import xyz.ufactions.customcrates.libs.WeightedList;
+import xyz.ufactions.customcrates.libs.RandomizableList;
 import xyz.ufactions.customcrates.spin.Spin;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 public class CratesFile {
@@ -36,7 +38,13 @@ public class CratesFile {
         identifier = cleanIdentifier(identifier);
         Crate crate = getCrateByIdentifier(identifier);
         if (crate != null) return crate;
-        File file = new File(identifier + ".yml");
+        File file = new File(directory, identifier + ".yml");
+        try {
+            file.createNewFile();
+        } catch (IOException e) {
+            plugin.getLogger().warning("Failed to create crate file. Please submit the following error when making a ticket.");
+            e.printStackTrace();
+        }
         FileConfiguration config = YamlConfiguration.loadConfiguration(file);
 
         String path;
@@ -45,7 +53,9 @@ public class CratesFile {
         path = "Crate";
         config.set(path + ".identifier", identifier);
         config.set(path + ".display", "&3&l" + identifier + " Crate");
-        config.set(path + ".open-commands", Collections.singletonList("broadcast &e%player% &bis opening &e%crate%&b."));
+        config.set(path + ".open-commands", Collections.singletonList(
+                "broadcast &e%player% &bis opening &e%crate%&b."
+        ));
         config.set(path + ".block", Material.CHEST.name());
         config.set(path + ".spin", Spin.SpinType.CSGO.name());
         config.set(path + ".spin time", 2500);
@@ -55,14 +65,19 @@ public class CratesFile {
         config.set(path + ".name", "&3&l" + identifier + " Key");
         config.set(path + ".item", Material.TRIPWIRE_HOOK.name());
         config.set(path + ".glow", true);
-        config.set(path + ".lore", Arrays.asList("&7Use this at the nearest", "&7Crate to open!"));
+        config.set(path + ".lore", Arrays.asList(
+                "&7Use this at the nearest",
+                "&7Crate to open!"
+        ));
 
         // Creating Pouch
         path = "pouch";
         config.set(path + ".item", Material.ENDER_CHEST.name());
         config.set(path + ".glow", false);
         config.set(path + ".name", "&3&l" + identifier + " Pouch");
-        config.set(path + ".lore", Collections.singletonList("&7Click on this item to open pouch"));
+        config.set(path + ".lore", Collections.singletonList(
+                "&7Click on this item to open pouch"
+        ));
 
         // Creating Hologram
         path = "hologram.items.key";
@@ -70,15 +85,83 @@ public class CratesFile {
         config.set(path + ".item", Material.TRIPWIRE_HOOK.name());
         config.set(path + ".glow", true);
         path = "hologram";
-        config.set(path + ".lines", Arrays.asList("{item_key}", "{crate_display}", "&7(Right Click to Open)", "&7(Left Click to Preview)"));
+        config.set(path + ".lines", Arrays.asList(
+                /*"{item_key}",*/
+                "{crate_display}",
+                "&7(Right Click to Open)",
+                "&7(Left Click to Preview)"
+        ));
 
         // Create Prizes
+
+        ItemBuilder builder = new ItemBuilder(Material.DIAMOND)
+                .glow(true)
+                .name("&b&lDIAMONDS!!")
+                .lore(Collections.singletonList(
+                        "&aChance: &e%chance%"
+                ));
+        Prize prize = new Prize(builder, 50, "Prizes.diamond", Arrays.asList(
+                "broadcast &e%player% &ahas won &e2x &b&lDIAMONDS!",
+                "give %player% diamond 2"
+        ));
+        savePrize(config, prize);
+
+        builder = new ItemBuilder(Material.GOLD_INGOT)
+                .glow(false)
+                .name("&6&lGold")
+                .lore(Collections.singletonList(
+                        "&aChance: &e%chance%"
+                ));
+        prize = new Prize(builder, 50, "Prizes.gold", Collections.singletonList(
+                "give %player% gold_ingot 1"
+        ));
+        savePrize(config, prize);
+
+        try {
+            config.save(file);
+        } catch (IOException e) {
+            plugin.getLogger().warning("Failed to save new crate file. Please submit the following error when making a ticket:");
+            e.printStackTrace();
+        }
 
         return getCrateByFile(file);
     }
 
-    public void savePrize(Crate crate, Prize prize) {
+    public boolean createPrize(Crate crate, Prize prize) {
+        File file = getFileByCrate(crate);
+        if (file == null) {
+            plugin.getLogger().warning("Failed to fetch crate file for creating prize.");
+            return false;
+        }
+        FileConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+        savePrize(configuration, prize);
+        try {
+            configuration.save(file);
+        } catch (IOException e) {
+            plugin.getLogger().warning("Failed to save configuration file. Please submit the following error when making a ticket:");
+            e.printStackTrace();
+        }
+        return true;
+    }
 
+    private void savePrize(FileConfiguration config, Prize prize) {
+        config.set(prize.getConfigurationSection() + ".chance", prize.getChance());
+        config.set(prize.getConfigurationSection() + ".display.item", prize.getDisplayItem().getType().name());
+        config.set(prize.getConfigurationSection() + ".display.data", prize.getDisplayItem().getData().getData());
+        config.set(prize.getConfigurationSection() + ".display.glow", false); // Not implemented yet
+        config.set(prize.getConfigurationSection() + ".display.amount", prize.getDisplayItem().getAmount());
+        config.set(prize.getConfigurationSection() + ".display.name", prize.getDisplayItem().getItemMeta().getDisplayName());
+        config.set(prize.getConfigurationSection() + ".display.lore", prize.getDisplayItem().getItemMeta().getLore());
+        List<String> enchantments = new ArrayList<>();
+        for (Map.Entry<Enchantment, Integer> entry : prize.getDisplayItem().getEnchantments().entrySet()) {
+            enchantments.add(entry.getKey().toString() + ":" + entry.getValue());
+        }
+        config.set(prize.getConfigurationSection() + ".display.enchantments", enchantments);
+        config.set(prize.getConfigurationSection() + ".commands", prize.getCommands());
+    }
+
+    public boolean crateExist(String identifier) {
+        return getCrateByIdentifier(identifier) != null;
     }
 
     // Getters
@@ -101,6 +184,18 @@ public class CratesFile {
                 if (configuration.getString("Crate.identifier").equalsIgnoreCase(identifier)) {
                     return getCrateByFile(file);
                 }
+            }
+        }
+        return null;
+    }
+
+    private File getFileByCrate(Crate crate) {
+        String identifier = cleanIdentifier(crate.getSettings().getIdentifier());
+        for (File file : directory.listFiles()) {
+            FileConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+            if (!configuration.contains("Crate.identifier")) continue;
+            if (configuration.getString("Crate.identifier").equalsIgnoreCase(identifier)) {
+                return file;
             }
         }
         return null;
@@ -165,7 +260,7 @@ public class CratesFile {
 
         plugin.debug("Loading Prizes...");
         // Load Prizes
-        WeightedList<Prize> prizes = new WeightedList<>();
+        RandomizableList<Prize> prizes = new RandomizableList<>();
         for (String key : configuration.getConfigurationSection("Prizes").getKeys(false)) {
             String path = "Prizes." + key;
             ItemBuilder prizeBuilder = itemFromConfiguration(configuration, path + ".display");
@@ -231,6 +326,29 @@ public class CratesFile {
         String name = config.getString(path + ".name");
         if (name != null)
             builder.name(name);
+
+        Map<Enchantment, Integer> enchantments = new HashMap<>();
+        for (String serializedEnchantment : config.getStringList(path + ".enchantments")) {
+            if (!serializedEnchantment.contains(":")) {
+                plugin.getLogger().warning("Enchantment format incorrect '" + path + "'. Must be in format {ENCHANTMENT NAME}:{LEVEL}");
+                continue;
+            }
+            String[] array = serializedEnchantment.split(":");
+            Enchantment enchantment = Enchantment.getByName(array[0]);
+            if (enchantment == null) {
+                plugin.getLogger().warning("Cannot find enchantment '" + array[0] + "' from '" + path + "'");
+                continue;
+            }
+            int level;
+            try {
+                level = Integer.parseInt(array[1]);
+            } catch (NumberFormatException e) {
+                plugin.getLogger().warning("Cannot parse enchantment level '" + array[1] + "' from '" + path + "'");
+                continue;
+            }
+            enchantments.put(enchantment, level);
+        }
+        builder.enchant(enchantments);
 
         List<String> lore = config.getStringList(path + ".lore");
         builder.lore(lore);

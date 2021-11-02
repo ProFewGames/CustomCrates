@@ -55,6 +55,17 @@ public class F {
         return builder.toString();
     }
 
+    public static String concatenate(String splitter, int index, String[] array) {
+        StringBuilder builder = new StringBuilder();
+
+        for (int i = index; i < array.length; i++) {
+            if (builder.length() == 0) builder.append(array[i]);
+            else builder.append(splitter).append(array[i]);
+        }
+
+        return builder.toString();
+    }
+
     public static String capitalizeFirstLetter(String string) {
         if (string.contains(" ")) {
             StringBuilder toReturn = new StringBuilder();

@@ -1,6 +1,6 @@
 name: CustomCrates
 main: xyz.ufactions.customcrates.CustomCrates
-version: 4.3.3
+version: 4.4.0
 author: ProFewGames
 description: A Fully Customizable Crates Plugin
 api-version: 1.13
@@ -26,6 +26,12 @@ permissions:
   customcrates.command.info:
     description: CustomCrates info command.
     default: true
+  customcrates.command.create:
+    description: CustomCrates create command.
+    default: op
+  customcrates.command.prize:
+    description: CustomCrates create prize command.
+    default: op
   customcrates.command.reload:
     description: CustomCrates reload command.
     default: op
