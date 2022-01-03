@@ -1,25 +1,21 @@
 package xyz.ufactions.customcrates;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.plugin.java.JavaPlugin;
 import xyz.ufactions.customcrates.api.CustomCratesAPI;
 import xyz.ufactions.customcrates.command.CratesCommand;
-import xyz.ufactions.customcrates.crates.Crate;
 import xyz.ufactions.customcrates.file.ConfigurationFile;
 import xyz.ufactions.customcrates.file.CratesFile;
 import xyz.ufactions.customcrates.file.LanguageFile;
 import xyz.ufactions.customcrates.file.LocationsFile;
-import xyz.ufactions.customcrates.libs.F;
 import xyz.ufactions.customcrates.libs.VaultManager;
 import xyz.ufactions.customcrates.listener.PlayerListener;
 import xyz.ufactions.customcrates.manager.CratesManager;
 import xyz.ufactions.customcrates.manager.HologramManager;
+import xyz.ufactions.customcrates.manager.SoundManager;
 import xyz.ufactions.customcrates.metrics.Metrics;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.nio.file.NotDirectoryException;
 
 public class CustomCrates extends JavaPlugin {
 
@@ -36,15 +32,23 @@ public class CustomCrates extends JavaPlugin {
     // Managers
     private CratesManager manager;
     private HologramManager hologramManager;
+    private SoundManager soundManager;
 
     @Override
     public void onEnable() {
-        this.cratesFile = new CratesFile(this);
         this.locationsFile = new LocationsFile(this);
         this.configurationFile = new ConfigurationFile(this);
         this.language = new LanguageFile(this, configurationFile.getLanguage().getResource());
-        this.manager = new CratesManager(this);
         this.hologramManager = new HologramManager(this);
+        this.soundManager = new SoundManager(this);
+        try {
+            this.cratesFile = new CratesFile(this);
+        } catch (NotDirectoryException e) {
+            Bukkit.getPluginManager().disablePlugin(this);
+            e.printStackTrace();
+            return;
+        }
+        this.manager = new CratesManager(this);
 
         CustomCratesAPI.initialize(this);
 
@@ -79,7 +83,12 @@ public class CustomCrates extends JavaPlugin {
 
     public void reload() {
         locationsFile.reload();
-        cratesFile.reload();
+        try {
+            cratesFile.reload();
+        } catch (NotDirectoryException e) {
+            getLogger().warning("Failed to reload crates file.");
+            e.printStackTrace();
+        }
         manager.reload();
         configurationFile.reload();
         hologramManager.reload();
@@ -104,6 +113,10 @@ public class CustomCrates extends JavaPlugin {
 
     public HologramManager getHologramManager() {
         return hologramManager;
+    }
+
+    public SoundManager getSoundManager() {
+        return soundManager;
     }
 
     public ConfigurationFile getConfigurationFile() {

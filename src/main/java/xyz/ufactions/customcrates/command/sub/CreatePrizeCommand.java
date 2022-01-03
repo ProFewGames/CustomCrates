@@ -8,8 +8,8 @@ import xyz.ufactions.customcrates.CustomCrates;
 import xyz.ufactions.customcrates.command.SubCommand;
 import xyz.ufactions.customcrates.crates.Crate;
 import xyz.ufactions.customcrates.crates.Prize;
+import xyz.ufactions.customcrates.item.ItemStackBuilder;
 import xyz.ufactions.customcrates.libs.F;
-import xyz.ufactions.customcrates.libs.ItemBuilder;
 
 import java.util.Collections;
 import java.util.List;
@@ -51,7 +51,7 @@ public class CreatePrizeCommand extends SubCommand {
         String name = args[2];
         name = name.replaceAll(" ", "_");
         String command = F.concatenate(" ", 3, args);
-        plugin.getCratesFile().createPrize(crate, new Prize(new ItemBuilder(item), chance, name, Collections.singletonList(command)));
+        plugin.getCratesFile().createPrize(crate, new Prize(ItemStackBuilder.from(item), chance, name, Collections.singletonList(command)));
         return true;
     }
 

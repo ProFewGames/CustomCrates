@@ -2,8 +2,8 @@ package xyz.ufactions.customcrates.crates;
 
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import xyz.ufactions.customcrates.item.ItemStackBuilder;
 import xyz.ufactions.customcrates.libs.F;
-import xyz.ufactions.customcrates.libs.ItemBuilder;
 import xyz.ufactions.customcrates.libs.RandomizableList;
 import xyz.ufactions.customcrates.spin.Spin;
 
@@ -22,18 +22,18 @@ public class CrateSettings {
     private final Sound spinSound;
     private final Sound winSound;
 
-    private final ItemBuilder key;
+    private final ItemStackBuilder key;
 
-    private final ItemBuilder pouch;
+    private final ItemStackBuilder pouch;
 
     private final RandomizableList<Prize> prizes;
 
-    private final Map<String, ItemBuilder> holographicItemMap;
+    private final Map<String, ItemStackBuilder> holographicItemMap;
     private final List<String> holographicLines;
 
     public CrateSettings(String identifier, String display, List<String> openCommands, Material block, Spin.SpinType spinType,
-                         long spinTime, Sound openingSound, Sound spinSound, Sound winSound, ItemBuilder key, ItemBuilder pouch,
-                         RandomizableList<Prize> prizes, Map<String, ItemBuilder> holographicItemMap, List<String> holographicLines) {
+                         long spinTime, Sound openingSound, Sound spinSound, Sound winSound, ItemStackBuilder key, ItemStackBuilder pouch,
+                         RandomizableList<Prize> prizes, Map<String, ItemStackBuilder> holographicItemMap, List<String> holographicLines) {
         this.identifier = identifier;
         this.display = F.color(display);
         this.openCommands = openCommands;
@@ -87,19 +87,19 @@ public class CrateSettings {
         return winSound;
     }
 
-    public ItemBuilder getKey() {
-        return new ItemBuilder(key.build().clone());
+    public ItemStackBuilder getKey() {
+        return this.key.clone();
     }
 
-    public ItemBuilder getPouch() {
-        return new ItemBuilder(pouch.build().clone());
+    public ItemStackBuilder getPouch() {
+        return this.pouch.clone();
     }
 
     public RandomizableList<Prize> getPrizes() {
         return prizes;
     }
 
-    public Map<String, ItemBuilder> getHolographicItemMap() {
+    public Map<String, ItemStackBuilder> getHolographicItemMap() {
         return holographicItemMap;
     }
 

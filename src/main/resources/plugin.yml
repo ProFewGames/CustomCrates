@@ -1,8 +1,8 @@
-name: CustomCrates
-main: xyz.ufactions.customcrates.CustomCrates
-version: 4.4.0
-author: ProFewGames
-description: A Fully Customizable Crates Plugin
+name: ${name}
+main: ${mainClass}
+version: ${version}
+author: ${author}
+description: ${description}
 api-version: 1.13
 softdepend:
   - Vault

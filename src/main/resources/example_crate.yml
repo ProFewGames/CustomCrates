@@ -6,7 +6,7 @@
 # Crate Settings
 Crate:
   identifier: Default
-  display: '&3&lDefault Crate'
+  display: '&3&lDefault Crate '
   open-commands:
     - 'broadcast &e%player% &bis opening &e%crate%&7.'
   block: CHEST
@@ -41,7 +41,7 @@ hologram:
       item: TRIPWIRE_HOOK
       glow: true
   lines:
-#    - '{crate_display}'
+    #    - '{crate_display}'
     - '&7(Right Click to Open)'
     - '&7(Left Click to Preview)'
 
@@ -60,6 +60,50 @@ Prizes:
     commands:
       - 'broadcast &e%player% &ahas won &e2x &b&lDIAMONDS!'
       - 'give %player% diamond 2'
+  leather_chestplate:
+    chance: 50.0
+    display:
+      item: LEATHER_CHESTPLATE
+      glow: false
+      amount: 1
+      durability: 10
+      name: '&3&lChestplate of Skyrim'
+      color: AQUA
+      enchants:
+        unbreak:
+          name: UNBREAKING
+          level: 10
+        thorn:
+          name: THORNS
+          level: 100
+      lore:
+        - '&a&lThis is the chestplate of Skyrim!'
+        - '&b&lOnly gods shall hold the power this item.'
+    commands:
+      - 'msg %player% Hello World'
+  skull:
+    chance: 50.0
+    display:
+      item: PLAYER_HEAD
+      glow: true
+      amount: 5
+      name: '&3&lDev Skull'
+      owner: ProFewGames
+    commands:
+      - 'minecraft:give %player% minecraft:player_head{SkullOwner:ProFewGames}'
+  sword:
+    chance: 50
+    display:
+      material: DIAMOND_SWORD
+      glow: true
+      name: '&3&lThanos Sword'
+      unbreakable: true
+      flags:
+        attrib:
+          name: HIDE_ATTRIBUTES
+          value: TRUE
+    commands:
+      - 'say Hello World'
   gold:
     chance: 50.0
     display:
@@ -67,6 +111,13 @@ Prizes:
       glow: false
       amount: 1
       name: '&6&lGold'
+      enchantments:
+        sharp:
+          name: SHARPNESS
+          level: 50
+        unbreaking:
+          name: UNBREAKING
+          level: 9
       lore:
         - '&aChance: &e%chance%'
     commands:
