@@ -1,93 +1,105 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-    <artifactId>CustomCrates</artifactId>
-    <groupId>xyz.ufactions.customcrates</groupId>
-    <version>4.4.0</version>
+	<artifactId>CustomCrates</artifactId>
+	<groupId>xyz.ufactions.customcrates</groupId>
+	<version>4.4.0</version>
 
-    <repositories>
-        <!-- Spigot Repository -->
-        <repository>
-            <id>spigot-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+	<repositories>
+		<!-- Spigot Repository -->
+		<repository>
+			<id>spigot-repo</id>
+			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+		</repository>
+		<!-- Minecraft Repository -->
+		<repository>
+            <id>minecraft-repo</id>
+            <url>https://libraries.minecraft.net/</url>
         </repository>
-        <!-- Vault Repository -->
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-    </repositories>
+		<!-- Vault Repository -->
+		<repository>
+			<id>jitpack.io</id>
+			<url>https://jitpack.io</url>
+		</repository>
+	</repositories>
 
-    <dependencies>
-        <!-- Spigot Dependency -->
-        <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
-            <version>1.16.3-R0.1-SNAPSHOT</version>
+	<dependencies>
+		<!-- Spigot Dependency -->
+		<dependency>
+			<groupId>org.spigotmc</groupId>
+			<artifactId>spigot-api</artifactId>
+			<version>1.16.3-R0.1-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+		<!-- Vault Dependency -->
+		<dependency>
+			<groupId>com.github.MilkBowl</groupId>
+			<artifactId>VaultAPI</artifactId>
+			<version>1.7</version>
+			<scope>provided</scope>
+		</dependency>
+		<!-- Enchantment Dependency -->
+		<dependency>
+			<groupId>xyz.ufactions</groupId>
+			<artifactId>EnchantmentLib-API</artifactId>
+			<version>latest</version>
+			<scope>compile</scope>
+		</dependency>
+		<!-- Enchantment Dependency -->
+		<dependency>
+            <groupId>com.mojang</groupId>
+            <artifactId>authlib</artifactId>
+            <version>1.5.21</version>
             <scope>provided</scope>
         </dependency>
-        <!-- Vault Dependency -->
-        <dependency>
-            <groupId>com.github.MilkBowl</groupId>
-            <artifactId>VaultAPI</artifactId>
-            <version>1.7</version>
-            <scope>provided</scope>
-        </dependency>
-        <!-- Enchantment Dependency -->
-        <dependency>
-            <groupId>xyz.ufactions</groupId>
-            <artifactId>EnchantmentLib-API</artifactId>
-            <version>latest</version>
-            <scope>compile</scope>
-        </dependency>
-<!--        <dependency>-->
-<!--            <groupId>com.github.ProFewGames</groupId>-->
-<!--            <artifactId>EnchantmentLib</artifactId>-->
-<!--            <version>latest</version>-->
-<!--            <scope>compile</scope>-->
-<!--        </dependency>-->
+        
+		<!-- <dependency> -->
+		<!-- <groupId>com.github.ProFewGames</groupId> -->
+		<!-- <artifactId>EnchantmentLib</artifactId> -->
+		<!-- <version>latest</version> -->
+		<!-- <scope>compile</scope> -->
     </dependencies>
 
-    <build>
-        <plugins>
-            <!-- Compile in Java 8 -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-                <configuration>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
-            <!-- Shade the dependencies -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.3</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <!-- Build to test server -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>3.2.0</version>
-                <configuration>
-                    <outputDirectory>
-                        ../
-                    </outputDirectory>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+	<build>
+		<plugins>
+			<!-- Compile in Java 8 -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.8.1</version>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+			<!-- Shade the dependencies -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>3.2.3</version>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- Build to test server -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>3.2.0</version>
+				<configuration>
+					<outputDirectory>
+						../
+					</outputDirectory>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>
