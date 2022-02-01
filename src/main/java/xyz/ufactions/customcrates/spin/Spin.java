@@ -38,8 +38,7 @@ public abstract class Spin {
         try {
             player.playSound(player.getLocation(), crate.getSettings().getOpeningSound(), 1f, 1f);
             for (String command : crate.getSettings().getOpenCommands()) {
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), F.color(command.replaceAll("%player%", player.getName())
-                        .replaceAll("%crate%", crate.getSettings().getDisplay())));
+                executeCommand(player, command);
             }
         } catch (Exception e) {
             plugin.getLogger().warning("Failed to initialize pre-crate open events for crate " + crate.getSettings().getIdentifier() + ".");
@@ -62,7 +61,7 @@ public abstract class Spin {
     protected final void end(Player player, Crate crate, Prize prizeWon) {
         player.playSound(player.getLocation(), crate.getSettings().getWinSound(), 1f, 1f);
         for (String command : prizeWon.getCommands()) {
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), ChatColor.translateAlternateColorCodes('&', command.replaceAll("%player%", player.getName())));
+            executeCommand(player, command);
         }
     }
 

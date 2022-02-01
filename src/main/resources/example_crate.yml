@@ -103,6 +103,8 @@ Prizes:
           name: HIDE_ATTRIBUTES
           value: TRUE
     commands:
+      - '[msg] You have won a prize!'
+      - '[bc] %player% has won a prize!'
       - 'say Hello World'
   gold:
     chance: 50.0
