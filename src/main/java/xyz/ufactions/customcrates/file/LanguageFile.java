@@ -1,6 +1,5 @@
 package xyz.ufactions.customcrates.file;
 
-import org.bukkit.plugin.java.JavaPlugin;
 import xyz.ufactions.customcrates.CustomCrates;
 import xyz.ufactions.customcrates.libs.F;
 import xyz.ufactions.customcrates.libs.FileHandler;
@@ -31,10 +30,6 @@ public class LanguageFile extends FileHandler {
         return getString("prefix");
     }
 
-    public String errorPlayingSound(String sound, String player) {
-        return getString("error_playing_sound").replaceAll("%type%", sound).replaceAll("%player%", player);
-    }
-
     public String errorFileSaving() {
         return getString("error_file_saving");
     }
@@ -58,7 +53,6 @@ public class LanguageFile extends FileHandler {
     public String spinTypeNotFound(String crate) {
         return getString("spin-not-found").replaceAll("%crate%", crate);
     }
-
 
     public String crateBlockNotFound(String crate) {
         return getString("crate-block-not-found").replaceAll("%crate%", crate);
@@ -193,6 +187,16 @@ public class LanguageFile extends FileHandler {
     public String purchasedKey() {
         return getString("key-purchased", "&7You have purchased a key.");
     }
+
+    // XXX -> Add to config
+
+    public String ineligiblePouch() {
+        return getString("invalid-pouch", "&cIneligible pouch configuration. Make sure you have a pouch configured for this crate.");
+    }
+
+
+
+    // XXX
 
     @Override
     public void onReload() {

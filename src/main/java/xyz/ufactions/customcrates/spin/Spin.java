@@ -1,5 +1,6 @@
 package xyz.ufactions.customcrates.spin;
 
+import me.clip.placeholderapi.PlaceholderAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -42,15 +43,13 @@ public abstract class Spin {
             }
         } catch (Exception e) {
             plugin.getLogger().warning("Failed to initialize pre-crate open events for crate " + crate.getSettings().getIdentifier() + ".");
-            if (plugin.debugging()) e.printStackTrace();
+            e.printStackTrace();
         }
         try {
             execute(player, crate);
         } catch (Exception e) {
             plugin.getLogger().warning("Error whilst spinning for type: " + this.getClass().getSimpleName() + ". Crate: " + crate.getSettings().getIdentifier());
-            if (plugin.debugging()) {
-                e.printStackTrace();
-            }
+            e.printStackTrace();
         }
     }
 
@@ -73,5 +72,21 @@ public abstract class Spin {
 
     protected final ChatColor randomColor() {
         return ChatColor.values()[UtilMath.random.nextInt(ChatColor.values().length)];
+    }
+
+    private void executeCommand(Player player, String command) {
+        command = command.replaceAll("%player%", player.getName());
+        command = ChatColor.translateAlternateColorCodes('&', command);
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null)
+            command = PlaceholderAPI.setPlaceholders(player, command); // TODO: 2/1/2022 More efficient way?
+        if (command.startsWith("[msg]")) {
+            command = command.replaceFirst("[msg]", "");
+            player.sendMessage(command);
+        } else if (command.startsWith("[bc]")) {
+            command = command.replaceFirst("[bc]", "");
+            Bukkit.broadcastMessage(command);
+        } else {
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
+        }
     }
 }

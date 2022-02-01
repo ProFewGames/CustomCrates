@@ -1,5 +1,4 @@
 # Errors
-error_playing_sound: 'There was an error while playing sound %type% to player %player%!'
 error_file_saving: '&cThere was an error whilst saving the files.'
 spin-not-found: 'Failed to load crate spin type for "%crate%". Defaulting to spin type ROULETTE.'
 crate-block-not-found: 'Failed to load crate block for "%crate%". Defaulting to CHEST block.'
@@ -16,7 +15,7 @@ invalid-integer: '&cYou have entered an invalid number.'
 player-not-found: '&cPlayer not found.'
 failed-load-sign: '&cFailed to load this sign.'
 no-money: '&cYou do not have enough money.'
-
+invalid-puch: '&cIneligible pouch configuration. Make sure you have a pouch configured for this crate.'
 
 # Information
 prefix: '&7[&4CustomCrates&7] '
@@ -37,3 +36,4 @@ key-given: '&7You have given &c%target% %amount%&7x &c%crate% &7crate key(s).'
 key-given-all: '&7You have given everyone on the server &c%amount%&7x &c%crate% &7crate keys. (Total of &c%total% &7keys given).'
 sign-purchase-set: '&7Purchase location set.'
 key-purchased: '&7You have purchased a key.'
+pouch-received: ''

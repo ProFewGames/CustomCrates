@@ -33,7 +33,7 @@ public class GivePouchCommand extends SubCommand {
             Crate crate = getCrate(sender, args[1]);
             if (crate == null) return true;
             if (!crate.validPouch()) {
-                sender.sendMessage(F.error("Ineligible pouch configuration. Make sure you have a pouch configured for this crate."));
+                sender.sendMessage(F.error(plugin.getLanguage().ineligiblePouch()));
                 return true;
             }
             if (!UtilMath.isInteger(args[2])) {

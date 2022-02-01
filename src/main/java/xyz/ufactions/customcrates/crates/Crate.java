@@ -28,18 +28,33 @@ public class Crate {
         }
     }
 
+	/**
+	 * @return Settings from the configuration file.
+	 */
     public CrateSettings getSettings() {
         return settings;
     }
 
+	/**
+	 * @return Preview inventory
+	 */
     public Inventory getPreviewInventory() {
         return previewInventory;
     }
 
+	/**
+	 * @return true if there is a pouch configuration otherwise false
+	 */
     public boolean validPouch() {
         return getSettings().getPouch().build().getType() != Material.AIR;
     }
 
+	/**
+	 * Give <code>Player</code> the given amount of keys.
+	 *
+	 * @param player The receiver of keys
+	 * @param amount The amount of keys given
+	 */
     public void giveKey(Player player, int amount) {
         ItemStack key = settings.getKey().build();
         key.setAmount(amount);
@@ -160,8 +175,11 @@ public class Crate {
         }
         return 36 - i;
     }
-    
-    public int countItemsToFillPartialStacks(Inventory inv, ItemStack itemType) {
+
+	/**
+	 * @author Fershaw
+	 */
+    private int countItemsToFillPartialStacks(Inventory inv, ItemStack itemType) {
         ItemStack[] cont = inv.getContents();
         int i = 0;
         for (ItemStack item : cont) {
@@ -171,6 +189,4 @@ public class Crate {
         }
         return i;
     }
-    
-    
 }

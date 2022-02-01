@@ -6,6 +6,7 @@ description: ${description}
 api-version: 1.13
 softdepend:
   - Vault
+  - PlaceholderAPI
 commands:
   customcrates:
     description: Main Command for CustomCrates

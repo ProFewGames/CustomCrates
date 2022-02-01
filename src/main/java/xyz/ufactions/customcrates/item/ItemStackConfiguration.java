@@ -79,15 +79,8 @@ public final class ItemStackConfiguration {
         return Optional.of(section.getStringList("lore"));
     }
 
-    public Optional<UUID> readOwner() {
-        if (section.isString("owner")) {
-            try {
-                return Optional.of(UUID.fromString(section.getString("owner")));
-            } catch (IllegalArgumentException e) {
-                // TODO Log
-                return Optional.empty();
-            }
-        }
+    public Optional<String> readOwner() {
+        if (section.isString("owner")) return Optional.of(section.getString("owner"));
         return Optional.empty();
     }
 

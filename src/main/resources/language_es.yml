@@ -1,5 +1,4 @@
 # Errors
-error_playing_sound: 'Ocurrió un error al reproducir el sonido %type% al jugador %player%!'
 error_file_saving: '&cHubo un error al guardar los archivos.'
 spin-not-found: 'Error al cargar el modo "spin" en la crate "%crate%". La crate fue establecida por defecto.'
 crate-block-not-found: 'Error al cargar el bloque para la crate "%crate%". El bloque fue establecido por defecto.'
@@ -16,6 +15,7 @@ invalid-integer: '&cEl número establecido es inválido.'
 player-not-found: '&cJugador no encontrado.'
 failed-load-sign: '&cError al cargar el cartel.'
 no-money: '&cNo tienes dinero suficiente.'
+invalid-pouch: '&cConfiguración de bolsa no elegible. Asegúrese de tener una bolsa configurada para esta caja.'
 
 
 # Information

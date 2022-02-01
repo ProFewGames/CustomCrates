@@ -162,19 +162,35 @@ public final class ItemStackBuilder {
         });
     }
 
-    public ItemStackBuilder owner(UUID owner) {
+    /**
+     * If the item is not a skull this method will do nothing.
+     * Attempts to set the skull's skin with UUID otherwise
+     * will set the skull's skin with base64
+     *
+     * @param value Skin UUID or Base64
+     * @return {@code this} for chaining
+     */
+    public ItemStackBuilder owner(String value) {
         return apply(item -> {
-            Material type = item.getType();
-            if (type == PlayerSkullBuilder.createSkull().getType()) {
-                PlayerSkullBuilder.itemWithUUID(item, owner);
+            Material material = item.getType();
+            if (material != PlayerSkullBuilder.createSkull().getType()) return;
+            try {
+                UUID uuid = UUID.fromString(value);
+                PlayerSkullBuilder.itemWithUUID(item, uuid);
+            } catch (IllegalArgumentException e) {
+                PlayerSkullBuilder.itemWithBase64(item, value);
             }
         });
     }
 
+    /**
+     * Set an item as unbreakable
+     *
+     * @param unbreakable Should this item be unbreakable
+     * @return {@code this} for chaining
+     */
     public ItemStackBuilder unbreakable(boolean unbreakable) {
-        return applyMeta(meta -> {
-            meta.setUnbreakable(unbreakable);
-        });
+        return applyMeta(meta -> meta.setUnbreakable(unbreakable));
     }
 
     public ItemStack build() {
