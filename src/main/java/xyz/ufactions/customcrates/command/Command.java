@@ -8,11 +8,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.BlockIterator;
 import xyz.ufactions.customcrates.CustomCrates;
 import xyz.ufactions.customcrates.crates.Crate;
+import xyz.ufactions.customcrates.file.LanguageFile;
 import xyz.ufactions.customcrates.libs.F;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public abstract class Command {
 
@@ -23,21 +25,15 @@ public abstract class Command {
     }
 
     protected final List<String> getMatches(String start, List<String> list) {
-        return getMatches(start, list, string -> string);
+        List<String> matches = new ArrayList<>();
+        for (String string : list)
+            if (string.toLowerCase().startsWith(start.toLowerCase()))
+                matches.add(string);
+        return matches;
     }
 
-    protected final <Any> List<String> getMatches(String start, List<Any> list, Function<Any, String> function) { // XXX : Relocate?
-        List<String> toReturn = new ArrayList<>();
-        for (Any any : list) {
-            String string = function.apply(any);
-            if (string.equalsIgnoreCase(start)) {
-                toReturn.add(string);
-                break;
-            } else {
-                toReturn.add(string);
-            }
-        }
-        return toReturn;
+    protected final <Any> List<String> getMatches(String start, List<Any> list, Function<Any, String> function) {
+        return getMatches(start, list.stream().map(function).collect(Collectors.toList()));
     }
 
     protected final Block getTargetBlock(LivingEntity entity, int range) {
@@ -55,7 +51,7 @@ public abstract class Command {
         Crate crate = plugin.getCratesManager().getCrate(name);
         if (crate == null)
             if (sender != null)
-                sender.sendMessage(F.error(plugin.getLanguage().invalidCrateInput()));
+                sender.sendMessage(F.color(plugin.getLanguage().getString(LanguageFile.LanguagePath.INVALID_CRATE_INPUT)));
         return crate;
     }
 
@@ -65,9 +61,8 @@ public abstract class Command {
 
     protected final boolean isPlayer(CommandSender sender, boolean notify) {
         if (!(sender instanceof Player)) {
-            if (notify) {
-                sender.sendMessage(F.color(plugin.getLanguage().noPlayer()));
-            }
+            if (notify)
+                sender.sendMessage(F.color(plugin.getLanguage().getString(LanguageFile.LanguagePath.NO_PLAYER)));
             return false;
         } else {
             return true;
@@ -80,9 +75,8 @@ public abstract class Command {
 
     protected final boolean checkPermission(CommandSender sender, String permission, boolean inform) {
         if (!sender.hasPermission(permission)) {
-            if (inform) {
-                sender.sendMessage(F.color(plugin.getLanguage().noPermission()));
-            }
+            if (inform)
+                sender.sendMessage(F.color(plugin.getLanguage().getString(LanguageFile.LanguagePath.NO_PERMISSION)));
             return false;
         } else {
             return true;

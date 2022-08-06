@@ -1,20 +1,23 @@
 package xyz.ufactions.customcrates.crates;
 
-import org.bukkit.inventory.ItemStack;
+import lombok.Getter;
+import lombok.Setter;
 import xyz.ufactions.customcrates.item.ItemStackBuilder;
 
 import java.util.List;
 
+@Setter
+@Getter
 public class Prize {
 
     private final String configurationSection; // The section configured to this prize
 
-    private final ItemStackBuilder builder;
-    private final List<String> commands;
-    private final double chance;
+    private ItemStackBuilder itemBuilder;
+    private List<String> commands;
+    private double chance;
 
-    public Prize(ItemStackBuilder builder, double chance, String configurationSection, List<String> commands) {
-        builder.applyMeta(meta -> {
+    public Prize(ItemStackBuilder itemBuilder, double chance, String configurationSection, List<String> commands) {
+        itemBuilder.applyMeta(meta -> {
             List<String> lore = meta.getLore();
             if (lore == null) return;
 
@@ -26,25 +29,9 @@ public class Prize {
 
             meta.setLore(lore);
         });
-        this.builder = builder;
+        this.itemBuilder = itemBuilder;
         this.commands = commands;
         this.chance = chance;
         this.configurationSection = configurationSection;
-    }
-
-    public ItemStack getDisplayItem() {
-        return builder.build();
-    }
-
-    public double getChance() {
-        return chance;
-    }
-
-    public String getConfigurationSection() {
-        return configurationSection;
-    }
-
-    public List<String> getCommands() {
-        return commands;
     }
 }

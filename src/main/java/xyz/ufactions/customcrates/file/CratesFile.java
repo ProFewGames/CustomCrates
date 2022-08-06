@@ -2,14 +2,16 @@ package xyz.ufactions.customcrates.file;
 
 import org.apache.commons.lang.Validate;
 import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.enchantments.Enchantment;
+import org.jetbrains.annotations.Nullable;
 import xyz.ufactions.customcrates.CustomCrates;
 import xyz.ufactions.customcrates.crates.Crate;
 import xyz.ufactions.customcrates.crates.Prize;
 import xyz.ufactions.customcrates.item.ItemStackBuilder;
+import xyz.ufactions.customcrates.item.ItemStackFileWriter;
 import xyz.ufactions.customcrates.libs.FileHandler;
 import xyz.ufactions.customcrates.spin.Spin;
 
@@ -40,7 +42,9 @@ public class CratesFile {
         if (crate != null) return crate;
         File file = new File(directory, identifier + ".yml");
         try {
-            file.createNewFile();
+            if (file.createNewFile())
+                if (plugin.debugging())
+                    plugin.getLogger().info("Created new crate file for '" + identifier + "'");
         } catch (IOException e) {
             plugin.getLogger().warning("Failed to create crate file. Please submit the following error when making a ticket.");
             e.printStackTrace();
@@ -54,7 +58,7 @@ public class CratesFile {
         config.set(path + ".identifier", identifier);
         config.set(path + ".display", "&3&l" + identifier + " Crate");
         config.set(path + ".open-commands", Collections.singletonList(
-                "broadcast &e%player% &bis opening &e%crate%&b."
+                "[bc]&e%player% &bis opening &e%crate%&b."
         ));
         config.set(path + ".block", Material.CHEST.name());
         config.set(path + ".spin", Spin.SpinType.CSGO.name());
@@ -99,7 +103,7 @@ public class CratesFile {
                 .name("&b&lDIAMONDS!!")
                 .lore("&aChance: &e%chance%");
         Prize prize = new Prize(builder, 50, "Prizes.diamond", Arrays.asList(
-                "broadcast &e%player% &ahas won &e2x &b&lDIAMONDS!",
+                "[msg]&aYou have won &e2x &b&lDIAMONDS!",
                 "give %player% diamond 2"
         ));
         savePrize(config, prize);
@@ -142,20 +146,31 @@ public class CratesFile {
         return true;
     }
 
+    public boolean deleteCrate(Crate crate) {
+        return Objects.requireNonNull(getFileByCrate(crate)).delete();
+    }
+
     private void savePrize(FileConfiguration config, Prize prize) {
         config.set(prize.getConfigurationSection() + ".chance", prize.getChance());
-        config.set(prize.getConfigurationSection() + ".display.item", prize.getDisplayItem().getType().name());
-        config.set(prize.getConfigurationSection() + ".display.data", prize.getDisplayItem().getData().getData());
-        config.set(prize.getConfigurationSection() + ".display.glow", false); // Not implemented yet
-        config.set(prize.getConfigurationSection() + ".display.amount", prize.getDisplayItem().getAmount());
-        config.set(prize.getConfigurationSection() + ".display.name", prize.getDisplayItem().getItemMeta().getDisplayName());
-        config.set(prize.getConfigurationSection() + ".display.lore", prize.getDisplayItem().getItemMeta().getLore());
-        List<String> enchantments = new ArrayList<>();
-        for (Map.Entry<Enchantment, Integer> entry : prize.getDisplayItem().getEnchantments().entrySet()) {
-            enchantments.add(entry.getKey().toString() + ":" + entry.getValue());
-        }
-        config.set(prize.getConfigurationSection() + ".display.enchantments", enchantments);
+        ConfigurationSection section = config.getConfigurationSection(prize.getConfigurationSection() + ".display");
+        if (section == null)
+            section = config.createSection(prize.getConfigurationSection() + ".display");
+        ItemStackFileWriter writer = ItemStackFileWriter.of(prize.getItemBuilder(), section);
+        writer.write();
         config.set(prize.getConfigurationSection() + ".commands", prize.getCommands());
+    }
+
+    public void deletePrize(Crate crate, Prize prize) {
+        File file = getFileByCrate(crate);
+        if (file == null) return;
+        FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+        config.set(prize.getConfigurationSection(), null);
+        try {
+            config.save(file);
+        } catch (IOException e) {
+            plugin.getLogger().warning("Failed to save configuration file. Please submit the following error when making a ticket:");
+            e.printStackTrace();
+        }
     }
 
     public boolean crateExist(String identifier) {
@@ -189,7 +204,7 @@ public class CratesFile {
         }
 
         this.plugin.debug("Reading data from file '" + file.getAbsolutePath() + "'");
-        CrateFileReadable readable = new CrateFileReadable(plugin, config);
+        CrateFileReader readable = new CrateFileReader(plugin, config);
         return readable.read();
     }
 
@@ -197,7 +212,7 @@ public class CratesFile {
         identifier = cleanIdentifier(identifier);
 
         for (Map.Entry<File, FileConfiguration> entry : getConfigurations().entrySet()) {
-            CrateFileReadable readable = new CrateFileReadable(plugin, entry.getValue());
+            CrateFileReader readable = new CrateFileReader(plugin, entry.getValue());
             if (readable.readIdentifier().equalsIgnoreCase(identifier)) return getCrateByFile(entry.getKey());
         }
 
@@ -217,7 +232,7 @@ public class CratesFile {
         try (Stream<Path> entries = Files.list(this.directory.toPath())) {
             if (!entries.findFirst().isPresent()) {
                 this.plugin.debug("Could not find any crates in directory. Loading default...");
-                new FileHandler(plugin, "crates/default.yml", directory, "default.yml") {
+                new FileHandler(plugin, "default.yml", directory, "default.yml") {
                 };
             }
         } catch (IOException e) {
@@ -226,16 +241,17 @@ public class CratesFile {
         }
     }
 
-    // Private Methods
-
-    private File getFileByCrate(Crate crate) {
+    @Nullable
+    public File getFileByCrate(Crate crate) {
         String identifier = cleanIdentifier(crate.getSettings().getIdentifier());
         for (Map.Entry<File, FileConfiguration> entry : getConfigurations().entrySet()) {
-            CrateFileReadable readable = new CrateFileReadable(plugin, entry.getValue());
+            CrateFileReader readable = new CrateFileReader(plugin, entry.getValue());
             if (readable.readIdentifier().equalsIgnoreCase(identifier)) return entry.getKey();
         }
         return null;
     }
+
+    // Private Methods
 
     private Map<File, FileConfiguration> getConfigurations() {
         Map<File, FileConfiguration> configurations = new HashMap<>();

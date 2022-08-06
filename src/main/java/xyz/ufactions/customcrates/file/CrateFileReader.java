@@ -9,19 +9,19 @@ import xyz.ufactions.customcrates.crates.Crate;
 import xyz.ufactions.customcrates.crates.CrateSettings;
 import xyz.ufactions.customcrates.crates.Prize;
 import xyz.ufactions.customcrates.item.ItemStackBuilder;
-import xyz.ufactions.customcrates.item.ItemStackConfiguration;
+import xyz.ufactions.customcrates.item.ItemStackFileReader;
 import xyz.ufactions.customcrates.libs.RandomizableList;
 import xyz.ufactions.customcrates.spin.Spin;
 
 import java.util.*;
 import java.util.logging.Level;
 
-public final class CrateFileReadable {
+public final class CrateFileReader {
 
     private final CustomCrates plugin;
     private final FileConfiguration configuration;
 
-    public CrateFileReadable(CustomCrates plugin, FileConfiguration configuration) {
+    public CrateFileReader(CustomCrates plugin, FileConfiguration configuration) {
         this.plugin = plugin;
         this.configuration = configuration;
     }
@@ -245,7 +245,7 @@ public final class CrateFileReadable {
     private Optional<ItemStackBuilder> readItemStack(String path) {
         debug("Attempting to read itemstack from given path '" + path + "'");
         if (configuration.isConfigurationSection(path)) {
-            ItemStackConfiguration itemStackConfiguration = ItemStackConfiguration.of(configuration, configuration.getConfigurationSection(path));
+            ItemStackFileReader itemStackConfiguration = ItemStackFileReader.of(configuration.getConfigurationSection(path));
             ItemStackBuilder builder = itemStackConfiguration.read();
             debug("Item read: " + builder);
             return Optional.ofNullable(builder);
@@ -259,10 +259,12 @@ public final class CrateFileReadable {
     }
 
     private void warn(Object o, Exception e) {
+        String identifier = readIdentifier();
+        String msg = "(" + identifier + ") " + o + ". Please enable debugging in the config.yml before submitting a support ticket via discord.";
         if (e == null)
-            this.plugin.getLogger().warning("(" + configuration.getName() + ") " + o + ". Please enable debugging in the config.yml before submitting a support ticket via discord.");
+            this.plugin.getLogger().warning(msg);
         else
-            this.plugin.getLogger().log(Level.WARNING, "(" + configuration.getName() + ") " + o + ". Please enable debugging in the config.yml before submitting a support ticket via discord.", e);
+            this.plugin.getLogger().log(Level.WARNING, msg, e);
     }
 
     private void debug(Object o) {

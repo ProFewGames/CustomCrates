@@ -9,7 +9,9 @@ import xyz.ufactions.enchantmentlib.VersionUtils;
  * Use traditional Material$ for that pls. thx
  */
 public enum UniversalMaterial {
-    REDSTONE_TORCH_ON(VersionUtils.Version.V1_13, "REDSTONE_TORCH_ON", "REDSTONE_TORCH");
+    REDSTONE_TORCH_ON(VersionUtils.Version.V1_13, "REDSTONE_TORCH_ON", "REDSTONE_TORCH"),
+    SIGN(VersionUtils.Version.V1_14, "SIGN", "OAK_SIGN"),
+    COMMAND_BLOCK(VersionUtils.Version.V1_13, "COMMAND", "COMMAND_BLOCK");
 
     private final Material material;
 

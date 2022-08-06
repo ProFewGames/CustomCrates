@@ -2,12 +2,10 @@ package xyz.ufactions.customcrates.manager;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import xyz.ufactions.customcrates.CustomCrates;
 import xyz.ufactions.customcrates.crates.Crate;
 import xyz.ufactions.customcrates.hologram.Hologram;
 import xyz.ufactions.customcrates.libs.F;
-import xyz.ufactions.customcrates.libs.ItemBuilder;
 
 import java.util.ArrayList;
 import java.util.HashMap;

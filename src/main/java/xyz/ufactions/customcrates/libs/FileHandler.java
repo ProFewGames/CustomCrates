@@ -3,11 +3,9 @@ package xyz.ufactions.customcrates.libs;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.java.JavaPlugin;
 import xyz.ufactions.customcrates.CustomCrates;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.NotDirectoryException;
 import java.util.List;
 
@@ -120,9 +118,16 @@ public abstract class FileHandler {
         boolean created = false;
         if (!file.exists()) {
             if (this.resourcePath != null) {
-                if (plugin.getResource(resourcePath) != null) {
-                    plugin.getLogger().info("Attempting to create '" + this.fileName + "' from resources.");
-                    plugin.saveResource(resourcePath, false);
+                try (InputStream in = plugin.getResource(resourcePath); OutputStream out = new FileOutputStream(file)) {
+                    if (in == null) return;
+                    byte[] buffer = new byte[1024];
+
+                    int len;
+                    while ((len = in.read(buffer)) > 0) {
+                        out.write(buffer, 0, len);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
             created = true;

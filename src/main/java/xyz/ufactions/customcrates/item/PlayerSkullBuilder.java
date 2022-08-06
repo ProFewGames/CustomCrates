@@ -12,11 +12,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Base64;
+import java.util.Collection;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -25,7 +24,6 @@ public class PlayerSkullBuilder {
 
     // some reflection stuff to be used when setting a skull's profile
     private static Field blockProfileField;
-    private static Method metaSetProfileMethod;
     private static Field metaProfileField;
 
     private PlayerSkullBuilder() {
@@ -118,6 +116,38 @@ public class PlayerSkullBuilder {
         return item;
     }
 
+    public static UUID getSkullOwner(ItemStack item) {
+        if (item == null) return null;
+        if (!item.hasItemMeta()) return null;
+        if (!(item.getItemMeta() instanceof SkullMeta)) return null;
+        SkullMeta meta = ((SkullMeta) item.getItemMeta());
+        if (meta.getOwningPlayer() == null) return null;
+        return meta.getOwningPlayer().getUniqueId();
+    }
+
+    public static String getSkullBase64(ItemStack item) {
+        if (item == null) return null;
+        if (!item.hasItemMeta()) return null;
+        if (!(item.getItemMeta() instanceof SkullMeta)) return null;
+        SkullMeta meta = ((SkullMeta) item.getItemMeta());
+        try {
+            if (metaProfileField == null) {
+                metaProfileField = meta.getClass().getDeclaredField("profile");
+                metaProfileField.setAccessible(true);
+            }
+            GameProfile profile = (GameProfile) metaProfileField.get(meta);
+            if (profile == null) return null;
+            Collection<Property> properties = profile.getProperties().get("textures");
+            for (Property property : properties)
+                if (property.getName().equals("textures"))
+                    return property.getValue();
+            return null;
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     /**
      * Sets the block to a skull with the given UUID.
      *
@@ -186,6 +216,7 @@ public class PlayerSkullBuilder {
     }
 
     private static GameProfile makeProfile(String base64) {
+        if (base64.length() < 20) return null;
         //random uuid based on the base64 string
         UUID uuid = new UUID(
                 base64.substring(base64.length() - 20).hashCode(),
@@ -201,7 +232,9 @@ public class PlayerSkullBuilder {
                 blockProfileField = block.getClass().getDeclaredField("profile");
                 blockProfileField.setAccessible(true);
             }
-            blockProfileField.set(block, makeProfile(base64));
+            GameProfile profile = makeProfile(base64);
+            if (profile != null)
+                blockProfileField.set(block, profile);
         } catch (NoSuchFieldException | IllegalAccessException e) {
             e.printStackTrace();
         }
@@ -209,21 +242,15 @@ public class PlayerSkullBuilder {
 
     private static void mutateItemMeta(SkullMeta meta, String base64) {
         try {
-            if (metaSetProfileMethod == null) {
-                metaSetProfileMethod = meta.getClass().getDeclaredMethod("profile");
-                metaSetProfileMethod.setAccessible(true);
+            if (metaProfileField == null) {
+                metaProfileField = meta.getClass().getDeclaredField("profile");
+                metaProfileField.setAccessible(true);
             }
-            metaSetProfileMethod.invoke(meta, makeProfile(base64));
-        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            try {
-                if (metaProfileField == null) {
-                    metaProfileField = meta.getClass().getDeclaredField("profile");
-                    metaProfileField.setAccessible(true);
-                }
-                metaProfileField.set(meta, makeProfile(base64));
-            } catch (IllegalAccessException | NoSuchFieldException ex) {
-                ex.printStackTrace();
-            }
+            GameProfile profile = makeProfile(base64);
+            if (profile != null)
+                metaProfileField.set(meta, profile);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            e.printStackTrace();
         }
     }
 

@@ -4,7 +4,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import xyz.ufactions.customcrates.CustomCrates;
 import xyz.ufactions.customcrates.command.SubCommand;
-import xyz.ufactions.customcrates.gui.CustomCratesGUI;
+import xyz.ufactions.customcrates.gui.EditorGUI;
 import xyz.ufactions.customcrates.libs.F;
 
 import java.util.Collections;
@@ -23,11 +23,7 @@ public class EditorCommand extends SubCommand {
     protected boolean execute(CommandSender sender, String label, String[] args) {
         if (!isPlayer(sender)) return true;
         Player player = (Player) sender;
-        if (!player.getUniqueId().equals(UUID.fromString("31e4c063-b6f7-4f91-bd1a-4fdc1a0d5849"))) {
-            sender.sendMessage(F.color("&4Command not released."));
-            return true;
-        }
-        new CustomCratesGUI(plugin).openInventory(player);
+        new EditorGUI(this.plugin, player).open();
         return true;
     }
 

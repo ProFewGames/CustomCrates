@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import xyz.ufactions.customcrates.CustomCrates;
 import xyz.ufactions.customcrates.command.SubCommand;
 import xyz.ufactions.customcrates.crates.Crate;
+import xyz.ufactions.customcrates.file.LanguageFile;
 import xyz.ufactions.customcrates.libs.F;
 
 import java.util.Collections;
@@ -26,7 +27,7 @@ public class PreviewCommand extends SubCommand {
             Crate crate = getCrate(player, args[0]);
             if (crate == null) return true;
             player.openInventory(crate.getPreviewInventory());
-            player.sendMessage(F.format(plugin.getLanguage().previewing(crate.getSettings().getIdentifier())));
+            player.sendMessage(F.format(plugin.getLanguage().getString(LanguageFile.LanguagePath.PREVIEWING, crate.getSettings().getIdentifier())));
             return true;
         }
         return false;

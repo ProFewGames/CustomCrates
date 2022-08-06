@@ -1,5 +1,7 @@
 package xyz.ufactions.customcrates.crates;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import xyz.ufactions.customcrates.item.ItemStackBuilder;
@@ -7,22 +9,25 @@ import xyz.ufactions.customcrates.libs.F;
 import xyz.ufactions.customcrates.libs.RandomizableList;
 import xyz.ufactions.customcrates.spin.Spin;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+@Getter
+@Setter
 public class CrateSettings {
 
     private final String identifier;
-    private final String display;
-    private final List<String> openCommands;
-    private final Material block;
-    private final Spin.SpinType spinType;
+    private String display;
+    private List<String> openCommands;
+    private Material block;
+    private Spin.SpinType spinType;
     private final long spinTime;
     private final Sound openingSound;
     private final Sound spinSound;
     private final Sound winSound;
 
-    private final ItemStackBuilder key;
+    private ItemStackBuilder key;
 
     private final ItemStackBuilder pouch;
 
@@ -50,60 +55,11 @@ public class CrateSettings {
         this.holographicLines = holographicLines;
     }
 
-    // Getters
-    public String getIdentifier() {
-        return identifier;
+    public void addCommand(String command) {
+        this.openCommands.add(command);
     }
 
-    public String getDisplay() {
-        return display;
-    }
-
-    public List<String> getOpenCommands() {
-        return openCommands;
-    }
-
-    public Material getBlock() {
-        return block;
-    }
-
-    public Spin.SpinType getSpinType() {
-        return spinType;
-    }
-
-    public long getSpinTime() {
-        return spinTime;
-    }
-
-    public Sound getOpeningSound() {
-        return openingSound;
-    }
-
-    public Sound getSpinSound() {
-        return spinSound;
-    }
-
-    public Sound getWinSound() {
-        return winSound;
-    }
-
-    public ItemStackBuilder getKey() {
-        return this.key.clone();
-    }
-
-    public ItemStackBuilder getPouch() {
-        return this.pouch.clone();
-    }
-
-    public RandomizableList<Prize> getPrizes() {
-        return prizes;
-    }
-
-    public Map<String, ItemStackBuilder> getHolographicItemMap() {
-        return holographicItemMap;
-    }
-
-    public List<String> getHolographicLines() {
-        return holographicLines;
+    public void removeCommand(String command) {
+        this.openCommands.remove(command);
     }
 }

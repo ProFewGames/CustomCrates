@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import xyz.ufactions.customcrates.CustomCrates;
 import xyz.ufactions.customcrates.command.SubCommand;
 import xyz.ufactions.customcrates.crates.Crate;
+import xyz.ufactions.customcrates.file.LanguageFile;
 import xyz.ufactions.customcrates.libs.F;
 import xyz.ufactions.customcrates.libs.UtilMath;
 
@@ -27,17 +28,17 @@ public class GivePouchCommand extends SubCommand {
         if (args.length == 3) {
             Player target = Bukkit.getPlayer(args[0]);
             if (target == null) {
-                sender.sendMessage(F.error(plugin.getLanguage().playerNotFound()));
+                sender.sendMessage(F.format(plugin.getLanguage().getString(LanguageFile.LanguagePath.PLAYER_NOT_FOUND)));
                 return true;
             }
             Crate crate = getCrate(sender, args[1]);
             if (crate == null) return true;
             if (!crate.validPouch()) {
-                sender.sendMessage(F.error(plugin.getLanguage().ineligiblePouch()));
+                sender.sendMessage(F.format(plugin.getLanguage().getString(LanguageFile.LanguagePath.INELIGIBLE_POUCH)));
                 return true;
             }
             if (!UtilMath.isInteger(args[2])) {
-                sender.sendMessage(F.error(plugin.getLanguage().invalidInteger()));
+                sender.sendMessage(F.format(plugin.getLanguage().getString(LanguageFile.LanguagePath.INVALID_INTEGER)));
                 return true;
             }
             int amount = Integer.parseInt(args[2]);

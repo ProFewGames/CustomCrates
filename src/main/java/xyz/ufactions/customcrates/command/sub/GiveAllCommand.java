@@ -2,14 +2,13 @@ package xyz.ufactions.customcrates.command.sub;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.HumanEntity;
 import xyz.ufactions.customcrates.CustomCrates;
 import xyz.ufactions.customcrates.command.SubCommand;
 import xyz.ufactions.customcrates.crates.Crate;
+import xyz.ufactions.customcrates.file.LanguageFile;
 import xyz.ufactions.customcrates.libs.F;
 import xyz.ufactions.customcrates.libs.UtilMath;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -29,15 +28,15 @@ public class GiveAllCommand extends SubCommand {
             Crate crate = getCrate(sender, args[0]);
             if (crate == null) return true;
             if (!UtilMath.isInteger(args[1])) {
-                sender.sendMessage(F.error(plugin.getLanguage().invalidInteger()));
+                sender.sendMessage(F.format(plugin.getLanguage().getString(LanguageFile.LanguagePath.INVALID_INTEGER)));
                 return true;
             }
             final int amount = Integer.parseInt(args[1]);
             Bukkit.getOnlinePlayers().forEach(player -> {
                 crate.giveKey(player, amount);
-                player.sendMessage(F.format(plugin.getLanguage().keyReceived(amount, crate.getSettings().getIdentifier())));
+                player.sendMessage(F.format(plugin.getLanguage().getString(LanguageFile.LanguagePath.KEY_RECEIVED, amount, crate.getSettings().getIdentifier())));
             });
-            sender.sendMessage(F.format(plugin.getLanguage().keyGivenAll(amount, crate.getSettings().getIdentifier(),
+            sender.sendMessage(F.format(plugin.getLanguage().getString(LanguageFile.LanguagePath.KEY_GIVEN_ALL, amount, crate.getSettings().getIdentifier(),
                     Bukkit.getOnlinePlayers().size() * amount)));
             return true;
         }

@@ -17,11 +17,6 @@
     </properties>
 
     <repositories>
-        <!-- Spigot Repository -->
-        <repository>
-            <id>spigot-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
-        </repository>
         <!-- Vault Repository -->
         <repository>
             <id>jitpack.io</id>
@@ -34,7 +29,12 @@
         <!-- PlaceholderAPI Repository -->
         <repository>
             <id>placeholderapi</id>
-            <url>http://repo.extendedclip.com/content/repositories/placeholderapi/</url>
+            <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
+        </repository>
+        <!-- Spigot Repository -->
+        <repository>
+            <id>spigot-repo</id>
+            <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
     </repositories>
 
@@ -74,6 +74,19 @@
             <version>2.0.6</version>
             <scope>provided</scope>
         </dependency>
+        <!-- Lombok Dependency -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.24</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>23.0.0</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -83,11 +96,7 @@
                 <directory>${basedir}/src/main/resources</directory>
                 <filtering>true</filtering>
                 <includes>
-                    <include>plugin.yml</include>
-                    <include>config.yml</include>
-                    <include>language_en.yml</include>
-                    <include>language_es.yml</include>
-                    <include>crates/default.yml</include>
+                    <include>*</include>
                 </includes>
             </resource>
         </resources>

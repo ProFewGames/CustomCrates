@@ -6,6 +6,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import xyz.ufactions.customcrates.CustomCrates;
 import xyz.ufactions.customcrates.command.SubCommand;
+import xyz.ufactions.customcrates.file.LanguageFile;
 import xyz.ufactions.customcrates.libs.F;
 
 import java.io.IOException;
@@ -27,19 +28,19 @@ public class RemoveCommand extends SubCommand {
         Player player = (Player) sender;
         Block block = getTargetBlock(player, 10);
         if (block == null) {
-            player.sendMessage(F.error(plugin.getLanguage().noTargetBlock()));
+            player.sendMessage(F.format(plugin.getLanguage().getString(LanguageFile.LanguagePath.NO_TARGET_BLOCK)));
             return true;
         }
         Location location = block.getLocation();
         if (!plugin.getLocationsFile().isCrate(location)) {
-            player.sendMessage(F.error(plugin.getLanguage().targetNotCrate()));
+            player.sendMessage(F.format(plugin.getLanguage().getString(LanguageFile.LanguagePath.TARGET_NOT_CRATE)));
             return true;
         }
         try {
             plugin.getLocationsFile().deleteLocation(location);
-            player.sendMessage(F.format(plugin.getLanguage().targetBroken()));
+            player.sendMessage(F.format(plugin.getLanguage().getString(LanguageFile.LanguagePath.TARGET_BROKEN)));
         } catch (IOException e) {
-            player.sendMessage(F.error(plugin.getLanguage().errorFileSaving()));
+            player.sendMessage(F.format(plugin.getLanguage().getString(LanguageFile.LanguagePath.ERROR_FILE_SAVING)));
             e.printStackTrace();
         }
         return true;

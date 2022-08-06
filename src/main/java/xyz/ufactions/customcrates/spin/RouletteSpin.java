@@ -5,6 +5,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.scheduler.BukkitRunnable;
 import xyz.ufactions.customcrates.crates.Crate;
 import xyz.ufactions.customcrates.crates.Prize;
+import xyz.ufactions.customcrates.libs.ColorLib;
 import xyz.ufactions.customcrates.libs.UtilTime;
 import xyz.ufactions.customcrates.universal.Universal;
 
@@ -18,7 +19,7 @@ public class RouletteSpin extends Spin {
 
         AtomicReference<Prize> prize = new AtomicReference<>();
         prize.set(randomPrize(crate));
-        inventory.setItem(13, prize.get().getDisplayItem());
+        inventory.setItem(13, prize.get().getItemBuilder().build());
         final long start = System.currentTimeMillis();
 
         new BukkitRunnable() {
@@ -37,12 +38,12 @@ public class RouletteSpin extends Spin {
                 }
                 for (int i = 0; i < inventory.getSize(); i++) {
                     if (inventory.getItem(i) == null || Universal.getInstance().isStainedGlassPane(inventory.getItem(i))) {
-                        inventory.setItem(i, Universal.getInstance().colorToGlassPane(randomColor()).name(" ").build());
+                        inventory.setItem(i, ColorLib.pane(randomColor()).name(" ").build());
                     }
                 }
                 player.playSound(player.getLocation(), crate.getSettings().getSpinSound(), 1f, 1f);
                 prize.set(randomPrize(crate));
-                inventory.setItem(13, prize.get().getDisplayItem());
+                inventory.setItem(13, prize.get().getItemBuilder().build());
             }
         }.runTaskTimer(plugin, 0L, 8L);
         player.openInventory(inventory);

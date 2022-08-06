@@ -8,7 +8,7 @@ Crate:
   identifier: Default
   display: '&3&lDefault Crate'
   open-commands:
-    - 'broadcast &e%player% &bis opening &e%crate%&7.'
+    - '[bc]&e%player% &bis opening &e%crate%&7.'
   block: CHEST
   spin: CSGO
   spin time: 2500
@@ -41,7 +41,7 @@ hologram:
       item: TRIPWIRE_HOOK
       glow: true
   lines:
-#    - '{crate_display}'
+    #    - '{crate_display}'
     - '&7(Right Click to Open)'
     - '&7(Left Click to Preview)'
 
@@ -58,7 +58,7 @@ Prizes:
       lore:
         - '&aChance: &e%chance%'
     commands:
-      - 'broadcast &e%player% &ahas won &e2x &b&lDIAMONDS!'
+      - '[bc]&e%player% &ahas won &e2x &b&lDIAMONDS!'
       - 'give %player% diamond 2'
   gold:
     chance: 50.0

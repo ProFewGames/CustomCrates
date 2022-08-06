@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 import xyz.ufactions.customcrates.CustomCrates;
 import xyz.ufactions.customcrates.command.SubCommand;
 import xyz.ufactions.customcrates.crates.Crate;
+import xyz.ufactions.customcrates.file.LanguageFile;
 import xyz.ufactions.customcrates.libs.F;
 
 import java.io.IOException;
@@ -28,26 +29,27 @@ public class SetCommand extends SubCommand {
             Player player = (Player) sender;
             Block block = getTargetBlock(player, 10);
             if (block == null) {
-                player.sendMessage(F.error(plugin.getLanguage().noTargetBlock()));
+                player.sendMessage(F.format(plugin.getLanguage().getString(LanguageFile.LanguagePath.NO_TARGET_BLOCK)));
                 return true;
             }
             Crate crate = getCrate(player, args[0]);
             if (crate == null) return true;
             if (block.getType() != crate.getSettings().getBlock()) {
-                player.sendMessage(F.error(plugin.getLanguage().incorrectTargetBlock(F.capitalizeFirstLetter(
-                        crate.getSettings().getBlock().toString().replaceAll("_", " ")))));
+                player.sendMessage(F.format(plugin.getLanguage().getString(LanguageFile.LanguagePath.INCORRECT_TARGET_BLOCK, F.capitalizeFirstLetter(
+                        crate.getSettings().getBlock().toString()
+                ))));
                 return true;
             }
             Location location = block.getLocation();
             if (plugin.getLocationsFile().isCrate(location)) {
-                player.sendMessage(F.error(plugin.getLanguage().locationAlreadySet()));
+                player.sendMessage(F.format(plugin.getLanguage().getString(LanguageFile.LanguagePath.LOCATION_ALREADY_SET)));
                 return true;
             }
             try {
                 plugin.getLocationsFile().saveLocation(crate, location);
-                player.sendMessage(F.format(plugin.getLanguage().targetBlockSet()));
+                player.sendMessage(F.format(plugin.getLanguage().getString(LanguageFile.LanguagePath.TARGET_BLOCK_SET)));
             } catch (IOException e) {
-                player.sendMessage(F.error(plugin.getLanguage().errorFileSaving()));
+                player.sendMessage(F.format(plugin.getLanguage().getString(LanguageFile.LanguagePath.ERROR_FILE_SAVING)));
                 e.printStackTrace();
             }
             return true;

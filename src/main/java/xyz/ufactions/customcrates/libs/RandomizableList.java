@@ -1,16 +1,20 @@
 package xyz.ufactions.customcrates.libs;
 
-import java.util.Map;
-import java.util.Random;
-import java.util.TreeMap;
+import lombok.Getter;
+import org.jetbrains.annotations.NotNull;
 
-public class RandomizableList<T> {
+import java.util.*;
+import java.util.concurrent.locks.ReentrantLock;
+
+public final class RandomizableList<T> implements Iterable<RandomizableList<T>.Entry> {
 
     public class Entry {
 
-        public final T object;
+        @Getter
+        private final T object;
         private final Double insertionWeight;
-        public final Double weight;
+        @Getter
+        private final Double weight;
 
         public Entry(T object, Double insertionWeight, Double weight) {
             this.object = object;
@@ -19,49 +23,109 @@ public class RandomizableList<T> {
         }
     }
 
-    private final TreeMap<Double, Entry> entries = new TreeMap<>();
-    private final Random random = new Random();
+    private final TreeMap<Double, Entry> entries;
+    private final ReentrantLock lock;
+    private final Random random;
+
     private double accumulatedWeight = 0;
 
-    public synchronized void add(T object, double weight) {
-        entries.put(accumulatedWeight += weight, new Entry(object, accumulatedWeight, weight));
+    public RandomizableList() {
+        this.lock = new ReentrantLock();
+        this.random = new Random();
+        this.entries = new TreeMap<>();
     }
 
-    public synchronized boolean contain(T object) {
-        for (Entry entry : entries.values()) {
-            if(entry.object == object) {
-                return true;
+    public void add(T object, double weight) {
+        Objects.requireNonNull(object);
+
+        this.lock.lock();
+        try {
+            entries.put(accumulatedWeight += weight, new Entry(object, accumulatedWeight, weight));
+        } finally {
+            this.lock.unlock();
+        }
+    }
+
+    public boolean contain(T object) {
+        Objects.requireNonNull(object);
+
+        this.lock.lock();
+        try {
+            for (Entry entry : entries.values()) {
+                if (entry.object == object) {
+                    return true;
+                }
             }
+        } finally {
+            this.lock.unlock();
         }
         return false;
     }
 
-    public synchronized void remove(T object) {
-        for (Map.Entry<Double, Entry> entry : entries.entrySet()) {
-            if(entry.getValue().object == object) {
-                accumulatedWeight -= entry.getValue().weight;
-                entries.remove(entry.getValue().insertionWeight);
+    public void remove(T object) {
+        Objects.requireNonNull(object);
+
+        this.lock.lock();
+        try {
+            for (Map.Entry<Double, Entry> entry : entries.entrySet()) {
+                if (entry.getValue().object == object) {
+                    accumulatedWeight -= entry.getValue().weight;
+                    entries.remove(entry.getValue().insertionWeight);
+                }
             }
+        } finally {
+            this.lock.unlock();
         }
     }
 
-    public synchronized T get() {
-        return entries.ceilingEntry(random.nextDouble() * accumulatedWeight).getValue().object;
+    public T get() {
+        this.lock.lock();
+        try {
+            return entries.ceilingEntry(random.nextDouble() * accumulatedWeight).getValue().object;
+        } finally {
+            this.lock.unlock();
+        }
     }
 
     public double getAccumulatedWeight() {
-        return accumulatedWeight;
+        this.lock.lock();
+        try {
+            return accumulatedWeight;
+        } finally {
+            this.lock.unlock();
+        }
     }
 
     public int size() {
-        return entries.size();
+        this.lock.lock();
+        try {
+            return entries.size();
+        } finally {
+            this.lock.unlock();
+        }
     }
 
     public boolean isEmpty() {
-        return entries.isEmpty();
+        this.lock.lock();
+        try {
+            return entries.isEmpty();
+        } finally {
+            this.lock.unlock();
+        }
     }
 
-    public TreeMap<Double, Entry> getEntries() {
-        return entries;
+    public Collection<Entry> getEntries() {
+        this.lock.lock();
+        try {
+            return entries.values();
+        } finally {
+            this.lock.unlock();
+        }
+    }
+
+    @NotNull
+    @Override
+    public Iterator<Entry> iterator() {
+        return getEntries().iterator();
     }
 }

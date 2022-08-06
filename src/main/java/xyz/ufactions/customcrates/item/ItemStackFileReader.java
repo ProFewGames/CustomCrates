@@ -4,27 +4,23 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import xyz.ufactions.customcrates.item.exception.ItemReadException;
 
 import java.util.*;
 
-public final class ItemStackConfiguration {
+public final class ItemStackFileReader {
 
-    public static ItemStackConfiguration of(FileConfiguration configuration, ConfigurationSection section) {
-        return new ItemStackConfiguration(configuration, section);
+    public static ItemStackFileReader of(ConfigurationSection section) {
+        return new ItemStackFileReader(section);
     }
 
-    private final FileConfiguration config;
     private final ConfigurationSection section;
 
-    private ItemStackConfiguration(FileConfiguration configuration, ConfigurationSection section) {
-        Validate.notNull(configuration, "configuration");
+    private ItemStackFileReader(ConfigurationSection section) {
         Validate.notNull(section, "section");
 
-        this.config = configuration;
         this.section = section;
     }
 
@@ -114,6 +110,11 @@ public final class ItemStackConfiguration {
         return Optional.empty();
     }
 
+    public OptionalInt readModelData() {
+        if (section.isInt("model")) return OptionalInt.of(section.getInt("model"));
+        return OptionalInt.empty();
+    }
+
     public ItemStackBuilder read() {
         Material material;
         try {
@@ -137,6 +138,7 @@ public final class ItemStackConfiguration {
         readColor().ifPresent(builder::color);
         readFlags().ifPresent(builder::flag);
         readUnbreakable().ifPresent(builder::unbreakable);
+        readModelData().ifPresent(builder::model);
 
         return builder;
     }

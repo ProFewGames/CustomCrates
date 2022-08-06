@@ -52,6 +52,7 @@ Prizes:
     display:
       item: DIAMOND
       data: 0
+      model: 1
       glow: true
       amount: 1
       name: '&b&lDIAMONDS!!'

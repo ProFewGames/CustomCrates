@@ -4,6 +4,7 @@ import org.bukkit.command.CommandSender;
 import xyz.ufactions.customcrates.CustomCrates;
 import xyz.ufactions.customcrates.command.SubCommand;
 import xyz.ufactions.customcrates.crates.Crate;
+import xyz.ufactions.customcrates.file.LanguageFile;
 import xyz.ufactions.customcrates.libs.F;
 
 import java.util.Collections;
@@ -20,9 +21,9 @@ public class ListCommand extends SubCommand {
     @Override
     protected boolean execute(CommandSender sender, String label, String[] args) {
         if (plugin.getCratesManager().getCrates().isEmpty()) {
-            sender.sendMessage(F.error(plugin.getLanguage().noAvailableCrates()));
+            sender.sendMessage(F.format(plugin.getLanguage().getString(LanguageFile.LanguagePath.NO_AVAILABLE_CRATES)));
         } else {
-            sender.sendMessage(F.format(plugin.getLanguage().availableCratesHeader()));
+            sender.sendMessage(F.format(plugin.getLanguage().getString(LanguageFile.LanguagePath.AVAILABLE_CRATES_HEADER)));
             for (Crate crate : plugin.getCratesManager().getCrates()) {
                 sender.sendMessage(F.list(crate.getSettings().getIdentifier()));
             }

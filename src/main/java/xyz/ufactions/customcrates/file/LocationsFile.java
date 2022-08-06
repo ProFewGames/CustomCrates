@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 // XXX - Static getter for language?
 public class LocationsFile extends FileHandler {
@@ -38,6 +39,14 @@ public class LocationsFile extends FileHandler {
 
     public boolean isCrate(Location location) {
         return getCrate(location) != null;
+    }
+
+    public List<Location> getLocations(Crate crate) {
+        List<Location> locations = new ArrayList<>();
+        for (Map.Entry<Crate, List<Location>> entry : getLocations().entrySet())
+            if (entry.getKey() == crate)
+                locations.addAll(entry.getValue());
+        return locations;
     }
 
     public HashMap<Crate, List<Location>> getLocations() {

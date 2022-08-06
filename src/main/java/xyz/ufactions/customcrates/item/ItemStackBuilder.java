@@ -4,17 +4,16 @@ import org.apache.commons.lang.Validate;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import xyz.ufactions.customcrates.libs.F;
 import xyz.ufactions.enchantmentlib.EnchantmentLib;
+import xyz.ufactions.enchantmentlib.VersionUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Consumer;
 
 /**
@@ -53,6 +52,10 @@ public final class ItemStackBuilder {
         return this;
     }
 
+    public Optional<ItemMeta> transformMeta() {
+        return Optional.ofNullable(this.item.getItemMeta());
+    }
+
     public ItemStackBuilder apply(Consumer<ItemStack> consumer) {
         consumer.accept(this.item);
         return this;
@@ -62,8 +65,20 @@ public final class ItemStackBuilder {
         return applyMeta(meta -> meta.setDisplayName(F.color(name)));
     }
 
+    public String getName() {
+        Optional<ItemMeta> meta = transformMeta();
+        if (meta.isPresent())
+            if (meta.get().hasDisplayName())
+                return meta.get().getDisplayName();
+        return F.capitalizeFirstLetter(getType().name());
+    }
+
     public ItemStackBuilder type(Material material) {
         return apply(item -> item.setType(material));
+    }
+
+    public Material getType() {
+        return item.getType();
     }
 
     public ItemStackBuilder lore(List<String> lore) {
@@ -84,9 +99,16 @@ public final class ItemStackBuilder {
         return applyMeta(meta -> meta.setLore(new ArrayList<>()));
     }
 
-    @Deprecated
+    public List<String> getLore() {
+        return transformMeta().map(ItemMeta::getLore).orElse(new ArrayList<>());
+    }
+
     public ItemStackBuilder durability(int durability) {
         return apply(item -> item.setDurability((short) durability));
+    }
+
+    public short getDurability() {
+        return item.getDurability();
     }
 
     @Deprecated
@@ -114,12 +136,36 @@ public final class ItemStackBuilder {
         return apply(item -> item.removeEnchantment(enchantment));
     }
 
+    public boolean hasEnchantment(Enchantment enchantment) {
+        return this.item.containsEnchantment(enchantment);
+    }
+
+    public Map<Enchantment, Integer> getEnchantments() {
+        Map<Enchantment, Integer> enchantments = new HashMap<>();
+        for (Map.Entry<Enchantment, Integer> entry : this.item.getEnchantments().entrySet()) {
+            if (entry.getKey() == EnchantmentLib.getGlowEnchantment()) continue;
+            enchantments.put(entry.getKey(), entry.getValue());
+        }
+        return enchantments;
+    }
+
     public ItemStackBuilder clearEnchantments() {
         return apply(item -> item.getEnchantments().keySet().forEach(item::removeEnchantment));
     }
 
     public ItemStackBuilder glow() {
-        return enchant(EnchantmentLib.getGlowEnchantment());
+        return glow(true);
+    }
+
+    public ItemStackBuilder glow(boolean glow) {
+        if (glow)
+            return enchant(EnchantmentLib.getGlowEnchantment());
+        else
+            return disenchant(EnchantmentLib.getGlowEnchantment());
+    }
+
+    public boolean isGlowing() {
+        return item.containsEnchantment(EnchantmentLib.getGlowEnchantment());
     }
 
     public ItemStackBuilder flag(ItemFlag... flags) {
@@ -139,6 +185,14 @@ public final class ItemStackBuilder {
                     meta.removeItemFlags(entry.getKey());
             }
         });
+    }
+
+    public Set<ItemFlag> getFlags() {
+        return transformMeta().map(ItemMeta::getItemFlags).orElse(Collections.emptySet());
+    }
+
+    public boolean hasFlag(ItemFlag flag) {
+        return transformMeta().map(itemMeta -> itemMeta.hasItemFlag(flag)).orElse(false);
     }
 
     public ItemStackBuilder hideAttributes() {
@@ -193,10 +247,45 @@ public final class ItemStackBuilder {
         return applyMeta(meta -> meta.setUnbreakable(unbreakable));
     }
 
+    public boolean isUnbreakable() {
+        return transformMeta().map(ItemMeta::isUnbreakable).orElse(false);
+    }
+
+    public ItemStackBuilder model(int data) {
+        return applyMeta(meta -> meta.setCustomModelData(data));
+    }
+
+    /**
+     * Get the model data of item. {@link ItemStackBuilder#hasModelData()}
+     * should be checked before invoking this method.
+     *
+     * @return The model data of item if present or 0
+     * @see ItemMeta#getCustomModelData()
+     */
+    public int getModelData() {
+        return transformMeta().map(ItemMeta::getCustomModelData).orElse(0);
+    }
+
+    public boolean hasModelData() {
+        return transformMeta().map(ItemMeta::hasCustomModelData).orElse(false);
+    }
+
     public ItemStack build() {
         return this.item;
     }
 
+    public Item<InventoryClickEvent> build(Consumer<InventoryClickEvent> consumer) {
+        return new Item<>(build(), consumer);
+    }
+
+    @Override
+    public String toString() {
+        return "ItemStackBuilder{" +
+                "item=" + item.toString() +
+                '}';
+    }
+
+    @Override
     public ItemStackBuilder clone() {
         return ItemStackBuilder.from(this.item.clone());
     }

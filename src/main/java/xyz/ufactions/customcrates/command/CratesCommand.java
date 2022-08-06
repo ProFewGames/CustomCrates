@@ -8,7 +8,6 @@ import xyz.ufactions.customcrates.CustomCrates;
 import xyz.ufactions.customcrates.command.sub.*;
 import xyz.ufactions.customcrates.libs.F;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -30,10 +29,7 @@ public class CratesCommand extends xyz.ufactions.customcrates.command.Command im
         commands.add(new GiveAllCommand(plugin));
         commands.add(new GivePouchCommand(plugin));
         commands.add(new GiveCommand(plugin));
-        commands.add(new CreateCommand(plugin));
-        commands.add(new CreatePrizeCommand(plugin));
-        if (new File("editor.dat").exists())
-            commands.add(new EditorCommand(plugin));
+        commands.add(new EditorCommand(plugin));
     }
 
     @Override
@@ -44,9 +40,8 @@ public class CratesCommand extends xyz.ufactions.customcrates.command.Command im
                     if (args[0].equalsIgnoreCase(alias)) {
                         if (!checkPermission(sender, command.permission())) return true;
                         String[] newArgs = Arrays.copyOfRange(args, 1, args.length);
-                        if (!command.execute(sender, label, newArgs)) {
-                            sender.sendMessage(F.error("Incorrect Usage: " + command.usage(label)));
-                        }
+                        if (!command.execute(sender, label, newArgs))
+                            sender.sendMessage(F.format("&cIncorrect Usage: " + command.usage(label)));
                         return true;
                     }
                 }
@@ -56,7 +51,7 @@ public class CratesCommand extends xyz.ufactions.customcrates.command.Command im
         sender.sendMessage(F.format("Commands:"));
         for (SubCommand command : commands) {
             if (!checkPermission(sender, command.permission(), false)) continue;
-            sender.sendMessage(F.help(command.usage(label), command.description()));
+            sender.sendMessage(F.color("&3&l" + command.usage(label) + " &b" + command.description()));
         }
         return true;
     }
