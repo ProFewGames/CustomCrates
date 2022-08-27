@@ -102,7 +102,7 @@ public class CratesFile {
                 .glow()
                 .name("&b&lDIAMONDS!!")
                 .lore("&aChance: &e%chance%");
-        Prize prize = new Prize(builder, 50, "Prizes.diamond", Arrays.asList(
+        Prize prize = new Prize(builder, 50, false, "Prizes.diamond", Arrays.asList(
                 "[msg]&aYou have won &e2x &b&lDIAMONDS!",
                 "give %player% diamond 2"
         ));
@@ -114,7 +114,7 @@ public class CratesFile {
                 .lore(Collections.singletonList(
                         "&aChance: &e%chance%"
                 ));
-        prize = new Prize(builder, 50, "Prizes.gold", Collections.singletonList(
+        prize = new Prize(builder, 50, false, "Prizes.gold", Collections.singletonList(
                 "give %player% gold_ingot 1"
         ));
         savePrize(config, prize);
@@ -129,11 +129,11 @@ public class CratesFile {
         return getCrateByFile(file);
     }
 
-    public boolean createPrize(Crate crate, Prize prize) {
+    public void createPrize(Crate crate, Prize prize) {
         File file = getFileByCrate(crate);
         if (file == null) {
             plugin.getLogger().warning("Failed to fetch crate file for creating prize.");
-            return false;
+            return;
         }
         FileConfiguration configuration = YamlConfiguration.loadConfiguration(file);
         savePrize(configuration, prize);
@@ -143,7 +143,6 @@ public class CratesFile {
             plugin.getLogger().warning("Failed to save configuration file. Please submit the following error when making a ticket:");
             e.printStackTrace();
         }
-        return true;
     }
 
     public boolean deleteCrate(Crate crate) {

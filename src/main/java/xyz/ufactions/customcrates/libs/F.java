@@ -65,6 +65,17 @@ public class F {
         return var ? "&c&lRemove" : "&a&lAdd";
     }
 
+    public String tf(boolean var) {
+        return var ? "&a&lTrue" : "&c&lFalse";
+    }
+
+    public boolean containsIgnoreCase(List<String> list, String contains) {
+        for (String string : list)
+            if (string.toLowerCase().contains(contains.toLowerCase()))
+                return true;
+        return false;
+    }
+
     // *** COLOR ***
 
     public String color(String text) {

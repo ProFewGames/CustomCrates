@@ -2,6 +2,8 @@ package xyz.ufactions.customcrates.manager;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
 import xyz.ufactions.customcrates.CustomCrates;
 import xyz.ufactions.customcrates.crates.Crate;
 import xyz.ufactions.customcrates.hologram.Hologram;
@@ -31,6 +33,11 @@ public class HologramManager {
             }
         }
         holograms.clear();
+
+        List<ArmorStand> holograms = Hologram.getHolograms();
+        if (holograms.isEmpty()) return;
+        plugin.debug("Lingering holograms detected, removing...");
+        holograms.forEach(Entity::remove);
     }
 
     public void reload() {
@@ -54,8 +61,8 @@ public class HologramManager {
                         hologram.addLine(line);
                     }
                     hologram.refresh();
-                    if (!holograms.containsKey(crate)) holograms.put(crate, new ArrayList<>());
-                    holograms.get(crate).add(hologram);
+                    if (!this.holograms.containsKey(crate)) this.holograms.put(crate, new ArrayList<>());
+                    this.holograms.get(crate).add(hologram);
                 }
             }
         });

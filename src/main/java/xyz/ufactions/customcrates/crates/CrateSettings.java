@@ -9,10 +9,12 @@ import xyz.ufactions.customcrates.libs.F;
 import xyz.ufactions.customcrates.libs.RandomizableList;
 import xyz.ufactions.customcrates.spin.Spin;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * All the crate's configurable settings are contained here. (e.g. Crate Display, Identifier, Prizes, etc...)
+ */
 @Getter
 @Setter
 public class CrateSettings {

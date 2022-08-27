@@ -1,17 +1,32 @@
 package xyz.ufactions.customcrates.hologram;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
+import org.bukkit.World;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Item;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.persistence.PersistentDataType;
 import xyz.ufactions.customcrates.CustomCrates;
+import xyz.ufactions.customcrates.item.ItemStackBuilder;
 import xyz.ufactions.customcrates.libs.F;
-import xyz.ufactions.customcrates.libs.ItemBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Hologram {
+
+    private static final NamespacedKey hologramKey = NamespacedKey.minecraft("ccholo");
+
+    public static List<ArmorStand> getHolograms() {
+        List<ArmorStand> holograms = new ArrayList<>();
+        for (World world : Bukkit.getWorlds())
+            for (ArmorStand entity : world.getEntitiesByClass(ArmorStand.class))
+                if (entity.getPersistentDataContainer().has(hologramKey, PersistentDataType.STRING))
+                    holograms.add(entity);
+        return holograms;
+    }
 
     // Meta
     private Location location;
@@ -56,11 +71,13 @@ public class Hologram {
                 continue;
             }
             ArmorStand armorStand = location.getWorld().spawn(location, ArmorStand.class);
+            armorStand.getPersistentDataContainer().set(hologramKey, PersistentDataType.STRING, Boolean.TRUE.toString());
             armorStand.setGravity(false);
             armorStand.setCanPickupItems(false);
             armorStand.setCustomNameVisible(true);
             armorStand.setVisible(false);
             armorStand.setCustomName(F.color((String) line));
+            armorStand.setRemoveWhenFarAway(false);
             armorStands.add(armorStand);
         }
     }
@@ -91,6 +108,6 @@ public class Hologram {
     }
 
     public void addItem(ItemStack item) {
-        this.lines.add(new ItemBuilder(item).name("CustomCrates - Unobtainable").build());
+        this.lines.add(ItemStackBuilder.from(item).name("CustomCrates - Unobtainable").build());
     }
 }

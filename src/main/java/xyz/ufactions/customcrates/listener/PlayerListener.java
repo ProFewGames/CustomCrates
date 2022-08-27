@@ -25,13 +25,13 @@ import xyz.ufactions.customcrates.crates.Crate;
 import xyz.ufactions.customcrates.dialog.Dialog;
 import xyz.ufactions.customcrates.dialog.Question;
 import xyz.ufactions.customcrates.file.LanguageFile;
-import xyz.ufactions.customcrates.libs.F;
-import xyz.ufactions.customcrates.libs.UtilEvent;
-import xyz.ufactions.customcrates.libs.VaultManager;
+import xyz.ufactions.customcrates.libs.*;
 import xyz.ufactions.customcrates.universal.Universal;
 
 import java.io.IOException;
 import java.util.Optional;
+import java.util.OptionalDouble;
+import java.util.OptionalInt;
 
 public class PlayerListener implements Listener {
 
@@ -83,91 +83,113 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler
-    public void onSignChangeEvent(SignChangeEvent e) {
-        if (e.getLine(0).equalsIgnoreCase("[crates]") && !e.getLine(1).isEmpty() && !e.getLine(2).isEmpty() && !e.getLine(3).isEmpty()) {
-            Player player = e.getPlayer();
-            if (!VaultManager.getInstance().useEconomy()) {
-                player.sendMessage(F.format("&cEconomy is not enabled on the server."));
-                return;
-            }
-            if (player.hasPermission("customcrates.sign.purchase.create")) {
-                for (Crate crate : plugin.getCratesManager().getCrates()) {
-                    if (e.getLine(2).equalsIgnoreCase(crate.getSettings().getIdentifier())) {
-                        double price;
-                        try {
-                            price = Double.parseDouble(e.getLine(3));
-                        } catch (NumberFormatException ex) {
-                            player.sendMessage(F.format(plugin.getLanguage().getString(LanguageFile.LanguagePath.INVALID_INTEGER)));
-                            return;
-                        }
-                        int amount;
-                        try {
-                            amount = Integer.parseInt(e.getLine(1));
-                        } catch (NumberFormatException ex) {
-                            player.sendMessage(F.format(plugin.getLanguage().getString(LanguageFile.LanguagePath.INVALID_INTEGER)));
-                            return;
-                        }
-                        if (price <= 0 && amount <= 0) {
-                            player.sendMessage(F.format(plugin.getLanguage().getString(LanguageFile.LanguagePath.INVALID_INTEGER)));
-                            return;
-                        }
-                        e.setLine(0, F.color("&7[&cCrates&7]"));
-                        e.setLine(1, String.valueOf(amount));
-                        e.setLine(2, F.capitalizeFirstLetter(crate.getSettings().getIdentifier()));
-                        e.setLine(3, "$" + price);
-                        player.sendMessage(F.format(plugin.getLanguage().getString(LanguageFile.LanguagePath.SIGN_PURCHASE_SET)));
-                        return;
-                    }
-                }
+    public void onSignChangeEvent(SignChangeEvent event) {
+        String[] lines = event.getLines();
+        if (lines.length != 4) return;
+        if (lines[0].isEmpty() || lines[1].isEmpty() || lines[2].isEmpty() || lines[3].isEmpty()) return;
+        if (!lines[0].equalsIgnoreCase("[crates]") && !lines[0].equalsIgnoreCase("[pouches]")) return;
+        Player player = event.getPlayer();
+        if (!VaultManager.getInstance().useEconomy()) {
+            player.sendMessage(F.format("&cEconomy is not enabled on the server."));
+            return;
+        }
+
+        if (!player.hasPermission("customcrates.sign.purchase.create"))
+            return;
+
+        Crate crate = null;
+        for (Crate otherCrate : plugin.getCratesManager().getCrates()) {
+            if (otherCrate.getSettings().getIdentifier().equalsIgnoreCase(lines[2])) {
+                crate = otherCrate;
+                break;
             }
         }
+
+        if (crate == null) {
+            player.sendMessage(F.format(String.format("&cThe provided name '%s' is not a crate.", lines[2])));
+            return;
+        }
+
+        OptionalDouble price = UtilMath.getDouble(lines[3]);
+        if (!price.isPresent()) {
+            player.sendMessage(F.format(plugin.getLanguage().getString(LanguageFile.LanguagePath.INVALID_INTEGER)));
+            return;
+        }
+        OptionalInt amount = UtilMath.getInteger(lines[1]);
+        if (!amount.isPresent()) {
+            player.sendMessage(F.format(plugin.getLanguage().getString(LanguageFile.LanguagePath.INVALID_INTEGER)));
+            return;
+        }
+
+        if (price.getAsDouble() <= 0 || amount.getAsInt() <= 0) {
+            player.sendMessage(F.format(plugin.getLanguage().getString(LanguageFile.LanguagePath.INVALID_INTEGER)));
+            return;
+        }
+        event.setLine(0, F.color("&7[&b&l" + F.capitalizeFirstLetter(
+                lines[0].replace("[", "").replace("]", "")) + "&7]"));
+        event.setLine(1, String.valueOf(amount.getAsInt()));
+        event.setLine(2, F.capitalizeFirstLetter(crate.getSettings().getIdentifier()));
+        event.setLine(3, "$" + price.getAsDouble());
+        player.sendMessage(F.format(plugin.getLanguage().getString(LanguageFile.LanguagePath.SIGN_PURCHASE_SET)));
     }
 
     @EventHandler
-    public void onSignInteract(PlayerInteractEvent e) {
-        if (UtilEvent.isAction(e, UtilEvent.ActionType.R_BLOCK)) {
-            if (Universal.getInstance().isSign(e.getClickedBlock()) || e.getClickedBlock().getState() instanceof Sign) {
-                Sign sign = (Sign) e.getClickedBlock().getState();
-                if (sign.getLine(0).equalsIgnoreCase(F.color("&7[&cCrates&7]")) && !sign.getLine(1).isEmpty() && !sign.getLine(2).isEmpty() && !sign.getLine(3).isEmpty()) {
-                    Player player = e.getPlayer();
-                    if (!VaultManager.getInstance().useEconomy()) {
-                        player.sendMessage(F.format("&cEconomy is not enabled on the server."));
-                        return;
-                    }
-                    for (Crate crate : plugin.getCratesManager().getCrates()) {
-                        if (sign.getLine(2).equalsIgnoreCase(crate.getSettings().getIdentifier())) {
-                            double price;
-                            try {
-                                price = Double.parseDouble(sign.getLine(3).substring(1));
-                            } catch (NumberFormatException ex) {
-                                player.sendMessage(F.format(plugin.getLanguage().getString(LanguageFile.LanguagePath.FAILED_LOAD_SIGN)));
-                                e.getClickedBlock().breakNaturally();
-                                return;
-                            }
-                            int amount;
-                            try {
-                                amount = Integer.parseInt(sign.getLine(1));
-                            } catch (NumberFormatException ex) {
-                                player.sendMessage(F.format(plugin.getLanguage().getString(LanguageFile.LanguagePath.FAILED_LOAD_SIGN)));
-                                e.getClickedBlock().breakNaturally();
-                                return;
-                            }
-                            if (!player.hasPermission("customcrates.sign.purchase.use")) return;
-                            EconomyResponse response = VaultManager.getInstance().getEconomy().withdrawPlayer(player, price);
-                            if (response.transactionSuccess()) {
-                                ItemStack key = crate.getSettings().getKey().build();
-                                key.setAmount(amount);
-                                player.getInventory().addItem(key);
-                                if (!plugin.getLanguage().getString(LanguageFile.LanguagePath.KEY_PURCHASED).isEmpty())
-                                    player.sendMessage(F.format(plugin.getLanguage().getString(LanguageFile.LanguagePath.KEY_PURCHASED)));
-                            } else {
-                                player.sendMessage(F.format(plugin.getLanguage().getString(LanguageFile.LanguagePath.NOT_ENOUGH_MONEY)));
-                            }
-                        }
-                    }
-                }
+    public void onSignInteract(PlayerInteractEvent event) {
+        if (!UtilEvent.isAction(event, UtilEvent.ActionType.R_BLOCK)) return;
+        Block block = event.getClickedBlock();
+        if (block == null) return;
+        if (!(block.getState() instanceof Sign)) return;
+
+        Sign sign = (Sign) block.getState();
+        String[] lines = sign.getLines();
+        if (lines.length != 4) return;
+        String strippedFirstLine = ChatColor.stripColor(lines[0]);
+
+        if (!strippedFirstLine.equalsIgnoreCase("[crates]") && !strippedFirstLine.equalsIgnoreCase("[pouches]")) return;
+
+        Player player = event.getPlayer();
+        if (!player.hasPermission("customcrates.sign.purchase.use")) return;
+
+        if (!VaultManager.getInstance().useEconomy()) {
+            player.sendMessage(F.format("&cEconomy is not enabled on the server."));
+            return;
+        }
+
+        boolean givePouch = strippedFirstLine.equalsIgnoreCase("[pouches]");
+
+        Crate crate = null;
+        for (Crate otherCrate : this.plugin.getCratesManager().getCrates()) {
+            if (lines[2].equalsIgnoreCase(otherCrate.getSettings().getIdentifier())) {
+                crate = otherCrate;
+                break;
             }
         }
+        if (crate == null) {
+            player.sendMessage(F.format(plugin.getLanguage().getString(LanguageFile.LanguagePath.FAILED_LOAD_SIGN)));
+            return;
+        }
+
+        OptionalDouble price = UtilMath.getDouble(lines[3].substring(1));
+        if (!price.isPresent()) {
+            player.sendMessage(F.format(plugin.getLanguage().getString(LanguageFile.LanguagePath.FAILED_LOAD_SIGN)));
+            return;
+        }
+        OptionalInt amount = UtilMath.getInteger(lines[1]);
+        if (!amount.isPresent()) {
+            player.sendMessage(F.format(plugin.getLanguage().getString(LanguageFile.LanguagePath.FAILED_LOAD_SIGN)));
+            return;
+        }
+
+        EconomyResponse response = VaultManager.getInstance().getEconomy().withdrawPlayer(player, price.getAsDouble());
+        if (!response.transactionSuccess()) {
+            player.sendMessage(F.format(plugin.getLanguage().getString(LanguageFile.LanguagePath.NOT_ENOUGH_MONEY)));
+            return;
+        }
+        ItemStack item = givePouch ? crate.getSettings().getPouch().build() : crate.getSettings().getKey().build();
+        item.setAmount(amount.getAsInt());
+        Utility.addOrDropItem(player.getInventory(), player.getLocation(), item);
+        if (!plugin.getLanguage().getString(LanguageFile.LanguagePath.KEY_PURCHASED).isEmpty())
+            player.sendMessage(F.format(plugin.getLanguage().getString(LanguageFile.LanguagePath.KEY_PURCHASED)));
     }
 
     @EventHandler
@@ -204,26 +226,26 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler
-    public void onCrateInteract(PlayerInteractEvent e) {
-        if (UtilEvent.isAction(e, UtilEvent.ActionType.R_BLOCK)) {
-            Crate crate = plugin.getCratesManager().getCrate(e.getClickedBlock().getLocation());
+    public void onCrateInteract(PlayerInteractEvent event) {
+        if (UtilEvent.isAction(event, UtilEvent.ActionType.R_BLOCK)) {
+            Crate crate = plugin.getCratesManager().getCrate(event.getClickedBlock().getLocation());
             if (crate != null) {
-                e.setCancelled(true);
-                Inventory inventory = e.getPlayer().getInventory();
+                event.setCancelled(true);
+                Inventory inventory = event.getPlayer().getInventory();
                 ItemStack item = crate.getSettings().getKey().build();
                 item.setAmount(1); // Just in case it's not already one we're setting it to one
                 if (inventory.containsAtLeast(item, 1)) {
                     inventory.removeItem(item);
-                    crate.getSettings().getSpinType().getSpin(plugin).spin(e.getPlayer(), crate);
+                    crate.getSettings().getSpinType().getSpin(plugin).spin(event.getPlayer(), crate);
                 } else {
-                    e.getPlayer().sendMessage(F.format(plugin.getLanguage().getString(LanguageFile.LanguagePath.NO_KEY, item.getItemMeta().getDisplayName())));
+                    event.getPlayer().sendMessage(F.format(plugin.getLanguage().getString(LanguageFile.LanguagePath.NO_KEY, item.getItemMeta().getDisplayName())));
                 }
             }
-        } else if (UtilEvent.isAction(e, UtilEvent.ActionType.L_BLOCK)) {
-            Crate crate = plugin.getCratesManager().getCrate(e.getClickedBlock().getLocation());
+        } else if (UtilEvent.isAction(event, UtilEvent.ActionType.L_BLOCK) && !event.getPlayer().isSneaking()) {
+            Crate crate = plugin.getCratesManager().getCrate(event.getClickedBlock().getLocation());
             if (crate != null) {
-                e.setCancelled(true);
-                e.getPlayer().openInventory(crate.getPreviewInventory());
+                event.setCancelled(true);
+                crate.openPreviewInventory(event.getPlayer());
             }
         }
     }

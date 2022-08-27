@@ -26,7 +26,7 @@ public class PreviewCommand extends SubCommand {
             Player player = (Player) sender;
             Crate crate = getCrate(player, args[0]);
             if (crate == null) return true;
-            player.openInventory(crate.getPreviewInventory());
+            crate.openPreviewInventory(player);
             player.sendMessage(F.format(plugin.getLanguage().getString(LanguageFile.LanguagePath.PREVIEWING, crate.getSettings().getIdentifier())));
             return true;
         }

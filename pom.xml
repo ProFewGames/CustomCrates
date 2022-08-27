@@ -6,7 +6,7 @@
 
     <groupId>xyz.ufactions.customcrates</groupId>
     <artifactId>CustomCrates</artifactId>
-    <version>5.0.0</version>
+    <version>5.0.4</version>
     <name>CustomCrates</name>
     <description>A Fully Customizable Crates Plugin</description>
 
@@ -17,7 +17,6 @@
     </properties>
 
     <repositories>
-        <!-- Vault Repository -->
         <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
@@ -67,6 +66,12 @@
             <version>latest</version>
             <scope>compile</scope>
         </dependency>
+<!--        <dependency>-->
+<!--            <groupId>com.github.simplix-softworks</groupId>-->
+<!--            <artifactId>simplixstorage</artifactId>-->
+<!--            <version>3.2.5</version>-->
+<!--            <scope>compile</scope>-->
+<!--        </dependency>-->
         <!-- PlaceholderAPI Dependency -->
         <dependency>
             <groupId>me.clip</groupId>
@@ -124,6 +129,15 @@
                         </goals>
                     </execution>
                 </executions>
+<!--                <configuration>-->
+<!--                    <createDependencyReducedPom>false</createDependencyReducedPom>-->
+<!--                    <relocations>-->
+<!--                        <relocation>-->
+<!--                            <pattern>de.leonhard.storage</pattern>-->
+<!--                            <shadedPattern>xyz.ufactions.customcrates.shaded.storage</shadedPattern>-->
+<!--                        </relocation>-->
+<!--                    </relocations>-->
+<!--                </configuration>-->
             </plugin>
             <!-- Build project  -->
             <plugin>

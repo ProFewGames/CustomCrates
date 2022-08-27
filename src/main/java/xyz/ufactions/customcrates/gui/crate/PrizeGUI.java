@@ -2,7 +2,7 @@ package xyz.ufactions.customcrates.gui.crate;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import xyz.ufactions.customcrates.CustomCrates;
 import xyz.ufactions.customcrates.crates.Crate;
 import xyz.ufactions.customcrates.crates.Prize;
@@ -10,27 +10,24 @@ import xyz.ufactions.customcrates.dialog.Question;
 import xyz.ufactions.customcrates.file.LanguageFile;
 import xyz.ufactions.customcrates.gui.PrizeEditorGUI;
 import xyz.ufactions.customcrates.gui.internal.GUI;
-import xyz.ufactions.customcrates.gui.internal.Slot;
+import xyz.ufactions.customcrates.gui.internal.PagedGUI;
+import xyz.ufactions.customcrates.item.Item;
 import xyz.ufactions.customcrates.item.ItemStackBuilder;
 import xyz.ufactions.customcrates.libs.F;
 import xyz.ufactions.customcrates.libs.RandomizableList;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
-public class PrizesGUI extends GUI {
+public class PrizeGUI extends PagedGUI {
 
-    private final GUI gui;
     private final Crate crate;
 
-    private boolean fallback = true;
+    public PrizeGUI(CustomCrates plugin, Crate crate, GUI fallbackGUI, Player player) {
+        super(crate.getSettings().getDisplay() + "&3&l's Prizes", plugin, fallbackGUI, player);
 
-    public PrizesGUI(CustomCrates plugin, Crate crate, GUI gui, Player player) {
-        super(plugin, player, 54);
-
-        this.gui = gui;
         this.crate = crate;
-
-        setTitle(crate.getSettings().getDisplay() + "&3&l's Prizes");
 
         setItem(49, ItemStackBuilder.of(Material.BARRIER)
                 .glow()
@@ -51,15 +48,20 @@ public class PrizesGUI extends GUI {
                                         .name("&b&l" + input.toUpperCase())
                                         .lore("&9Chance: &e%chance%")
                                         .glow();
+                                List<String> commands = new ArrayList<>();
+                                commands.add("[bc] &e&l%player% &b&lhas won &e&l1&b&lx diamond");
+                                commands.add("minecraft:give %player% diamond 1");
                                 Prize prize = new Prize(builder,
                                         50d,
+                                        false,
                                         "Prizes." + input.toLowerCase(),
-                                        Arrays.asList("[bc] &e&l%player% &b&lhas won &e&l1&b&lx diamond", "minecraft:give %player% diamond 1"));
+                                        commands);
                                 plugin.getCratesManager().createPrize(this.crate, prize);
+                                setDefaultItems();
                                 open();
                                 return true;
                             }).build();
-                    this.fallback = false;
+                    this.openFallback = false;
                     player.closeInventory();
                     plugin.getDialogManager()
                             .create(player)
@@ -68,28 +70,27 @@ public class PrizesGUI extends GUI {
                 }));
     }
 
-    @Override
-    protected void onOpen() {
-        this.fallback = true;
-
-        for (Slot slot : getSlots())
-            if (slot.getSlot() != 49)
-                slot.clear();
-
-        int slot = 0;
-        for (RandomizableList<Prize>.Entry entry : this.crate.getSettings().getPrizes()) {
-            Prize prize = entry.getObject();
-            setItem(slot++, prize.getItemBuilder().clone()
-                    .lore("", "&7&o* Click to edit *")
-                    .build(event -> {
-                        this.fallback = false;
-                        new PrizeEditorGUI(plugin, crate, prize, this, player).open();
-                    }));
-        }
+    private Item<InventoryClickEvent> itemFromPrize(Prize prize) {
+        return prize.getItemBuilder().clone()
+                .lore("", "&7&o* Click to edit *")
+                .build(event -> {
+                    this.openFallback = false;
+                    new PrizeEditorGUI(this.plugin, this.crate, prize, this, this.player).open();
+                });
     }
 
     @Override
-    protected void handleClose(InventoryCloseEvent event) {
-        if (this.fallback) this.gui.open();
+    protected List<Item<InventoryClickEvent>> getItems() {
+        return this.crate.getSettings()
+                .getPrizes()
+                .getEntries()
+                .stream()
+                .map(entry -> itemFromPrize(entry.getObject()))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    protected List<Item<InventoryClickEvent>> getSearchItems(String search) {
+        return getItems(); // Method will not be used for this GUI
     }
 }

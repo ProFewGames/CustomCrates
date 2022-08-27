@@ -9,9 +9,11 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import xyz.ufactions.customcrates.CustomCrates;
+import xyz.ufactions.customcrates.api.event.CrateOpenEvent;
 import xyz.ufactions.customcrates.crates.Crate;
 import xyz.ufactions.customcrates.crates.Prize;
 import xyz.ufactions.customcrates.libs.UtilMath;
+import xyz.ufactions.customcrates.libs.Utility;
 
 public abstract class Spin {
 
@@ -45,6 +47,7 @@ public abstract class Spin {
             plugin.getLogger().warning("Failed to initialize pre-crate open events for crate " + crate.getSettings().getIdentifier() + ".");
             e.printStackTrace();
         }
+        Bukkit.getPluginManager().callEvent(new CrateOpenEvent(player, crate));
         try {
             execute(player, crate);
         } catch (Exception e) {
@@ -61,6 +64,8 @@ public abstract class Spin {
 
     protected final void end(Player player, Crate crate, Prize prizeWon) {
         player.playSound(player.getLocation(), crate.getSettings().getWinSound(), 1f, 1f);
+        if (prizeWon.isGiveItem())
+            Utility.addOrDropItem(player.getInventory(), player.getLocation(), prizeWon.getItemBuilder().build());
         for (String command : prizeWon.getCommands()) {
             executeCommand(player, crate, command);
         }

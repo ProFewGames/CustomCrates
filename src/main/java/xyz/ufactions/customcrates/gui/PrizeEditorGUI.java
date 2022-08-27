@@ -10,6 +10,7 @@ import xyz.ufactions.customcrates.dialog.Question;
 import xyz.ufactions.customcrates.file.CrateFileWriter;
 import xyz.ufactions.customcrates.file.LanguageFile;
 import xyz.ufactions.customcrates.gui.internal.GUI;
+import xyz.ufactions.customcrates.gui.internal.PagedGUI;
 import xyz.ufactions.customcrates.gui.item.ItemGUI;
 import xyz.ufactions.customcrates.item.ItemStackBuilder;
 import xyz.ufactions.customcrates.libs.F;
@@ -43,7 +44,9 @@ public class PrizeEditorGUI extends ItemGUI {
     protected void onOpen() {
         super.onOpen();
 
-        setItem(47, ItemStackBuilder.of(UniversalMaterial.COMMAND_BLOCK.get())
+        setGiveItemButton();
+
+        setItem(46, ItemStackBuilder.of(UniversalMaterial.COMMAND_BLOCK.get())
                 .name("&b&lEdit Commands")
                 .lore("", "&e&lCommands:")
                 .lore(this.prize.getCommands().stream().map(command -> "&f&l" + command).collect(Collectors.toList()))
@@ -56,7 +59,7 @@ public class PrizeEditorGUI extends ItemGUI {
                     }, prize::getCommands, plugin, this, player).open();
                 }));
 
-        setItem(49, ItemStackBuilder.of(Material.DIAMOND)
+        setItem(48, ItemStackBuilder.of(Material.DIAMOND)
                 .name("&b&lEdit Chance")
                 .lore("", "&e&lChance:", "&f&l" + this.prize.getChance(), "", "&7&o* Click to edit *")
                 .build(event -> {
@@ -84,7 +87,7 @@ public class PrizeEditorGUI extends ItemGUI {
                             .begin();
                 }));
 
-        setItem(51, ItemStackBuilder.of(Material.BARRIER)
+        setItem(50, ItemStackBuilder.of(Material.BARRIER)
                 .glow()
                 .name("&4&lDELETE")
                 .lore("&c&lWARNING THIS ACTION IS IRREVERSIBLE", "", "&7&o* Click to delete *")
@@ -95,9 +98,22 @@ public class PrizeEditorGUI extends ItemGUI {
                             open();
                         else if (response == DeleteConfirmationGUI.DeletionResponse.ACCEPTED) {
                             this.plugin.getCratesManager().deletePrize(this.crate, this.prize);
+                            if (this.fallbackGUI instanceof PagedGUI)
+                                ((PagedGUI) this.fallbackGUI).setDefaultItems();
                             this.fallbackGUI.open();
                         }
                     }, plugin, player).open();
+                }));
+    }
+
+    private void setGiveItemButton() {
+        setItem(52, ItemStackBuilder.of(Material.CRAFTING_TABLE)
+                .name("&b&lGive Item")
+                .lore("", "&e&lCurrent Value:", F.tf(prize.isGiveItem()), "", "&7&o* Click to toggle this value *")
+                .build(event -> {
+                    prize.setGiveItem(!prize.isGiveItem());
+                    saveCrate();
+                    setGiveItemButton();
                 }));
     }
 

@@ -157,7 +157,8 @@ public final class CrateFileReader {
                 ItemStackBuilder builder = readItemStack(section.getCurrentPath() + ".display").orElseGet(() -> ItemStackBuilder.of(Material.AIR));
                 double chance = section.getDouble("chance");
                 List<String> commands = section.getStringList("commands");
-                prizes.add(new Prize(builder, chance, section.getCurrentPath(), commands), chance);
+                boolean giveItem = section.getBoolean("give item", false);
+                prizes.add(new Prize(builder, chance, giveItem, section.getCurrentPath(), commands), chance);
             } catch (Exception e) {
                 warn("Failed to read configured prize '" + key + "'.", e);
             }
@@ -239,7 +240,7 @@ public final class CrateFileReader {
                 prizes,
                 hologramItems,
                 hologramLines);
-        return new Crate(settings);
+        return new Crate(plugin, settings);
     }
 
     private Optional<ItemStackBuilder> readItemStack(String path) {

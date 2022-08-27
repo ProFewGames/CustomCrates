@@ -1,6 +1,6 @@
 # GUI
 gui:
-  language question: '&bType in chat the new setting for that language. Enter " " for an empty message'
+  language question: '&bType in chat the new message for that section. Enter " " for an empty message'
   language set: "&bLanguage Path Set."
   create crate question: "&bType in chat a name for the new crate."
   create crate response: "&bCrate has been created."
@@ -16,6 +16,7 @@ gui:
   owner question: "&bType in chat a player's UUID to retrieve their skin or enter the \"Other Value\" from https://minecraft-heads.com/"
   rgb question: "&bType in chat RGB values for leather armor. Example: 255, 0, 255"
   rgb unknown format: "&cUnknown RGB Format. Example: 255, 0, 0"
+  rgb wrong arguments: "&cIncorrect number of arguments. Example: 255, 0, 0"
   rgb failed parse: "&cFailed to parse RGB number values."
   rgb value too large: "&cAn RGB value that you have entered is too large. {0} > 255"
   rgb value too small: "&cAn RGB value that you have entered is too small. {0} < 0"
@@ -26,7 +27,7 @@ gui:
 
 # Dialog
 dialog:
-  title: "&3&lDialog"
+  title: "&3&lEditing..."
   subtitle: "&e&lLeft Click &b&lto cancel"
 
 # Errors

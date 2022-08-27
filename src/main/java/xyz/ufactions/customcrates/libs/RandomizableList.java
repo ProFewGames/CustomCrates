@@ -12,14 +12,20 @@ public final class RandomizableList<T> implements Iterable<RandomizableList<T>.E
 
         @Getter
         private final T object;
-        private final Double insertionWeight;
         @Getter
         private final Double weight;
 
-        public Entry(T object, Double insertionWeight, Double weight) {
+        public Entry(T object, Double weight) {
             this.object = object;
-            this.insertionWeight = insertionWeight;
             this.weight = weight;
+        }
+
+        @Override
+        public String toString() {
+            return "Entry{" +
+                    "object=" + object +
+                    ", weight=" + weight +
+                    '}';
         }
     }
 
@@ -35,18 +41,18 @@ public final class RandomizableList<T> implements Iterable<RandomizableList<T>.E
         this.entries = new TreeMap<>();
     }
 
-    public void add(T object, double weight) {
+    public synchronized void add(T object, double weight) {
         Objects.requireNonNull(object);
 
         this.lock.lock();
         try {
-            entries.put(accumulatedWeight += weight, new Entry(object, accumulatedWeight, weight));
+            entries.put(accumulatedWeight += weight, new Entry(object, weight));
         } finally {
             this.lock.unlock();
         }
     }
 
-    public boolean contain(T object) {
+    public synchronized boolean contain(T object) {
         Objects.requireNonNull(object);
 
         this.lock.lock();
@@ -62,15 +68,18 @@ public final class RandomizableList<T> implements Iterable<RandomizableList<T>.E
         return false;
     }
 
-    public void remove(T object) {
+    public synchronized void remove(T object) {
         Objects.requireNonNull(object);
 
         this.lock.lock();
         try {
-            for (Map.Entry<Double, Entry> entry : entries.entrySet()) {
+            Iterator<Map.Entry<Double, Entry>> iterator = entries.entrySet().iterator();
+            Map.Entry<Double, Entry> entry;
+            while (iterator.hasNext()) {
+                entry = iterator.next();
                 if (entry.getValue().object == object) {
                     accumulatedWeight -= entry.getValue().weight;
-                    entries.remove(entry.getValue().insertionWeight);
+                    iterator.remove();
                 }
             }
         } finally {
@@ -78,7 +87,7 @@ public final class RandomizableList<T> implements Iterable<RandomizableList<T>.E
         }
     }
 
-    public T get() {
+    public synchronized T get() {
         this.lock.lock();
         try {
             return entries.ceilingEntry(random.nextDouble() * accumulatedWeight).getValue().object;
@@ -87,7 +96,7 @@ public final class RandomizableList<T> implements Iterable<RandomizableList<T>.E
         }
     }
 
-    public double getAccumulatedWeight() {
+    public synchronized double getAccumulatedWeight() {
         this.lock.lock();
         try {
             return accumulatedWeight;
@@ -96,7 +105,7 @@ public final class RandomizableList<T> implements Iterable<RandomizableList<T>.E
         }
     }
 
-    public int size() {
+    public synchronized int size() {
         this.lock.lock();
         try {
             return entries.size();
@@ -105,7 +114,7 @@ public final class RandomizableList<T> implements Iterable<RandomizableList<T>.E
         }
     }
 
-    public boolean isEmpty() {
+    public synchronized boolean isEmpty() {
         this.lock.lock();
         try {
             return entries.isEmpty();
@@ -114,7 +123,7 @@ public final class RandomizableList<T> implements Iterable<RandomizableList<T>.E
         }
     }
 
-    public Collection<Entry> getEntries() {
+    public synchronized Collection<Entry> getEntries() {
         this.lock.lock();
         try {
             return entries.values();
@@ -127,5 +136,15 @@ public final class RandomizableList<T> implements Iterable<RandomizableList<T>.E
     @Override
     public Iterator<Entry> iterator() {
         return getEntries().iterator();
+    }
+
+    @Override
+    public String toString() {
+        return "RandomizableList{" +
+                "entries=" + entries +
+                ", lock=" + lock +
+                ", random=" + random +
+                ", accumulatedWeight=" + accumulatedWeight +
+                '}';
     }
 }

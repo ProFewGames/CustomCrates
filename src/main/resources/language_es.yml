@@ -1,71 +1,72 @@
 # GUI
 gui:
-  language question: '&bType in chat the new setting for that language. Enter " " for an empty message'
-  language set: "&bLanguage Path Set."
-  create crate question: "&bType in chat a name for the new crate."
-  create crate response: "&bCrate has been created."
-  prize chance question: "&bType in chat new chance as double in the format ##.##; Example: 50.0"
-  prize chance unknown format: "&cIncorrect double format ##.##; Example 50.0"
-  prize name question: "&bType in chat the name of the new prize."
-  add command question: "&bType in chat the command to add. &cDo not include the slash '/'"
-  add command username flag detected: "&cUsername detected instead of global flag &e%player%&c, CustomCrates will automatically rectify the issue."
-  add lore question: '&bType in chat a line of lore. Type " " for an empty line of lore.'
-  display name question: "&bType in chat a new display name for this item."
-  durability question: "&bType in chat durability short value."
-  durability unknown format: "&cUnknown short value [{0} <-> {1}]"
-  owner question: "&bType in chat a player's UUID to retrieve their skin or enter the \"Other Value\" from https://minecraft-heads.com/"
-  rgb question: "&bType in chat RGB values for leather armor. Example: 255, 0, 255"
-  rgb unknown format: "&cUnknown RGB Format. Example: 255, 0, 0"
-  rgb failed parse: "&cFailed to parse RGB number values."
-  rgb value too large: "&cAn RGB value that you have entered is too large. {0} > 255"
-  rgb value too small: "&cAn RGB value that you have entered is too small. {0} < 0"
-  model question: "&bType in chat new model data number."
-  model invalid: "&cIncorrect model data format, ensure you're entering an integer. 001"
-  prize exists: "&cA Prize with that name already exists."
-  crate display question: "&bType in chat the new display name for this crate."
+  language question: '&bEscriba en el chat el nuevo mensaje para esa sección. Ingrese " " para establecer un mensaje vacío'
+  language set: "&bMensaje actualizado y establecido con éxito."
+  create crate question: "&bEscriba en el chat el nuevo nombre para la caja."
+  create crate response: "&bCaja creada con éxito."
+  prize chance question: "&bEscriba en el chat la nueva chance en el formato ##.##; Ejemplo: 50.0"
+  prize chance unknown format: "&cFormato incorrecto ##.##; Ejemplo 50.0"
+  prize name question: "&bEscriba en el chat el nombre del premio."
+  add command question: "&bEscriba en el chat el comando que desee agregar. &cNo incluyas la barra '/'"
+  add command username flag detected: "&cNombre de usuário detectado en vez de la variable global &e{player}&c, CustomCrates solucionará el problema automaticamente."
+  add lore question: '&bEscriba en el chat una línea de descripción (lore). Escriba " " para una línea vacía.'
+  display name question: "&bEscriba en el chat el nombre a ser mostrado del item."
+  durability question: "&bEscriba en el chat la durabilidad deseada para el item."
+  durability unknown format: "&cEl valor ingresado es incorrecto. [{0} <-> {1}]"
+  owner question: '&bEscriba en el chat el UUID de un jugador para recuperar su skin o ingrese "Otro Valor" de https://minecraft-heads.com/'
+  rgb question: "&bEscriba en el chat los valores RGB para la armadura de cuero. Ejemplo: 255, 0, 255"
+  rgb unknown format: "&cFormato RGB incorrecto. Ejemplo: 255, 0, 0"
+  rgb wrong arguments: "&cCantidad de argumentos inválida. Ejemplo: 255, 0, 0"
+  rgb failed parse: "&cHubo un error al analizar los valores numéricos RGB"
+  rgb value too large: "&cEl valor RGB ingresado es muy largo. {0} > 255"
+  rgb value too small: "&cEl valor RGB ingresado es muy corto. {0} < 0"
+  model question: "&bEscriba en el chat el número de datos del modelo (model data number)."
+  model invalid: "&cFormato de modelo incorrecto, asegurese de ingresar un número entero. 001"
+  prize exists: "&cYa existe un premio con ese nombre."
+  crate display question: "&bEscriba en el chat el nombre para mostrar de la caja."
 
 # Dialog
 dialog:
-  title: "&3&lDialog"
-  subtitle: "&e&lLeft Click &b&lto cancel"
+  title: "&3&lEditando..."
+  subtitle: "&e&lUse click izquierdo &b&lpara cancelar la acción"
 
 # Errors
-error_file_saving: '&cHubo un error al guardar los archivos.'
-spin-not-found: 'Error al cargar el modo "spin" en la crate "{0}". La crate fue establecida por defecto.'
-crate-block-not-found: 'Error al cargar el bloque para la crate "{0}". El bloque fue establecido por defecto.'
-failed-load-prize: 'Error al cargar el premio "{0}" para la crate "{1}".'
-failed-load-crate: 'Error al cargar la crate desde el archivo: {0}'
-no-player: '&cDebes ser un jugador para ejecutar ese comando.'
-no-permission: '&cNo tienes permiso para ejecutar ese comando.'
-no-target-block: '&cDebes estar mirando hacia un bloque.'
-target-not-crate: '&cEl lugar al que estas mirando no es una crate.'
-invalid-crate-input: '&cEl nombre establecido es invalid.'
-incorrect-block-target: '&cDebes estar mirando hacia un "{0}" para establecerlo como crate.'
-location-already-set: '&cEse bloque ya esta establecido como crate.'
-invalid-integer: '&cEl número establecido es inválido.'
-player-not-found: '&cJugador no encontrado.'
-failed-load-sign: '&cError al cargar el cartel.'
-no-money: '&cNo tienes dinero suficiente.'
-invalid-pouch: '&cConfiguración de bolsa no elegible. Asegúrese de tener una bolsa configurada para esta caja.'
-cannot place key: ""
+error_file_saving: "&cOcurrió un error al guardar los archivos."
+spin-not-found: 'Error al cargar el tipo de apertura de la caja "{0}". Estableciendo al tipo por defecto: ROULETTE.'
+crate-block-not-found: 'Error al cargar el bloque de la caja "{0}". Estableciendo el bloque por defecto: CHEST.'
+failed-load-prize: 'Error al cargar el premio "{0}" de la caja "{1}".'
+failed-load-crate: "Error al cargar la caja del archivo: {0}"
+no-player: "&cDebes ser un jugador para realizar esta acción."
+no-permission: "&cNo tienes permisos para ejecutar ese comando."
+no-target-block: "&cDebes estar mirando a un bloque para establecerlo como caja."
+target-not-crate: "&cEl bloque al que estas mirando no es una caja."
+invalid-crate-input: "&cEl nombre ingresado es incorrecto."
+incorrect-block-target: '&cDebes estar mirando hacia un(a) "{0}" para establecerlo como caja.'
+location-already-set: "&cEl bloque al que estas mirando ya es una caja."
+invalid-integer: "&cEl número ingresado es incorrecto. Este debe ser un número entero."
+player-not-found: "&cJugador no encontrado."
+failed-load-sign: "&cError al cargar el cartel de compra."
+no-money: "&cNo tienes dinero suficiente para realizar la compra."
+invalid-pouch: "&cConfiguración de la bolsa inválida. Asegúrese de tener una bolsa configurada para esta caja."
+cannot place key: "&cNo puedes usar esa llave."
 
 # Information
-prefix: '&7[&4CustomCrates&7] '
-no_key: '&cNo tienes una llave {0} &cpara abrir la crate.'
-no-available-crates: '&cNo hay crates disponibles'
-broken_crate: '&7Eliminaste el crate de ese lugar.'
-update-available: '&aHay una actualización disponible!.'
-update-downloaded: '&aLa versión mas actual fue descargada. Reinicia el servidor para que cambie.'
-reloading: '&7Recargando plugin...'
-reloaded: '&7Plugin recargado correctamente!'
-available-crates-header: '&7Crates disponibles:'
-target-broken: '&7Eliminaste el crate al que estabas mirando.'
-target-block-set: '&7El bloque al que estabas mirando, fue establecido como crate'
-previewing: '&7Previsualizando &c{0}&7...'
-opening: '&7Abriendo &c{0}&7...'
-key-received: '&7Recibiste x&c{0} &7llaves de la crate &c{1}.'
-key-given: '&7Le diste x&c{0} &7llaves de la crate &c{1} &7a &c{2}.'
-key-given-all: '&7Le diste x&c{0}&7 llaves de la crate &c{1} &7a todo el servidor. (Total de llaves dadas: &c{2}&7).'
-sign-purchase-set: '&7Localización de compra establecida.'
-key-purchased: '&7Compraste una llave!'
-pouch-received: '&bYou have received a pouch.'
+prefix: "&3&lCustomCrates&b "
+no_key: "&cNecesitas una llave {0} para abrir esta caja."
+no-available-crates: "&cNo existe ningúna caja disponible."
+broken_crate: "&bEliminaste la caja de la ubicación."
+update-available: "&aHay una nueva actualización disponible."
+update-downloaded: "&aLa versión mas actual del plugin fue descargada. Recarga el plugin para establecer los cambios."
+reloading: "&bRecargando plugin..."
+reloaded: "&bEl plugin fue recargado con éxito."
+available-crates-header: "&bCajas disponibles:"
+target-broken: "&bLa caja fue eliminada de la ubicación que estabas mirando con éxito."
+target-block-set: "&bEl bloque al que estabas mirando fue establecido como una caja."
+previewing: "&bPrevisualizando la caja: &c{0}"
+opening: "&bAbriendo la caja &c{0}&b..."
+key-received: "&bRecibiste &c{0}&bx llaves de la caja &c{1}&b."
+key-given: "&bLe enviaste &c{1}&bx llaves de la caja &c{2} &bal jugador &c{0}"
+key-given-all: "&bLe enviaste a todos los jugadores &c{0}&bx llaves de la caja &c{1} &b. (Total de llaves enviadas: &c{2}&b."
+sign-purchase-set: "&bEl cartel de compra fue establecido con éxito."
+key-purchased: "&bCompraste una llave con éxito."
+pouch-received: "&bRecibiste una bolsa!"

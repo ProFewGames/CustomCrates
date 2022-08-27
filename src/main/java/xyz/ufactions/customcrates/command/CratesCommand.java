@@ -1,16 +1,22 @@
 package xyz.ufactions.customcrates.command;
 
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import xyz.ufactions.customcrates.CustomCrates;
 import xyz.ufactions.customcrates.command.sub.*;
+import xyz.ufactions.customcrates.crates.Crate;
+import xyz.ufactions.customcrates.crates.Prize;
+import xyz.ufactions.customcrates.item.ItemStackBuilder;
 import xyz.ufactions.customcrates.libs.F;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class CratesCommand extends xyz.ufactions.customcrates.command.Command implements CommandExecutor, TabExecutor {
 

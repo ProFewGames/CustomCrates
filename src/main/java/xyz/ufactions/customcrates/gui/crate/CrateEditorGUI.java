@@ -151,7 +151,7 @@ public class CrateEditorGUI extends GUI {
                 .lore("", "&7&o* Click to edit prizes *")
                 .build(event -> {
                     this.fallback = false;
-                    new PrizesGUI(plugin, crate, this, player).open();
+                    new PrizeGUI(plugin, crate, this, player).open();
                 }));
     }
 

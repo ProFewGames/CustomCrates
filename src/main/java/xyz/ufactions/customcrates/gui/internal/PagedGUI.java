@@ -84,10 +84,10 @@ public abstract class PagedGUI extends GUI {
 
     @Override
     protected final void handleClose(InventoryCloseEvent event) {
-        if (this.openFallback) this.fallbackGUI.open();
+        if (this.openFallback && this.fallbackGUI != null) this.fallbackGUI.open();
     }
 
-    private void setDefaultItems() {
+    public final void setDefaultItems() {
         if (this.items == null)
             this.items = new ArrayList<>();
         this.items.clear();

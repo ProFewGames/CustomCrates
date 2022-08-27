@@ -27,12 +27,6 @@ permissions:
   customcrates.command.info:
     description: CustomCrates info command.
     default: true
-  customcrates.command.create:
-    description: CustomCrates create command.
-    default: op
-  customcrates.command.prize:
-    description: CustomCrates create prize command.
-    default: op
   customcrates.command.reload:
     description: CustomCrates reload command.
     default: op

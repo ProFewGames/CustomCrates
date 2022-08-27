@@ -1,8 +1,26 @@
 package xyz.ufactions.customcrates.libs;
 
+import java.util.OptionalDouble;
+import java.util.OptionalInt;
 import java.util.Random;
 
 public class UtilMath {
+
+    public static OptionalDouble getDouble(String string) {
+        try {
+            return OptionalDouble.of(Double.parseDouble(string));
+        } catch (NumberFormatException e) {
+            return OptionalDouble.empty();
+        }
+    }
+
+    public static OptionalInt getInteger(String string) {
+        try {
+            return OptionalInt.of(Integer.parseInt(string));
+        } catch (NumberFormatException e) {
+            return OptionalInt.empty();
+        }
+    }
 
     public static boolean isInteger(String string) {
         try {

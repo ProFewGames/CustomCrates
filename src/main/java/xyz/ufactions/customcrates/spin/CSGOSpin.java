@@ -5,8 +5,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.scheduler.BukkitRunnable;
 import xyz.ufactions.customcrates.crates.Crate;
 import xyz.ufactions.customcrates.crates.Prize;
+import xyz.ufactions.customcrates.item.ItemStackBuilder;
 import xyz.ufactions.customcrates.libs.ColorLib;
-import xyz.ufactions.customcrates.libs.ItemBuilder;
 import xyz.ufactions.customcrates.libs.UtilTime;
 import xyz.ufactions.customcrates.universal.UniversalMaterial;
 
@@ -26,7 +26,7 @@ public class CSGOSpin extends Spin {
             if (i == 10 || i == 11 || i == 12 || i == 13 || i == 14 || i == 15 || i == 16)
                 continue;
             if (i == 4 || i == 22) {
-                inventory.setItem(i, new ItemBuilder(UniversalMaterial.REDSTONE_TORCH_ON.get()).name(" ").build());
+                inventory.setItem(i, ItemStackBuilder.of(UniversalMaterial.REDSTONE_TORCH_ON.get()).name(" ").build());
                 continue;
             }
             inventory.setItem(i, ColorLib.pane(randomColor()).name(" ").build());

@@ -93,6 +93,7 @@ public class CrateFileWriter {
             section = getConfigurationSection(entry.getObject().getConfigurationSection());
             section.set("chance", entry.getObject().getChance());
             section.set("commands", entry.getObject().getCommands());
+            section.set("give item", entry.getObject().isGiveItem());
         }
         debug(crate.getSettings().getPrizes().size() + " prizes written");
     }
