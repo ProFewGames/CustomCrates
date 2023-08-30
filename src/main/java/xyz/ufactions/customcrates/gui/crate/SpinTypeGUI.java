@@ -4,8 +4,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import xyz.ufactions.customcrates.CustomCrates;
 import xyz.ufactions.customcrates.crates.Crate;
-import xyz.ufactions.customcrates.file.CrateFileWriter;
-import xyz.ufactions.customcrates.gui.crate.CrateEditorGUI;
+import xyz.ufactions.customcrates.file.crate.CrateFileWriter;
 import xyz.ufactions.customcrates.gui.internal.GUI;
 import xyz.ufactions.customcrates.item.ItemStackBuilder;
 import xyz.ufactions.customcrates.libs.F;
@@ -30,7 +29,7 @@ public class SpinTypeGUI extends GUI {
                     .lore("&7&o* Click to apply spin to crate *")
                     .build(event -> {
                         crate.getSettings().setSpinType(type);
-                        CrateFileWriter writer = new CrateFileWriter(plugin, crate);
+                        CrateFileWriter writer = CrateFileWriter.create(plugin,crate);
                         writer.writeSpinType();
                         writer.save();
                         player.closeInventory();

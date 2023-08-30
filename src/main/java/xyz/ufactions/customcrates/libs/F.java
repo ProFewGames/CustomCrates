@@ -14,6 +14,9 @@ public class F {
 
     private final Pattern HEX_PATTERN = Pattern.compile("#[a-fA-F0-9]{6}");
 
+    public final char STAR_SYMBOL = '✦';
+    public final char BAR_SYMBOL = '▌';
+
     @Setter
     private String prefix;
 
@@ -23,6 +26,10 @@ public class F {
 
     public String list(String string) {
         return color(" &c➥ &7" + string);
+    }
+
+    public String cleanCrateIdentifier(String identifier) {
+        return identifier.replaceAll(" ", "_");
     }
 
     public String concatenate(String splitter, List<String> list) {

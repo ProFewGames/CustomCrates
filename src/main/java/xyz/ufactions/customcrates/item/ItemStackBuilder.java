@@ -11,7 +11,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import xyz.ufactions.customcrates.libs.F;
 import xyz.ufactions.enchantmentlib.EnchantmentLib;
-import xyz.ufactions.enchantmentlib.VersionUtils;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -29,7 +28,11 @@ public final class ItemStackBuilder {
         return new ItemStackBuilder(item);
     }
 
-    private final ItemStack item;
+    public static ItemStackBuilder clone(ItemStack item) {
+        return from(item.clone());
+    }
+
+    private ItemStack item;
 
     private final ItemFlag[] HIDE_FLAGS = new ItemFlag[]{
             ItemFlag.HIDE_ENCHANTS, ItemFlag.HIDE_ATTRIBUTES,
@@ -58,6 +61,11 @@ public final class ItemStackBuilder {
 
     public ItemStackBuilder apply(Consumer<ItemStack> consumer) {
         consumer.accept(this.item);
+        return this;
+    }
+
+    public ItemStackBuilder overrideItem(ItemStack item) {
+        this.item = item.clone();
         return this;
     }
 
@@ -118,6 +126,10 @@ public final class ItemStackBuilder {
 
     public ItemStackBuilder amount(int amount) {
         return apply(item -> item.setAmount(amount));
+    }
+
+    public int getEnchantmentLevel(Enchantment enchantment) {
+        return item.getEnchantmentLevel(enchantment);
     }
 
     public ItemStackBuilder enchant(Enchantment enchantment, int level) {
@@ -274,6 +286,10 @@ public final class ItemStackBuilder {
         return this.item;
     }
 
+    public Item<InventoryClickEvent> build(Runnable runnable) {
+        return new Item<>(build(), event -> runnable.run());
+    }
+
     public Item<InventoryClickEvent> build(Consumer<InventoryClickEvent> consumer) {
         return new Item<>(build(), consumer);
     }
@@ -287,6 +303,6 @@ public final class ItemStackBuilder {
 
     @Override
     public ItemStackBuilder clone() {
-        return ItemStackBuilder.from(this.item.clone());
+        return ItemStackBuilder.clone(this.item);
     }
 }

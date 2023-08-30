@@ -4,6 +4,7 @@ import lombok.experimental.UtilityClass;
 import org.bukkit.Location;
 import xyz.ufactions.customcrates.CustomCrates;
 import xyz.ufactions.customcrates.crates.Crate;
+import xyz.ufactions.customcrates.factory.SoundFactory;
 
 import java.util.Optional;
 
@@ -17,6 +18,10 @@ public class CustomCratesAPI {
      */
     public void initialize(CustomCrates plugin) {
         if (CustomCratesAPI.plugin == null) CustomCratesAPI.plugin = plugin;
+    }
+
+    public SoundFactory getSoundFactory() {
+        return plugin.getSoundFactory();
     }
 
     public Optional<Crate> getCrate(String crateIdentifier) {

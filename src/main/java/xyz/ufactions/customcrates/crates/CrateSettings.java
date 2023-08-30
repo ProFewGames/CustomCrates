@@ -24,7 +24,7 @@ public class CrateSettings {
     private List<String> openCommands;
     private Material block;
     private Spin.SpinType spinType;
-    private final long spinTime;
+    private long spinTime;
     private final Sound openingSound;
     private final Sound spinSound;
     private final Sound winSound;
@@ -36,11 +36,12 @@ public class CrateSettings {
     private final RandomizableList<Prize> prizes;
 
     private final Map<String, ItemStackBuilder> holographicItemMap;
+    private final double hologramOffset;
     private final List<String> holographicLines;
 
     public CrateSettings(String identifier, String display, List<String> openCommands, Material block, Spin.SpinType spinType,
                          long spinTime, Sound openingSound, Sound spinSound, Sound winSound, ItemStackBuilder key, ItemStackBuilder pouch,
-                         RandomizableList<Prize> prizes, Map<String, ItemStackBuilder> holographicItemMap, List<String> holographicLines) {
+                         RandomizableList<Prize> prizes, Map<String, ItemStackBuilder> holographicItemMap, double hologramOffset, List<String> holographicLines) {
         this.identifier = identifier;
         this.display = F.color(display);
         this.openCommands = openCommands;
@@ -55,6 +56,7 @@ public class CrateSettings {
         this.prizes = prizes;
         this.holographicItemMap = holographicItemMap;
         this.holographicLines = holographicLines;
+        this.hologramOffset = hologramOffset;
     }
 
     public void addCommand(String command) {

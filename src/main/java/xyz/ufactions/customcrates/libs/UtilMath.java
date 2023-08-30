@@ -1,12 +1,17 @@
 package xyz.ufactions.customcrates.libs;
 
+import lombok.experimental.UtilityClass;
+
+import java.text.NumberFormat;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.Random;
 
+@UtilityClass
 public class UtilMath {
 
-    public static OptionalDouble getDouble(String string) {
+    public OptionalDouble getDouble(String string) {
+        if (string == null || string.isEmpty()) return OptionalDouble.empty();
         try {
             return OptionalDouble.of(Double.parseDouble(string));
         } catch (NumberFormatException e) {
@@ -14,7 +19,8 @@ public class UtilMath {
         }
     }
 
-    public static OptionalInt getInteger(String string) {
+    public OptionalInt getInteger(String string) {
+        if (string == null || string.isEmpty()) return OptionalInt.empty();
         try {
             return OptionalInt.of(Integer.parseInt(string));
         } catch (NumberFormatException e) {
@@ -22,7 +28,15 @@ public class UtilMath {
         }
     }
 
-    public static boolean isInteger(String string) {
+    public String formatNumber(long number) {
+        return NumberFormat.getInstance().format(number);
+    }
+
+    public String formatNumber(double number) {
+        return NumberFormat.getInstance().format(number);
+    }
+
+    public boolean isInteger(String string) {
         try {
             Integer.parseInt(string);
             return true;
@@ -31,13 +45,13 @@ public class UtilMath {
         }
     }
 
-    public static int roundInventorySize(int num) {
+    public int roundInventorySize(int num) {
         return (num / 9 + ((num % 9 == 0) ? 0 : 1)) * 9;
     }
 
-    public static Random random = new Random();
+    public Random random = new Random();
 
-    public static int r(int i) {
+    public int r(int i) {
         return random.nextInt(i);
     }
 }

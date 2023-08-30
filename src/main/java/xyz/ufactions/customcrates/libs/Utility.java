@@ -6,8 +6,6 @@ import org.bukkit.Location;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.HashMap;
-
 @UtilityClass
 public class Utility {
 
@@ -17,9 +15,7 @@ public class Utility {
         Validate.notNull(inventory);
         Validate.notNull(item);
 
-        HashMap<Integer, ItemStack> leftOvers = inventory.addItem(item);
-        if (leftOvers.isEmpty()) return;
-        for (ItemStack leftOver : leftOvers.values())
-            dropLocation.getWorld().dropItemNaturally(dropLocation, leftOver);
+        // TODO Removed items dropping on the floor as it seems to be causing issues dropping a full stack.
+        inventory.addItem(item);
     }
 }

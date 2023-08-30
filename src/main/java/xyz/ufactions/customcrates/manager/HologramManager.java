@@ -2,6 +2,7 @@ package xyz.ufactions.customcrates.manager;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import xyz.ufactions.customcrates.CustomCrates;
@@ -46,7 +47,7 @@ public class HologramManager {
             for (Map.Entry<Crate, List<Location>> entry : plugin.getLocationsFile().getLocations().entrySet()) {
                 List<Location> locations = entry.getValue();
                 Crate crate = entry.getKey();
-                double offsetY = -1.5 + (0.25 * crate.getSettings().getHolographicLines().size());
+                double offsetY = crate.getSettings().getHologramOffset() + (0.25 * crate.getSettings().getHolographicLines().size());
                 for (Location location : locations) {
                     location.add(0, offsetY, 0);
                     Hologram hologram = new Hologram(plugin, location);

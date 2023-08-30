@@ -1,5 +1,6 @@
 package xyz.ufactions.customcrates.gui.item;
 
+import lombok.Synchronized;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -14,8 +15,8 @@ import java.util.function.Consumer;
 
 public class FlagsGUI extends GUI {
 
-    private static int[] slots = new int[]{
-            10, 12, 14, 16, 20, 22, 24
+    private static final int[] slots = new int[]{
+            10, 12, 14, 16, 20, 22, 24, 30
     };
 
     private final Consumer<ItemStackBuilder> consumer;

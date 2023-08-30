@@ -49,7 +49,7 @@ public class GiveAllCommand extends SubCommand {
             return getMatches(args[0], plugin.getCratesManager().getCrates(), crate -> crate.getSettings().getIdentifier());
         }
         if (args.length == 2) {
-            return getMatches(args[0], Arrays.asList("1", "2", "3"));
+            return getMatches(args[1], Arrays.asList("1", "2", "3"));
         }
         return Collections.emptyList();
     }

@@ -7,8 +7,8 @@ import xyz.ufactions.customcrates.CustomCrates;
 import xyz.ufactions.customcrates.crates.Crate;
 import xyz.ufactions.customcrates.crates.Prize;
 import xyz.ufactions.customcrates.dialog.Question;
-import xyz.ufactions.customcrates.file.CrateFileWriter;
 import xyz.ufactions.customcrates.file.LanguageFile;
+import xyz.ufactions.customcrates.file.crate.CrateFileWriter;
 import xyz.ufactions.customcrates.gui.internal.GUI;
 import xyz.ufactions.customcrates.gui.internal.PagedGUI;
 import xyz.ufactions.customcrates.gui.item.ItemGUI;
@@ -25,7 +25,8 @@ public class PrizeEditorGUI extends ItemGUI {
 
     public PrizeEditorGUI(CustomCrates plugin, Crate crate, Prize prize, GUI fallbackGUI, Player player) {
         super(builder -> {
-            CrateFileWriter writer = new CrateFileWriter(plugin, crate);
+            plugin.debug("GUI Writing Prize " + builder);
+            CrateFileWriter writer = CrateFileWriter.create(plugin,crate);
             writer.writePrizes();
             writer.save();
         }, plugin, prize.getItemBuilder(), fallbackGUI, player);
@@ -35,7 +36,7 @@ public class PrizeEditorGUI extends ItemGUI {
     }
 
     private void saveCrate() {
-        CrateFileWriter writer = new CrateFileWriter(this.plugin, this.crate);
+        CrateFileWriter writer = CrateFileWriter.create(plugin,crate);
         writer.writePrizes();
         writer.save();
     }

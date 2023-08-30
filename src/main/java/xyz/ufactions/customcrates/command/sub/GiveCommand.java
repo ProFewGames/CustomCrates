@@ -11,10 +11,10 @@ import xyz.ufactions.customcrates.file.LanguageFile;
 import xyz.ufactions.customcrates.libs.F;
 import xyz.ufactions.customcrates.libs.UtilMath;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class GiveCommand extends SubCommand {
 
@@ -51,13 +51,13 @@ public class GiveCommand extends SubCommand {
     @Override
     protected List<String> tabComplete(CommandSender sender, String label, String[] args) {
         if (args.length == 1) {
-            return getMatches(args[0], new ArrayList<>(Bukkit.getOnlinePlayers()), HumanEntity::getName);
+            return getMatches(args[0], Bukkit.getOnlinePlayers().stream().map(HumanEntity::getName).collect(Collectors.toList()));
         }
         if (args.length == 2) {
-            return getMatches(args[0], plugin.getCratesManager().getCrates(), crate -> crate.getSettings().getIdentifier());
+            return getMatches(args[1], plugin.getCratesManager().getCrates().stream().map(crate -> crate.getSettings().getIdentifier()).collect(Collectors.toList()));
         }
         if (args.length == 3) {
-            return getMatches(args[0], Arrays.asList("1", "2", "3"));
+            return getMatches(args[2], Arrays.asList("1", "2", "3"));
         }
         return Collections.emptyList();
     }

@@ -4,6 +4,7 @@ version: ${version}
 author: ${author}
 description: ${description}
 api-version: 1.13
+load: POSTWORLD
 softdepend:
   - Vault
   - PlaceholderAPI
@@ -59,4 +60,7 @@ permissions:
     default: op
   customcrates.notify.version:
     description: Notify if new version available
+    default: op
+  customcrates.command.migrate:
+    description: Migrate any files using an old deprecated structure to a new structure.
     default: op

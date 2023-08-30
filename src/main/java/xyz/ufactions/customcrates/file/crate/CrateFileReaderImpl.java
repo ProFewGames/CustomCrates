@@ -1,5 +1,6 @@
-package xyz.ufactions.customcrates.file;
+package xyz.ufactions.customcrates.file.crate;
 
+import lombok.RequiredArgsConstructor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
@@ -9,35 +10,67 @@ import xyz.ufactions.customcrates.crates.Crate;
 import xyz.ufactions.customcrates.crates.CrateSettings;
 import xyz.ufactions.customcrates.crates.Prize;
 import xyz.ufactions.customcrates.item.ItemStackBuilder;
-import xyz.ufactions.customcrates.item.ItemStackFileReader;
+import xyz.ufactions.customcrates.item.ItemStackFileIO;
 import xyz.ufactions.customcrates.libs.RandomizableList;
 import xyz.ufactions.customcrates.spin.Spin;
 
 import java.util.*;
 import java.util.logging.Level;
 
-public final class CrateFileReader {
+@RequiredArgsConstructor
+class CrateFileReaderImpl implements CrateFileReader {
 
     private final CustomCrates plugin;
     private final FileConfiguration configuration;
 
-    public CrateFileReader(CustomCrates plugin, FileConfiguration configuration) {
-        this.plugin = plugin;
-        this.configuration = configuration;
-    }
-
-    /**
-     * @return The crate unique identifier
+    /*
+    We're caching the identifier for this reader because it is used on multiple occasions to debug and warn, we don't
+    want to repeatedly fetch the identifier from config everytime it is called.
      */
+
+    private String identifier;
+
+    @Override
     public String readIdentifier() {
-        String identifier = configuration.getString("Crate.identifier");
-        if (identifier != null) identifier = cleanIdentifier(identifier);
-        return identifier;
+        if (this.identifier != null) return this.identifier;
+        String identifier = this.configuration.getString("Crate.identifier");
+        if (identifier != null) identifier = identifier.replaceAll(" ", "_");
+        return this.identifier = identifier;
     }
 
-    /**
-     * @return The crate block item
-     */
+    // *** Utilities ***
+
+    private Optional<ItemStackBuilder> readItemStack(String path) {
+        debug(String.format("Attempting to read item from given path '%s'", path));
+        if (!configuration.isConfigurationSection(path)) {
+            warn(String.format("Path '%s' is not a configuration section.", path));
+            return Optional.empty();
+        }
+        ConfigurationSection section = configuration.getConfigurationSection(path);
+        ItemStackBuilder item = ItemStackFileIO.create(this.plugin, section).read();
+        return Optional.ofNullable(item);
+    }
+
+    private void debug(Object obj) {
+        this.plugin.debug(String.format("(%s) %s", readIdentifier(), obj));
+    }
+
+    private void warn(Object obj) {
+        warn(obj, null);
+    }
+
+    private void warn(Object obj, Exception exception) {
+        String identifier = readIdentifier();
+        String msg = "(" + identifier + ") " + obj + ". Please enable debugging in your config.yml before submitting a support ticket via Discord.";
+        if (exception == null)
+            this.plugin.getLogger().warning(msg);
+        else
+            this.plugin.getLogger().log(Level.WARNING, msg, exception);
+    }
+
+    // *** Reading ***
+
+    @Override
     public Material readBlock() {
         if (!configuration.isString("Crate.block")) {
             debug("Could not find configured block. Defaulting to chest");
@@ -54,9 +87,7 @@ public final class CrateFileReader {
         }
     }
 
-    /**
-     * @return Crate inventory title if present
-     */
+    @Override
     public Optional<String> readDisplay() {
         if (configuration.isString("Crate.display"))
             return Optional.ofNullable(configuration.getString("Crate.display"));
@@ -64,69 +95,54 @@ public final class CrateFileReader {
         return Optional.empty();
     }
 
-    /**
-     * @return Crate inventory spin time if present
-     */
+    @Override
     public OptionalLong readSpinTime() {
-        if (configuration.isLong("Crate.spin time")) return OptionalLong.of(configuration.getLong("Crate.spin time"));
+        if (configuration.isLong("Crate.spin time") || configuration.isInt("Crate.spin time"))
+            return OptionalLong.of(configuration.getLong("Crate.spin time"));
         debug("Configured spin time was not found.");
         return OptionalLong.empty();
     }
 
-    /**
-     * @return Sound to play when crate is opened
-     */
-    public Optional<Sound> readOpeningSound() {
+    @Override
+    public Optional<Sound> readOpenSound() {
         if (configuration.isString("Crate.open sound"))
-            return Optional.ofNullable(plugin.getSoundManager().parse(configuration.getString("Crate.open sound")));
+            return Optional.ofNullable(plugin.getSoundFactory().parse(configuration.getString("Crate.open sound")));
         debug("Configured open sound was not found.");
         return Optional.empty();
     }
 
-    /**
-     * @return Sound to play while crate is spinning
-     */
+    @Override
     public Optional<Sound> readSpinSound() {
         if (configuration.isString("Crate.spin sound"))
-            return Optional.ofNullable(plugin.getSoundManager().parse(configuration.getString("Crate.spin sound")));
+            return Optional.ofNullable(plugin.getSoundFactory().parse(configuration.getString("Crate.spin sound")));
         debug("Configured spin sound was not found.");
         return Optional.empty();
     }
 
-    /**
-     * @return Sound to play when a prize is won
-     */
+    @Override
     public Optional<Sound> readWinSound() {
         if (configuration.isString("Crate.win sound"))
-            return Optional.ofNullable(plugin.getSoundManager().parse(configuration.getString("Crate.win sound")));
+            return Optional.ofNullable(plugin.getSoundFactory().parse(configuration.getString("Crate.win sound")));
         debug("Configured win sound was not found.");
         return Optional.empty();
     }
 
-    /**
-     * @return Commands to be run when crate is opened
-     */
+    @Override
     public List<String> readCommands() {
         return configuration.getStringList("Crate.open-commands");
     }
 
-    /**
-     * @return Crate key item
-     */
+    @Override
     public ItemStackBuilder readKey() {
         return readItemStack("Key").orElse(null);
     }
 
-    /**
-     * @return Crate pouch item
-     */
+    @Override
     public Optional<ItemStackBuilder> readPouch() {
         return readItemStack("pouch");
     }
 
-    /**
-     * @return Crate spin type if present
-     */
+    @Override
     public Optional<Spin.SpinType> readSpinType() {
         if (configuration.isString("Crate.spin")) {
             try {
@@ -141,9 +157,7 @@ public final class CrateFileReader {
         return Optional.empty();
     }
 
-    /**
-     * @return All configured prizes
-     */
+    @Override
     public RandomizableList<Prize> readPrizes() {
         RandomizableList<Prize> prizes = new RandomizableList<>();
         if (!configuration.isConfigurationSection("Prizes")) {
@@ -154,7 +168,7 @@ public final class CrateFileReader {
             debug("Loading prize " + key);
             try {
                 ConfigurationSection section = configuration.getConfigurationSection("Prizes." + key);
-                ItemStackBuilder builder = readItemStack(section.getCurrentPath() + ".display").orElseGet(() -> ItemStackBuilder.of(Material.AIR));
+                ItemStackBuilder builder = readItemStack(section.getCurrentPath()).orElseGet(() -> ItemStackBuilder.of(Material.AIR));
                 double chance = section.getDouble("chance");
                 List<String> commands = section.getStringList("commands");
                 boolean giveItem = section.getBoolean("give item", false);
@@ -166,64 +180,66 @@ public final class CrateFileReader {
         return prizes;
     }
 
-    /**
-     * @return Holographic Lines
-     */
+    @Override
     public List<String> readHologramLines() {
         return configuration.getStringList("hologram.lines");
     }
 
-    /**
-     * @return Holographic Items
-     */
-    public Map<String, ItemStackBuilder> readHologramItems() {
-        Map<String, ItemStackBuilder> map = new HashMap<>();
-        if (configuration.isConfigurationSection("hologram.items")) {
-            for (String key : configuration.getConfigurationSection("hologram.items").getKeys(false)) {
-                debug("Mapping hologram item " + key);
-                if (!configuration.isConfigurationSection("hologram.items." + key)) continue;
-                ConfigurationSection section = configuration.getConfigurationSection("hologram.items." + key);
-                String identifier = section.getString("identifier");
-                ItemStackBuilder builder = readItemStack(section.getCurrentPath()).orElse(ItemStackBuilder.of(Material.AIR));
-                map.put(identifier, builder);
-                debug("Hologram Item Mapped.");
-            }
-        }
-        return map;
+    @Override
+    public OptionalDouble readHologramOffset() {
+        if (configuration.isDouble("hologram.offset") || configuration.isInt("hologram.offset"))
+            return OptionalDouble.of(configuration.getDouble("hologram.offset"));
+        return OptionalDouble.empty();
     }
 
-    public Crate read() {
+    @Override
+    public Map<String, ItemStackBuilder> readHologramItems() {
+        debug("Hologram Items Not Yet Implemented");
+        return new HashMap<>();
+    }
+
+    @Override
+    public Crate readAll() {
         String identifier = readIdentifier();
         if (identifier == null || identifier.isEmpty()) {
-            warn("Identifier is null or is empty '" + identifier + "'");
+            warn(String.format("Identifier is null or is empty '%s'", identifier));
             return null;
         }
         ItemStackBuilder key = readKey();
         if (key == null) {
-            warn("Could not load key from configuration.");
+            warn("Could not read key from configuration.");
             return null;
         }
 
+        // Properties
         String display = readDisplay().orElse(identifier);
         List<String> commands = readCommands();
         Material block = readBlock();
         Spin.SpinType spinType = readSpinType().orElse(Spin.SpinType.CSGO);
-        long spinTime = readSpinTime().orElse(2500);
-        Sound openingSound = readOpeningSound().orElseGet(() ->
-                this.plugin.getSoundManager().parseOrDefault(
+        long spinTime = readSpinTime().orElse(2_500 /* 2.5 Seconds */);
+
+        RandomizableList<Prize> prizes = readPrizes();
+
+        // Pouch
+        ItemStackBuilder pouch = readPouch().orElse(ItemStackBuilder.of(Material.AIR));
+
+        // Sound
+        Sound openSound = readOpenSound().orElseGet(() ->
+                this.plugin.getSoundFactory().parseOrDefault(
                         "BLOCK_CHEST_OPEN",
                         "CHEST_OPEN"));
         Sound spinSound = readSpinSound().orElseGet(() ->
-                this.plugin.getSoundManager().parseOrDefault(
+                this.plugin.getSoundFactory().parseOrDefault(
                         "BLOCK_NOTE_BLOCK_PLING",
                         "NOTE_PLING"));
         Sound winSound = readWinSound().orElseGet(() ->
-                this.plugin.getSoundManager().parseOrDefault(
+                this.plugin.getSoundFactory().parseOrDefault(
                         "ENTITY_PLAYER_LEVELUP",
                         "LEVEL_UP"));
-        ItemStackBuilder pouch = readPouch().orElse(ItemStackBuilder.of(Material.AIR));
-        RandomizableList<Prize> prizes = readPrizes();
+
+        // Holograms
         List<String> hologramLines = readHologramLines();
+        double hologramOffset = readHologramOffset().orElse(-1.4);
         Map<String, ItemStackBuilder> hologramItems = readHologramItems();
 
         CrateSettings settings = new CrateSettings(identifier,
@@ -232,47 +248,15 @@ public final class CrateFileReader {
                 block,
                 spinType,
                 spinTime,
-                openingSound,
+                openSound,
                 spinSound,
                 winSound,
                 key,
                 pouch,
                 prizes,
                 hologramItems,
+                hologramOffset,
                 hologramLines);
-        return new Crate(plugin, settings);
-    }
-
-    private Optional<ItemStackBuilder> readItemStack(String path) {
-        debug("Attempting to read itemstack from given path '" + path + "'");
-        if (configuration.isConfigurationSection(path)) {
-            ItemStackFileReader itemStackConfiguration = ItemStackFileReader.of(configuration.getConfigurationSection(path));
-            ItemStackBuilder builder = itemStackConfiguration.read();
-            debug("Item read: " + builder);
-            return Optional.ofNullable(builder);
-        }
-        debug("Configured itemstack was not found.");
-        return Optional.empty();
-    }
-
-    private void warn(Object o) {
-        warn(o, null);
-    }
-
-    private void warn(Object o, Exception e) {
-        String identifier = readIdentifier();
-        String msg = "(" + identifier + ") " + o + ". Please enable debugging in the config.yml before submitting a support ticket via discord.";
-        if (e == null)
-            this.plugin.getLogger().warning(msg);
-        else
-            this.plugin.getLogger().log(Level.WARNING, msg, e);
-    }
-
-    private void debug(Object o) {
-        this.plugin.debug("(" + configuration.getName() + ") " + o);
-    }
-
-    private String cleanIdentifier(String identifier) {
-        return identifier.replaceAll(" ", "_");
+        return new Crate(this.plugin, settings);
     }
 }

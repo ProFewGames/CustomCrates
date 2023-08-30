@@ -19,7 +19,7 @@ public abstract class Spin {
 
     @AllArgsConstructor
     public enum SpinType {
-        ROULETTE(new RouletteSpin(), Material.GOLD_INGOT), CSGO(new CSGOSpin(), Material.CHEST), NONE(new QuickSpin(), Material.BARRIER);
+        ROULETTE(new RouletteSpin(), Material.GOLD_INGOT), CSGO(new CSGOSpin(), Material.DIAMOND), NONE(new QuickSpin(), Material.BARRIER);
 
         private final Spin spin;
         @Getter

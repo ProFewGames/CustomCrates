@@ -7,8 +7,8 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import xyz.ufactions.customcrates.CustomCrates;
 import xyz.ufactions.customcrates.crates.Crate;
 import xyz.ufactions.customcrates.dialog.Question;
-import xyz.ufactions.customcrates.file.CrateFileWriter;
 import xyz.ufactions.customcrates.file.LanguageFile;
+import xyz.ufactions.customcrates.file.crate.CrateFileWriter;
 import xyz.ufactions.customcrates.gui.CommandsGUI;
 import xyz.ufactions.customcrates.gui.CratesGUI;
 import xyz.ufactions.customcrates.gui.DeleteConfirmationGUI;
@@ -17,9 +17,12 @@ import xyz.ufactions.customcrates.gui.item.ItemGUI;
 import xyz.ufactions.customcrates.gui.item.MaterialGUI;
 import xyz.ufactions.customcrates.item.ItemStackBuilder;
 import xyz.ufactions.customcrates.libs.F;
+import xyz.ufactions.customcrates.libs.UtilMath;
+import xyz.ufactions.customcrates.libs.UtilTime;
 import xyz.ufactions.customcrates.universal.UniversalMaterial;
 
 import java.util.Arrays;
+import java.util.OptionalInt;
 import java.util.stream.Collectors;
 
 public class CrateEditorGUI extends GUI {
@@ -37,7 +40,7 @@ public class CrateEditorGUI extends GUI {
 
         setTitle(crate.getSettings().getDisplay() + "&3&l Editor");
 
-        setItem(40, ItemStackBuilder.of(Material.BARRIER)
+        setItem(49, ItemStackBuilder.of(Material.BARRIER)
                 .name("&c&lDelete")
                 .lore("&4&lWARNING THIS ACTION IS IRREVERSIBLE",
                         "",
@@ -72,7 +75,7 @@ public class CrateEditorGUI extends GUI {
                     this.fallback = false;
                     new MaterialGUI(material -> {
                         crate.getSettings().setBlock(material);
-                        CrateFileWriter writer = new CrateFileWriter(plugin, crate);
+                        CrateFileWriter writer = CrateFileWriter.create(plugin,crate);
                         writer.writeBlock();
                         writer.save();
                         for (Location location : plugin.getLocationsFile().getLocations(crate))
@@ -91,7 +94,7 @@ public class CrateEditorGUI extends GUI {
                             .stripColor(false)
                             .inputPredicate(input -> {
                                 crate.getSettings().setDisplay(input);
-                                CrateFileWriter writer = new CrateFileWriter(plugin, crate);
+                                CrateFileWriter writer = CrateFileWriter.create(plugin,crate);
                                 writer.writeDisplay();
                                 writer.save();
                                 new CrateEditorGUI(plugin, gui, crate, player).open();
@@ -126,7 +129,7 @@ public class CrateEditorGUI extends GUI {
                     this.fallback = false;
                     new CommandsGUI(commands -> {
                         crate.getSettings().setOpenCommands(commands);
-                        CrateFileWriter writer = new CrateFileWriter(plugin, crate);
+                        CrateFileWriter writer = CrateFileWriter.create(plugin,crate);
                         writer.writeOpenCommands();
                         writer.save();
                     }, () -> crate.getSettings().getOpenCommands(), plugin, this, player).open();
@@ -140,7 +143,7 @@ public class CrateEditorGUI extends GUI {
                     this.fallback = false;
                     new ItemGUI(builder -> {
                         crate.getSettings().setKey(builder);
-                        CrateFileWriter writer = new CrateFileWriter(plugin, crate);
+                        CrateFileWriter writer = CrateFileWriter.create(plugin,crate);
                         writer.writeKey();
                         writer.save();
                     }, plugin, crate.getSettings().getKey(), this, player).open();
@@ -152,6 +155,37 @@ public class CrateEditorGUI extends GUI {
                 .build(event -> {
                     this.fallback = false;
                     new PrizeGUI(plugin, crate, this, player).open();
+                }));
+
+        setItem(38, ItemStackBuilder.of(Material.CLOCK)
+                .name("&b&lChange Spin Time")
+                .lore("",
+                        "&e&lCurrent Time:",
+                        "&f&l" + UtilMath.formatNumber(crate.getSettings().getSpinTime()),
+                        "&f&l(" + UtilTime.getDurationBreakdown(crate.getSettings().getSpinTime()) + ")",
+                        "",
+                        "&7&o* Click to change *")
+                .build(event -> {
+                    this.fallback = false;
+                    Question question = Question.create("Enter the desired spin time, this number is in milliseconds. (Seconds * 1,000)")
+                            .inputPredicate(input -> {
+                                OptionalInt time = UtilMath.getInteger(input);
+                                if (!time.isPresent()) return false;
+                                crate.getSettings().setSpinTime(time.getAsInt());
+                                CrateFileWriter writer = CrateFileWriter.create(plugin,crate);
+                                writer.writeSpinTime();
+                                writer.save();
+                                this.fallback = true;
+                                open();
+                                return true;
+                            })
+                            .stripColor(true)
+                            .repeatIfFailed(true)
+                            .build();
+                    player.closeInventory();
+                    plugin.getDialogManager().create(player)
+                            .askQuestion(question)
+                            .begin();
                 }));
     }
 

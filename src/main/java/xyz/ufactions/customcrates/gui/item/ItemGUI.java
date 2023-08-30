@@ -24,8 +24,9 @@ import java.util.stream.Collectors;
 public class ItemGUI extends GUI {
 
     private final Consumer<ItemStackBuilder> consumer;
-    private final ItemStackBuilder builder;
     protected final GUI fallbackGUI;
+
+    private ItemStackBuilder builder;
 
     protected boolean fallback = true;
 
@@ -56,6 +57,7 @@ public class ItemGUI extends GUI {
         setModelDataItem();
         setLoreItem();
         setEnchantmentItem();
+        setCopyItem();
 
         // *** MATERIAL ***
         setItem(24, ItemStackBuilder.of(builder.getType())
@@ -367,6 +369,30 @@ public class ItemGUI extends GUI {
                             .create(player)
                             .askQuestion(question)
                             .begin();
+                }));
+    }
+
+    private void setCopyItem() {
+        setItem(40, ItemStackBuilder.of(Material.CREEPER_HEAD)
+                .name("&b&lCopy Item")
+                .lore(
+                        "",
+                        "&fThis will copy an item from",
+                        "&fyour inventory and set it",
+                        "&fas the item for this config",
+                        "",
+                        "&c&lWARNING THIS WILL OVERRIDE THE",
+                        "&c&lITEM CURRENTLY CONFIGURED",
+                        "",
+                        "&7&o* Click to select an item *"
+                )
+                .build(() -> {
+                    this.fallback = false;
+                    new PlayerGUI(this.plugin, player, item -> {
+                        apply(builder -> builder.overrideItem(item));
+                        ItemGUI.this.fallback = true;
+                        ItemGUI.this.open();
+                    }).open();
                 }));
     }
 

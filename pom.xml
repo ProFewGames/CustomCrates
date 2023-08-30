@@ -6,7 +6,7 @@
 
     <groupId>xyz.ufactions.customcrates</groupId>
     <artifactId>CustomCrates</artifactId>
-    <version>5.0.4</version>
+    <version>5.1.0</version>
     <name>CustomCrates</name>
     <description>A Fully Customizable Crates Plugin</description>
 
@@ -34,6 +34,10 @@
         <repository>
             <id>spigot-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+        </repository>
+        <repository>
+            <id>jeff-media-gbr</id>
+            <url>https://hub.jeff-media.com/nexus/repository/jeff-media-public/</url>
         </repository>
     </repositories>
 
@@ -66,12 +70,6 @@
             <version>latest</version>
             <scope>compile</scope>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>com.github.simplix-softworks</groupId>-->
-<!--            <artifactId>simplixstorage</artifactId>-->
-<!--            <version>3.2.5</version>-->
-<!--            <scope>compile</scope>-->
-<!--        </dependency>-->
         <!-- PlaceholderAPI Dependency -->
         <dependency>
             <groupId>me.clip</groupId>
@@ -83,14 +81,20 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.24</version>
+            <version>1.18.26</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>23.0.0</version>
+            <version>24.0.1</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.jeff_media</groupId>
+            <artifactId>CustomBlockData</artifactId>
+            <version>1.0.5</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 
@@ -129,15 +133,15 @@
                         </goals>
                     </execution>
                 </executions>
-<!--                <configuration>-->
-<!--                    <createDependencyReducedPom>false</createDependencyReducedPom>-->
-<!--                    <relocations>-->
-<!--                        <relocation>-->
-<!--                            <pattern>de.leonhard.storage</pattern>-->
-<!--                            <shadedPattern>xyz.ufactions.customcrates.shaded.storage</shadedPattern>-->
-<!--                        </relocation>-->
-<!--                    </relocations>-->
-<!--                </configuration>-->
+                <configuration>
+                    <createDependencyReducedPom>false</createDependencyReducedPom>
+                    <relocations>
+                        <relocation>
+                            <pattern>com.jeff_media.customblockdata</pattern>
+                            <shadedPattern>xyz.ufactions.customcrates.shaded.customblockdata</shadedPattern>
+                        </relocation>
+                    </relocations>
+                </configuration>
             </plugin>
             <!-- Build project  -->
             <plugin>
